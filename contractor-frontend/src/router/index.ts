@@ -1,4 +1,4 @@
-// src/router/index.ts หรือ index.js
+// src/router/index.ts
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../views/Login.vue'
 import ContractorRegistration from '../views/ContractorRegistration.vue'
@@ -13,6 +13,10 @@ import DownloadListQR from '../views/DownloadListQR.vue'
 import TakeExam from '../views/TakeExam.vue'
 import PrintCard from '../views/PrintCard.vue'
 import NotFound from '../views/NotFound.vue'
+import ApprovalOfficer from '../views/ApprovalOfficer.vue'
+import ApprovalSafety from '../views/ApprovalSafety.vue'// เพิ่มการนำเข้า ApprovalSafety
+import CertificaAdd from '../views/CertificaAdd.vue' // เพิ่มการนำเข้า CertificaAdd
+import BookTraining from '../views/BookTraining.vue' // เพิ่มการนำเข้า BookTraining
 
 const routes = [
   {
@@ -74,6 +78,26 @@ const routes = [
     path: '/print-card',
     component: PrintCard,
     meta: { step: 9, title: 'พิมพ์บัตร' }
+  },
+  {
+    path: '/approval-officer',
+    component: ApprovalOfficer,
+    meta: { step: 10, title: 'การอนุมัติผู้ประสานงานคู่ธุรกิจ' }
+  },
+  {
+    path: '/approval-safety',
+    component: ApprovalSafety,
+    meta: { step: 11, title: 'การอนุมัติผู้ประสานงานด้านความปลอดภัย' }
+  },
+  {
+    path: '/certifica-add',
+    component: CertificaAdd,
+    meta: { step: 12, title: 'เพิ่มเอกสาร CertificaAdd' }
+  },
+  {
+    path: '/book-training',
+    component: BookTraining,
+    meta: { step: 13, title: 'จองอบรมทีมงาน' }
   },
   {
     path: '/:pathMatch(.*)*',

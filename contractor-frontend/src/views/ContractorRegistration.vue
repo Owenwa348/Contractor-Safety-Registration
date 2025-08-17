@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-50">
     <div class="w-full max-w-md bg-white rounded-xl shadow-md p-8">
-      <h1 class="text-2xl font-bold text-center text-blue-700 mb-4">ลงทะเบียนคู่ธุรกิจ</h1>
+      <h1 class="text-2xl font-bold text-center mb-4">ลงทะเบียนคู่ธุรกิจ</h1>
 
       <form class="space-y-4">
         <div>
