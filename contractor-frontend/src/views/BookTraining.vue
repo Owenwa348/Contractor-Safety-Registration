@@ -1,87 +1,94 @@
 <!-- BookTraining.vue -->
 <template>
-  <div class="p-6">
+  <div class="p-4">
     <!-- หัวข้อ -->
-    <h1 class="text-3xl font-bold text-gray-800 mb-6">จองอบรมทีมงาน</h1>
+    <h1 class="text-2xl font-bold mb-4">จองอบรมทีมงาน</h1>
 
     <!-- ข้อมูลอบรมที่เลือก -->
-    <div v-if="selectedEvent" class="border rounded-lg p-4 bg-white shadow-sm mb-4">
-      <h3 class="text-lg font-semibold mb-3 text-gray-800">ข้อมูลการอบรม</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-        <p><strong>หัวข้อการอบรม:</strong> {{ selectedEvent.title }}</p>
-        <p><strong>ประเภทการอบรม:</strong> {{ selectedEvent.type }}</p>
+    <div v-if="selectedEvent" class="border rounded p-4 bg-gray-50 mb-4">
+      <h3 class="text-lg font-bold mb-2">ข้อมูลการอบรม</h3>
+      <div class="space-y-1 text-sm">
+        <p><strong>หัวข้อ:</strong> {{ selectedEvent.title }}</p>
         <p><strong>ผู้สอน:</strong> {{ selectedEvent.instructor }}</p>
-        <p><strong>รอบอบรม:</strong> {{ formatDate(selectedEvent.date) }} {{ selectedEvent.time }}-{{ selectedEvent.endTime }}</p>
-        <p><strong>จำนวนผู้จองอบรม:</strong> {{ selectedEvent.booked }} / {{ selectedEvent.capacity }}</p>
-        <p><strong>ห้องอบรม:</strong> {{ selectedEvent.room }}</p>
-        <p><strong>ผู้สร้างการอบรม:</strong> {{ selectedEvent.creator }} ({{ selectedEvent.createdDate }})</p>
+        <p><strong>วันเวลา:</strong> {{ formatDate(selectedEvent.date) }} {{ selectedEvent.time }}-{{ selectedEvent.endTime }}</p>
+        <p><strong>จำนวนคน:</strong> {{ selectedEvent.booked }} / {{ selectedEvent.capacity }}</p>
+        <p><strong>ห้อง:</strong> {{ selectedEvent.room }}</p>
       </div>
     </div>
 
-    <!-- ส่วนค้นหาและตาราง (แสดงเมื่อเลือกอบรมแล้ว) -->
+    <!-- ส่วนจัดการรายชื่อ -->
     <div v-if="selectedEvent">
-      <!-- Search -->
-      <div class="flex justify-end mb-4">
+      <!-- ค้นหา -->
+      <div class="mb-3">
         <input
           v-model="search"
           type="text"
           placeholder="ค้นหาชื่อ..."
-          class="border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          class="border rounded px-3 py-2 w-64"
         />
       </div>
 
-      <!-- ปุ่มจองอบรม -->
-      <div class="mb-4">
+      <!-- ปุ่มต่างๆ -->
+      <div class="mb-3 flex gap-2 flex-wrap">
         <button
           @click="bookSelected"
-          class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200"
+          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
-          จองอบรมคนที่เลือก
+          จองคนที่เลือก ({{ selectedCount }})
+        </button>
+        
+        <button
+          @click="selectAllPeople"
+          class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+        >
+          เลือกทั้งหมด
+        </button>
+        
+        <button
+          @click="clearSelection"
+          class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 disabled:bg-gray-300"
+          :disabled="selectedCount === 0"
+        >
+          เคลียร์การเลือก
         </button>
       </div>
 
+      <!-- แสดงจำนวนที่เลือก -->
+      <div v-if="selectedCount > 0" class="mb-3 p-3 bg-blue-50 rounded">
+        <p class="text-blue-800">เลือกแล้ว {{ selectedCount }} คน สำหรับอบรม "{{ selectedEvent.title }}"</p>
+      </div>
+
       <!-- ตารางรายชื่อ -->
-      <div class="overflow-x-auto">
-        <table class="w-full border-collapse bg-white rounded-lg shadow-sm">
+      <div class="border rounded">
+        <table class="w-full">
           <thead class="bg-gray-100">
             <tr>
-              <th class="p-3 border text-center">
+              <th class="p-2 text-center w-12">
                 <input 
                   type="checkbox" 
                   @change="selectAll" 
                   :checked="allSelected"
-                  class="rounded"
                 >
               </th>
-              <th class="p-3 border text-center">ลำดับ</th>
-              <th class="p-3 border text-center">ชื่อ</th>
-              <th class="p-3 border text-center">เบอร์ติดต่อ</th>
-              <th class="p-3 border text-center">บัตรประชาชน</th>
-              <th class="p-3 border text-center">Certificate</th>
-              <th class="p-3 border text-center">สถานะการจอง</th>
+              <th class="p-2 text-center w-16">ลำดับ</th>
+              <th class="p-2 text-left">ชื่อ</th>
+              <th class="p-2 text-center">เบอร์</th>
+              <th class="p-2 text-center">บัตรประชาชน</th>
+              <th class="p-2 text-center w-20">จัดการ</th>
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="(person, index) in filteredPeople"
-              :key="person.id"
-              class="hover:bg-gray-50 transition-colors duration-150"
-            >
-              <td class="border p-3 text-center">
-                <input 
-                  type="checkbox" 
-                  v-model="person.selected"
-                  class="rounded"
-                />
+            <tr v-for="(person, index) in filteredPeople" :key="person.id" class="border-t">
+              <td class="p-2 text-center">
+                <input type="checkbox" v-model="person.selected" />
               </td>
-              <td class="border p-3 text-center">{{ index + 1 }}</td>
-              <td class="border p-3">{{ person.name }}</td>
-              <td class="border p-3 text-center">{{ person.phone || '-' }}</td>
-              <td class="border p-3 text-center">{{ person.idcard }}</td>
-              <td class="border p-3 text-center text-gray-400">-</td>
-              <td class="border p-3 text-center">
+              <td class="p-2 text-center">{{ index + 1 }}</td>
+              <td class="p-2">{{ person.name }}</td>
+              <td class="p-2 text-center">{{ person.phone || '-' }}</td>
+              <td class="p-2 text-center">{{ person.idcard }}</td>
+              <td class="p-2 text-center">
                 <button 
-                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors duration-200 text-sm" 
+                  class="bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600" 
                   @click="removePerson(person.id)"
                 >
                   ลบ
@@ -91,22 +98,10 @@
           </tbody>
         </table>
       </div>
-
-      <!-- สรุปจำนวนคนที่เลือก -->
-      <div v-if="selectedCount > 0" class="mt-4 p-3 bg-blue-50 rounded-lg">
-        <p class="text-blue-800">
-          <strong>เลือกแล้ว {{ selectedCount }} คน</strong> สำหรับอบรม "{{ selectedEvent.title }}"
-        </p>
-      </div>
     </div>
 
-    <!-- ข้อความเมื่อไม่มีข้อมูลอบรม -->
-    <div v-if="!selectedEvent" class="text-center py-12">
-      <div class="text-gray-400 text-lg mb-2">
-        <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z"></path>
-        </svg>
-      </div>
+    <!-- ข้อความเมื่อไม่มีอบรม -->
+    <div v-if="!selectedEvent" class="text-center py-8">
       <p class="text-gray-500">ไม่พบข้อมูลการอบรม กรุณาเลือกอบรมจากปฏิทินก่อน</p>
     </div>
   </div>
@@ -118,67 +113,55 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
+// ข้อมูลอบรม
 const events = ref([
   { 
     id: 1, 
-    title: '08:30 อบรมครั้งที่ 1', 
+    title: 'อบรมพื้นฐานความปลอดภัย', 
     date: '2025-08-07', 
     time: '08:30', 
     endTime: '12:30',
-    type: 'อบรมพื้นฐานความปลอดภัย',
     instructor: 'นายสมชัย งบ.1',
     capacity: 20,
-    booked: 1,
-    room: 'ห้อง A',
-    creator: 'นายสมชัย งบ.1',
-    createdDate: '02/04/2025 16:37'
+    booked: 12,
+    room: 'ห้อง A'
   },
   { 
     id: 2, 
-    title: '08:00 อบรมครั้งที่ 2', 
+    title: 'อบรมการใช้เครื่องมือ', 
     date: '2025-08-14', 
     time: '08:00', 
     endTime: '12:00',
-    type: 'อบรมความปลอดภัยขั้นสูง',
     instructor: 'นายสมศักดิ์ กิจดี',
     capacity: 25,
     booked: 3,
-    room: 'ห้อง B',
-    creator: 'นายสมศักดิ์ กิจดี',
-    createdDate: '05/04/2025 10:15'
+    room: 'ห้อง B'
   },
   { 
     id: 3, 
-    title: '08:30 อบรมครั้งที่ 3', 
+    title: 'อบรมการใช้เครื่องจักร', 
     date: '2025-08-19', 
     time: '08:30', 
     endTime: '12:30',
-    type: 'อบรมการใช้เครื่องจักร',
     instructor: 'นางสาวมาลี ใจดี',
     capacity: 30,
     booked: 0,
-    room: 'ห้อง C',
-    creator: 'นางสาวมาลี ใจดี',
-    createdDate: '08/04/2025 14:20'
+    room: 'ห้อง C'
   },
   { 
     id: 4, 
-    title: '08:30 อบรมครั้งที่ 4', 
+    title: 'อบรมการปฐมพยาบาล', 
     date: '2025-08-22', 
     time: '08:30', 
     endTime: '12:30',
-    type: 'อบรมการปฐมพยาบาล',
     instructor: 'นายวิชัย เก่งดี',
     capacity: 20,
     booked: 2,
-    room: 'ห้อง A',
-    creator: 'นายวิชัย เก่งดี',
-    createdDate: '10/04/2025 09:45'
+    room: 'ห้อง A'
   }
 ])
 
-const selectedEventId = ref('')
-const search = ref('')
+// ข้อมูลบุคคล
 const people = ref([
   { id: 1, name: 'ธันวา ชัยรัตนานนท์', phone: '0874569215', idcard: '11********66', selected: false },
   { id: 2, name: 'ภาคิน รินนาน', phone: '0874569216', idcard: '01********12', selected: false },
@@ -188,49 +171,25 @@ const people = ref([
   { id: 6, name: 'วิชัย มั่นคง', phone: '0823456789', idcard: '34********01', selected: false }
 ])
 
-// ตรวจสอบข้อมูลที่ส่งมาจากปฏิทิน
+const selectedEventId = ref('')
+const search = ref('')
+
+// ตั้งค่าเริ่มต้นจาก URL
 onMounted(() => {
   const queryEventId = route.query.eventId
-  console.log('Query parameters:', route.query)
-  
-  if (queryEventId && queryEventId !== '') {
-    // ตั้งค่า event ที่เลือกตาม query parameter
+  if (queryEventId) {
     selectedEventId.value = parseInt(queryEventId)
-    
-    // อัพเดทข้อมูล event หากมีข้อมูลเพิ่มเติมจาก query
-    const eventIndex = events.value.findIndex(e => e.id === parseInt(queryEventId))
-    if (eventIndex !== -1) {
-      // อัพเดทข้อมูล event จาก query parameters
-      if (route.query.eventTitle) events.value[eventIndex].title = route.query.eventTitle
-      if (route.query.eventDate) events.value[eventIndex].date = route.query.eventDate
-      if (route.query.eventTime) {
-        const timeStr = route.query.eventTime.toString()
-        // ถ้าเป็นตัวเลข ให้แปลงเป็นเวลา
-        if (!timeStr.includes(':')) {
-          const time = parseInt(timeStr)
-          events.value[eventIndex].time = `${time.toString().padStart(2, '0')}:${time >= 8 && time <= 9 ? '30' : '00'}`
-          events.value[eventIndex].endTime = `${(time + 4).toString().padStart(2, '0')}:${time >= 8 && time <= 9 ? '30' : '00'}`
-        } else {
-          events.value[eventIndex].time = timeStr
-        }
-      }
-      if (route.query.examiner) events.value[eventIndex].instructor = route.query.examiner
-      if (route.query.type) events.value[eventIndex].type = route.query.type
-      if (route.query.room) events.value[eventIndex].room = route.query.room
-    }
-  } else {
-    console.log('No eventId in query parameters')
   }
 })
 
-// ติดตามการเปลี่ยนแปลงของ route query
+// ติดตามการเปลี่ยนแปลง URL
 watch(() => route.query, (newQuery) => {
-  console.log('Route query changed:', newQuery)
-  if (newQuery.eventId && newQuery.eventId !== '') {
+  if (newQuery.eventId) {
     selectedEventId.value = parseInt(newQuery.eventId)
   }
-}, { immediate: true })
+})
 
+// คำนวณค่าต่างๆ
 const selectedEvent = computed(() => {
   return events.value.find(event => event.id === parseInt(selectedEventId.value))
 })
@@ -250,6 +209,7 @@ const allSelected = computed(() => {
   return filteredPeople.value.length > 0 && filteredPeople.value.every(p => p.selected)
 })
 
+// ฟังก์ชันต่างๆ
 const formatDate = (dateStr) => {
   const date = new Date(dateStr)
   const day = date.getDate().toString().padStart(2, '0')
@@ -265,7 +225,7 @@ const bookSelected = () => {
     return
   }
   
-  if (confirm(`คุณต้องการจองอบรม "${selectedEvent.value.title}" ให้ ${selected.length} คน ใช่หรือไม่?`)) {
+  if (confirm(`จองอบรม "${selectedEvent.value.title}" ให้ ${selected.length} คน?`)) {
     // อัพเดทจำนวนผู้จอง
     const eventIndex = events.value.findIndex(e => e.id === selectedEvent.value.id)
     events.value[eventIndex].booked += selected.length
@@ -273,7 +233,7 @@ const bookSelected = () => {
     // รีเซ็ตการเลือก
     people.value.forEach(p => p.selected = false)
     
-    alert(`จองอบรมเรียบร้อยแล้ว! จำนวน ${selected.length} คน`)
+    alert(`จองเรียบร้อยแล้ว! จำนวน ${selected.length} คน`)
   }
 }
 
@@ -284,13 +244,21 @@ const selectAll = (event) => {
   })
 }
 
+const selectAllPeople = () => {
+  people.value.forEach(person => {
+    person.selected = true
+  })
+}
+
+const clearSelection = () => {
+  people.value.forEach(person => {
+    person.selected = false
+  })
+}
+
 const removePerson = (personId) => {
-  if (confirm('คุณต้องการลบบุคคลนี้ออกจากรายชื่อหรือไม่?')) {
+  if (confirm('ลบบุคคลนี้ออกจากรายชื่อ?')) {
     people.value = people.value.filter(p => p.id !== personId)
   }
 }
 </script>
-
-<style scoped>
-/* Custom styles สำหรับ Vue component */
-</style>

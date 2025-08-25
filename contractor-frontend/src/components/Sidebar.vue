@@ -1,9 +1,9 @@
 <template>
-  <aside class="w-56 bg-white shadow-sm h-screen sticky top-16 border-r border-gray-100">
+  <aside class="w-60 bg-white shadow-sm h-screen sticky top-16 border-r border-gray-100 overflow-y-auto">
     <nav class="p-4">
       <!-- Employee Management Section -->
-      <section class="mb-6">
-        <h2 class="text-base font-medium text-gray-900 mb-3 px-2">
+      <section class="mb-8">
+        <h2 class="text-base font-semibold text-gray-900 mb-4 px-2 border-b border-gray-100 pb-2">
           จัดการรายชื่อพนักงาน
         </h2>
         
@@ -11,21 +11,30 @@
           <li v-for="item in employeeMenuItems" :key="item.path">
             <router-link
               :to="item.path"
-              class="flex items-center px-3 py-2 text-sm rounded-md transition-colors duration-150 text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-              :class="{ 'bg-blue-50 text-blue-700 font-medium': isCurrentRoute(item.path) }"
+              class="group flex items-center px-3 py-2.5 text-sm rounded-lg transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-700 hover:shadow-sm"
+              :class="{ 
+                'bg-blue-100 text-blue-800 font-medium shadow-sm border-l-4 border-blue-500': isCurrentRoute(item.path),
+                'hover:translate-x-1': !isCurrentRoute(item.path)
+              }"
               :aria-current="isCurrentRoute(item.path) ? 'page' : undefined"
             >
               <component 
                 :is="item.icon" 
-                class="w-4 h-4 mr-2.5 flex-shrink-0"
-                :class="{ 'text-blue-600': isCurrentRoute(item.path), 'text-gray-400': !isCurrentRoute(item.path) }"
+                class="w-4 h-4 mr-3 flex-shrink-0 transition-colors duration-200"
+                :class="{ 
+                  'text-blue-600': isCurrentRoute(item.path), 
+                  'text-gray-500 group-hover:text-blue-600': !isCurrentRoute(item.path) 
+                }"
                 aria-hidden="true"
               />
-              <span class="flex-1 truncate">{{ item.name }}</span>
+              <span class="flex-1 min-w-0 leading-relaxed">{{ item.name }}</span>
               <span 
                 v-if="item.step"
-                class="ml-2 w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0"
-                :class="{ 'bg-blue-100 text-blue-700': isCurrentRoute(item.path), 'bg-gray-100 text-gray-500': !isCurrentRoute(item.path) }"
+                class="ml-3 w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 transition-colors duration-200"
+                :class="{ 
+                  'bg-blue-200 text-blue-800': isCurrentRoute(item.path), 
+                  'bg-gray-200 text-gray-600 group-hover:bg-blue-100 group-hover:text-blue-700': !isCurrentRoute(item.path) 
+                }"
                 :aria-label="`ขั้นตอนที่ ${item.step}`"
               >
                 {{ item.step }}
@@ -37,7 +46,7 @@
 
       <!-- Business Partner Section -->
       <section>
-        <h2 class="text-base font-medium text-gray-900 mb-3 px-2">
+        <h2 class="text-base font-semibold text-gray-900 mb-4 px-2 border-b border-gray-100 pb-2">
           จัดการผู้ประสานงานคู่ธุรกิจ
         </h2>
         
@@ -45,16 +54,22 @@
           <li v-for="item in partnerMenuItems" :key="item.path">
             <router-link 
               :to="item.path"
-              class="flex items-center px-3 py-2 text-sm rounded-md transition-colors duration-150 text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-              :class="{ 'bg-blue-50 text-blue-700 font-medium': isCurrentRoute(item.path) }"
+              class="group flex items-center px-3 py-2.5 text-sm rounded-lg transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-700 hover:shadow-sm"
+              :class="{ 
+                'bg-blue-100 text-blue-800 font-medium shadow-sm border-l-4 border-blue-500': isCurrentRoute(item.path),
+                'hover:translate-x-1': !isCurrentRoute(item.path)
+              }"
               :aria-current="isCurrentRoute(item.path) ? 'page' : undefined"
             >
               <UserPlusIcon 
-                class="w-4 h-4 mr-2.5 flex-shrink-0"
-                :class="{ 'text-blue-600': isCurrentRoute(item.path), 'text-gray-400': !isCurrentRoute(item.path) }"
+                class="w-4 h-4 mr-3 flex-shrink-0 transition-colors duration-200"
+                :class="{ 
+                  'text-blue-600': isCurrentRoute(item.path), 
+                  'text-gray-500 group-hover:text-blue-600': !isCurrentRoute(item.path) 
+                }"
                 aria-hidden="true" 
               />
-              <span class="truncate">{{ item.name }}</span>
+              <span class="flex-1 min-w-0 leading-relaxed">{{ item.name }}</span>
             </router-link>
           </li>
         </ul>
@@ -81,8 +96,9 @@ export default {
       return [
         { path: '/approval-officer', name: 'การอนุมัติผู้ประสานงานคู่ธุรกิจ' },
         { path: '/approval-safety', name: 'การอนุมัติผู้ประสานงานด้านความปลอดภัย' },
-        { path: '/download-list-qr', name: 'การดาวน์โหลดรายชื่อ QR Code' },
-        { path: '/print-card', name: 'พิมพ์บัตรพนักงาน' }
+        { path: '/print-card', name: 'พิมพ์บัตรพนักงาน' },
+        { path: '/create-training', name: 'สร้างการฝึกอบรม' },
+        { path: '/setting', name: 'การตั้งค่า' }
       ]
     }
   },
@@ -94,3 +110,28 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+/* Custom scrollbar for sidebar */
+aside::-webkit-scrollbar {
+  width: 4px;
+}
+
+aside::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+aside::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+aside::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Smooth transitions */
+.router-link-active {
+  transform: translateX(0) !important;
+}
+</style>

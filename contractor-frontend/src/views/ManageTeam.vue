@@ -41,7 +41,7 @@
         </div>
       </div>
 
-      <!-- Table Container -->
+      <!-- First Table - Original Contractors -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <!-- Search Controls -->
         <div class="p-4 border-b bg-gray-50 flex flex-col sm:flex-row justify-between gap-3">
@@ -233,6 +233,124 @@
           </button>
         </div>
       </div>
+
+      <!-- Second Table - Trained Contractors -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <!-- Header for Trained Table -->
+        <div class="p-4 border-b bg-green-50">
+          <div class="flex items-center">
+            <i class="fas fa-graduation-cap text-green-600 text-xl mr-3"></i>
+            <h2 class="text-lg font-semibold text-gray-800">รายชื่อพนักงานอบรมแล้ว</h2>
+          </div>
+        </div>
+
+        <!-- Search Controls for Trained -->
+        <div class="p-4 border-b bg-green-50 flex flex-col sm:flex-row justify-between gap-3">
+          <div class="flex items-center space-x-3">
+            <span class="text-sm font-medium text-gray-700">ค้นหาข้อมูลพนักงานอบรมแล้ว:</span>
+            <div class="relative">
+              <input 
+                v-model="searchTermTrained" 
+                type="text" 
+                placeholder="พิมพ์เพื่อค้นหา..." 
+                class="border border-gray-300 rounded-lg px-4 py-2 pl-10 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors w-64 bg-white" 
+              />
+              <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trained Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[1200px]">
+            <thead class="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-200 sticky top-0">
+              <tr>
+                <th v-for="header in trainedHeaders" :key="header.key" @click="sortByTrained(header.key)" 
+                    :class="getHeaderClass(header.key)" class="px-3 py-4 text-xs font-semibold uppercase tracking-wider transition-colors">
+                  <div :class="header.key.includes('Picture') || ['choose', 'actions', 'Certificate'].includes(header.key) ? 'justify-center' : ''" class="flex items-center">
+                    <span>{{ header.label }}</span>
+                    <i v-if="!['choose', 'actions', 'EmployeePicture', 'IDCardPicture', 'SocialSecurityPicture', 'Certificate'].includes(header.key)" 
+                       :class="getSortIconTrained(header.key)" class="fas fa-sort ml-2 text-sm"></i>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr v-for="(contractor, index) in paginatedTrainedContractors" :key="contractor.id" 
+                  :class="index % 2 === 0 ? 'bg-green-25' : 'bg-white'" class="hover:bg-green-100 transition-colors border-b border-gray-100">
+                
+                <!-- Checkbox -->
+                <td class="px-3 py-4 text-center">
+                  <input type="checkbox" v-model="contractor.selected" class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
+                </td>
+                
+                <!-- Basic Info -->
+                <td class="px-3 py-4 text-sm text-gray-900 font-medium">{{ contractor.id }}</td>
+                <td class="px-3 py-4 text-sm font-medium text-gray-900">{{ contractor.firstName }}</td>
+                <td class="px-3 py-4 text-sm font-medium text-gray-900">{{ contractor.lastName }}</td>
+                <td class="px-3 py-4 text-sm text-gray-700 font-mono">{{ contractor.idCard }}</td>
+                <td class="px-3 py-4 text-sm text-gray-700">{{ contractor.phone }}</td>
+                
+                <!-- Status -->
+                <td class="px-2 py-2 text-center">
+                  <span class="inline-flex px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    อบรมแล้ว
+                  </span>
+                </td>
+
+                <!-- Training Date -->
+                <td class="px-3 py-4 text-sm text-gray-700">{{ contractor.trainingDate }}</td>
+                
+                <!-- Image Display (View Only) -->
+                <td v-for="imageType in ['employee', 'idcard', 'social']" :key="imageType" class="px-2 py-2 text-center">
+                  <div class="flex justify-center">
+                    <button v-if="contractor.images[imageType]" @click="openImageInNewTab(contractor.images[imageType], getImageText(imageType))" :class="getImageLinkClass(imageType)" class="text-xs flex items-center hover:underline">
+                      <i :class="getImageIcon(imageType)" class="mr-1"></i>
+                      {{ getImageText(imageType) }}
+                    </button>
+                    <span v-else class="text-gray-400 text-xs">-</span>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- No Data for Trained -->
+              <tr v-if="paginatedTrainedContractors.length === 0">
+                <td colspan="13" class="px-4 py-8 text-center text-gray-500">
+                  <div class="flex flex-col items-center">
+                    <i class="fas fa-graduation-cap text-3xl text-gray-300 mb-3"></i>
+                    <div class="font-medium text-lg mb-2">ไม่พบข้อมูลพนักงานอบรมแล้ว</div>
+                    <div class="text-sm">ลองเปลี่ยนคำค้นหา</div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination for Trained -->
+        <div class="px-6 py-4 border-t bg-green-50 flex flex-col lg:flex-row items-center justify-between gap-4">
+          <div class="text-sm text-gray-600">
+            แสดง {{ startEntryTrained }} ถึง {{ endEntryTrained }} จาก {{ totalEntriesTrained }} รายการ
+          </div>
+          <div class="flex items-center space-x-2">
+            <button @click="currentPageTrained > 1 && currentPageTrained--" :disabled="currentPageTrained === 1" 
+                    class="px-4 py-2 border border-gray-300 rounded text-sm bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+              <i class="fas fa-chevron-left mr-2"></i>ก่อนหน้า
+            </button>
+            <div class="flex space-x-1">
+              <button v-for="page in visiblePagesTrained" :key="page" @click="typeof page === 'number' && (currentPageTrained = page)"
+                      :class="page === currentPageTrained ? 'bg-green-600 text-white' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100'"
+                      class="px-3 py-2 rounded text-sm transition-colors">
+                {{ page }}
+              </button>
+            </div>
+            <button @click="currentPageTrained < totalPagesTrained && currentPageTrained++" :disabled="currentPageTrained === totalPagesTrained"
+                    class="px-4 py-2 border border-gray-300 rounded text-sm bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+              ถัดไป<i class="fas fa-chevron-right ml-2"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -241,18 +359,22 @@
 import { ref, computed } from 'vue'
 
 // State
-const entriesPerPage = ref(10)
+const entriesPerPage = ref(5)
 const searchTerm = ref('')
+const searchTermTrained = ref('')
 const currentPage = ref(1)
+const currentPageTrained = ref(1)
 const sortField = ref('')
 const sortDirection = ref('asc')
+const sortFieldTrained = ref('')
+const sortDirectionTrained = ref('asc')
 const selectedSupervisor = ref('')
 
 // Sample supervisors data
 const supervisors = ref([
-  { id: 1, name: 'นายสมชาย ผู้จัดการ', department: 'แผนกก่อสร้าง' },
-  { id: 2, name: 'นางสาวสมหญิง หัวหน้า', department: 'แผนกควบคุมคุณภาพ' },
-  { id: 3, name: 'นายวิชาญ ผู้ดูแล', department: 'แผนกความปลอดภัย' }
+  { id: 1, name: 'นายมนสม หัวหน้า', department: 'แผนกก่อสร้าง' },
+  { id: 2, name: 'นางสาวปานี หัวหน้า', department: 'แผนกควบคุมคุณภาพ' },
+  { id: 3, name: 'นายวิรง หัวหน้า', department: 'แผนกความปลอดภัย' }
 ])
 
 // Headers
@@ -268,14 +390,30 @@ const headers = ref([
   { key: 'IDCardPicture', label: 'รูปบัตรประชาชน/บัตรต่างด้าว' },
   { key: 'SocialSecurityPicture', label: 'รูปประกันสังคม' },
   { key: 'Certificate', label: 'Certifica' },
+  { key: 'actions', label: 'การจัดการ' }
+])
+
+// Headers for Trained Table
+const trainedHeaders = ref([
+  { key: 'choose', label: 'เลือก' },
+  { key: 'id', label: 'ลำดับ' },
+  { key: 'firstName', label: 'ชื่อ' },
+  { key: 'lastName', label: 'นามสกุล' },
+  { key: 'idCard', label: 'รหัสบัตรประชาชน' },
+  { key: 'phone', label: 'หมายเลขโทรศัพท์' },
+  { key: 'status', label: 'สถานะ' },
+  { key: 'trainingDate', label: 'วันที่อบรม' },
+  { key: 'EmployeePicture', label: 'รูปพนักงาน' },
+  { key: 'IDCardPicture', label: 'รูปบัตรประชาชน/บัตรต่างด้าว' },
+  { key: 'SocialSecurityPicture', label: 'รูปประกันสังคม' },
 ])
 
 // Sample Data
 const contractors = ref([
   { 
     id: 1, 
-    firstName: 'สมชาย', 
-    lastName: 'ใจดี', 
+    firstName: 'ธันวา', 
+    lastName: 'ชัยรัตนานนท์', 
     idCard: '1-2345-67890-12-3', 
     phone: '081-234-5678', 
     status: 'อนุมัติแล้ว', 
@@ -286,6 +424,30 @@ const contractors = ref([
   },
   { 
     id: 2, 
+    firstName: 'มกรา', 
+    lastName: 'ชัยสินรัตน์', 
+    idCard: '1-2345-67890-12-3', 
+    phone: '081-234-5678', 
+    status: 'อนุมัติแล้ว', 
+    selected: false, 
+    isEditing: false,
+    originalData: {},
+    images: { employee: null, idcard: 'https://example.com/idcard1.jpg', social: null, documents: [] }
+  },
+  { 
+    id: 3, 
+    firstName: 'สุราดา', 
+    lastName: 'มงคล', 
+    idCard: '1-2345-67890-12-3', 
+    phone: '081-234-5678', 
+    status: 'อนุมัติแล้ว', 
+    selected: false, 
+    isEditing: false,
+    originalData: {},
+    images: { employee: null, idcard: 'https://example.com/idcard1.jpg', social: null, documents: [] }
+  },
+  { 
+    id: 4, 
     firstName: 'สมหญิง', 
     lastName: 'รักงาน', 
     idCard: '1-2345-67891-12-4', 
@@ -297,7 +459,19 @@ const contractors = ref([
     images: { employee: null, idcard: 'https://example.com/idcard2.jpg', social: null, documents: [] }
   },
   { 
-    id: 3, 
+    id: 5, 
+    firstName: 'ชุระนะ', 
+    lastName: 'รักงาน', 
+    idCard: '1-2345-67891-12-4', 
+    phone: '082-345-6789', 
+    status: 'ไม่อนุมัติ', 
+    selected: false, 
+    isEditing: false,
+    originalData: {},
+    images: { employee: null, idcard: 'https://example.com/idcard2.jpg', social: null, documents: [] }
+  },
+  { 
+    id: 6, 
     firstName: 'วิชาญ', 
     lastName: 'มั่นคง', 
     idCard: '1-2345-67892-12-5', 
@@ -309,7 +483,19 @@ const contractors = ref([
     images: { employee: null, idcard: 'https://example.com/idcard3.jpg', social: null, documents: [] }
   },
   { 
-    id: 4, 
+    id: 7, 
+    firstName: 'พิมพ์ใจ', 
+    lastName: 'บุญมี', 
+    idCard: '1-4444-44444-44-4', 
+    phone: '087-123-4567', 
+    status: 'กำลังดำเนินการ', 
+    selected: false, 
+    isEditing: false,
+    originalData: {},
+    images: { employee: null, idcard: 'https://example.com/idcard7.jpg', social: null, documents: [] }
+  },
+  { 
+    id: 8, 
     firstName: 'นิติกร', 
     lastName: 'มั่นคง', 
     idCard: '1-2345-67892-12-5', 
@@ -319,27 +505,156 @@ const contractors = ref([
     isEditing: false,
     originalData: {},
     images: { employee: null, idcard: 'https://example.com/idcard3.jpg', social: null, documents: [] }
+  },
+  { 
+    id: 9, 
+    firstName: 'ศิริพร', 
+    lastName: 'ทองแท้', 
+    idCard: '1-5555-55555-55-5', 
+    phone: '088-234-5678', 
+    status: 'รอการอนุมัติ', 
+    selected: false, 
+    isEditing: false,
+    originalData: {},
+    images: { employee: null, idcard: 'https://example.com/idcard8.jpg', social: null, documents: [] }
+  },
+  { 
+    id: 10, 
+    firstName: 'กิตติพงศ์', 
+    lastName: 'เจริญสุข', 
+    idCard: '1-1111-11111-11-1', 
+    phone: '084-567-1234', 
+    status: 'หมดอายุ', 
+    selected: false, 
+    isEditing: false,
+    originalData: {},
+    images: { employee: null, idcard: 'https://example.com/idcard4.jpg', social: null, documents: [] }
+  },
+  { 
+    id: 11, 
+    firstName: 'สุพจน์', 
+    lastName: 'วัฒนกิจ', 
+    idCard: '1-2222-22222-22-2', 
+    phone: '085-678-2345', 
+    status: 'หมดอายุ', 
+    selected: false, 
+    isEditing: false,
+    originalData: {},
+    images: { employee: null, idcard: 'https://example.com/idcard5.jpg', social: null, documents: [] }
+  },
+  { 
+    id: 12, 
+    firstName: 'อัญชลี', 
+    lastName: 'เพชรรัตน์', 
+    idCard: '1-3333-33333-33-3', 
+    phone: '086-789-3456', 
+    status: 'หมดอายุ', 
+    selected: false, 
+    isEditing: false,
+    originalData: {},
+    images: { employee: null, idcard: 'https://example.com/idcard6.jpg', social: null, documents: [] }
   }
 ])
 
-// Computed
+
+const trainedContractors = ref([
+  { 
+    id: 1, 
+    firstName: 'สมชาย', 
+    lastName: 'ใจดี', 
+    idCard: '1-1111-11111-11-1', 
+    phone: '081-111-1111', 
+    status: 'อบรมแล้ว',
+    trainingDate: '15/08/2025',
+    selected: false,
+    images: { employee: 'https://example.com/emp1.jpg', idcard: 'https://example.com/idcard1.jpg', social: 'https://example.com/social1.jpg' }
+  },
+  { 
+    id: 2, 
+    firstName: 'วิภา', 
+    lastName: 'สุขใจ', 
+    idCard: '1-2222-22222-22-2', 
+    phone: '082-222-2222', 
+    status: 'อบรมแล้ว',
+    trainingDate: '16/08/2025',
+    selected: false,
+    images: { employee: 'https://example.com/emp2.jpg', idcard: 'https://example.com/idcard2.jpg', social: 'https://example.com/social2.jpg' }
+  },
+  { 
+    id: 3, 
+    firstName: 'ประยุทธ', 
+    lastName: 'มั่นคง', 
+    idCard: '1-3333-33333-33-3', 
+    phone: '083-333-3333', 
+    status: 'อบรมแล้ว',
+    trainingDate: '17/08/2025',
+    selected: false,
+    images: { employee: 'https://example.com/emp3.jpg', idcard: 'https://example.com/idcard3.jpg', social: 'https://example.com/social3.jpg' }
+  },
+  { 
+    id: 4, 
+    firstName: 'สุนิสา', 
+    lastName: 'เรียนรู้', 
+    idCard: '1-4444-44444-44-4', 
+    phone: '084-444-4444', 
+    status: 'อบรมแล้ว',
+    trainingDate: '18/08/2025',
+    selected: false,
+    images: { employee: 'https://example.com/emp4.jpg', idcard: 'https://example.com/idcard4.jpg', social: 'https://example.com/social4.jpg' }
+  },
+  { 
+    id: 5, 
+    firstName: 'วิชิต', 
+    lastName: 'ปลอดภัย', 
+    idCard: '1-5555-55555-55-5', 
+    phone: '085-555-5555', 
+    status: 'อบรมแล้ว',
+    trainingDate: '19/08/2025',
+    selected: false,
+    images: { employee: 'https://example.com/emp5.jpg', idcard: 'https://example.com/idcard5.jpg', social: 'https://example.com/social5.jpg' }
+  },
+  { 
+    id: 6, 
+    firstName: 'มาลี', 
+    lastName: 'ขยันทำงาน', 
+    idCard: '1-6666-66666-66-6', 
+    phone: '086-666-6666', 
+    status: 'อบรมแล้ว',
+    trainingDate: '20/08/2025',
+    selected: false,
+    images: { employee: 'https://example.com/emp6.jpg', idcard: 'https://example.com/idcard6.jpg', social: 'https://example.com/social6.jpg' }
+  },
+  { 
+    id: 7, 
+    firstName: 'ณัฐวุฒิ', 
+    lastName: 'เก่งกาจ', 
+    idCard: '1-7777-77777-77-7', 
+    phone: '087-777-7777', 
+    status: 'อบรมแล้ว',
+    trainingDate: '21/08/2025',
+    selected: false,
+    images: { employee: 'https://example.com/emp7.jpg', idcard: 'https://example.com/idcard7.jpg', social: 'https://example.com/social7.jpg' }
+  },
+  { 
+    id: 8, 
+    firstName: 'สิริรัตน์', 
+    lastName: 'ใฝ่รู้', 
+    idCard: '1-8888-88888-88-8', 
+    phone: '088-888-8888', 
+    status: 'อบรมแล้ว',
+    trainingDate: '22/08/2025',
+    selected: false,
+    images: { employee: 'https://example.com/emp8.jpg', idcard: 'https://example.com/idcard8.jpg', social: 'https://example.com/social8.jpg' }
+  }
+])
+
+
 const filteredContractors = computed(() => 
   !searchTerm.value ? contractors.value : 
   contractors.value.filter(c => ['firstName', 'lastName', 'idCard', 'phone', 'status'].some(field => 
     c[field]?.toLowerCase().includes(searchTerm.value.toLowerCase())
   ))
 )
-
-const formatPhone = (contractor) => {
-  let digits = contractor.phone.replace(/\D/g, ''); // เอาเฉพาะตัวเลข
-  if (digits.length > 3 && digits.length <= 6) {
-    contractor.phone = `${digits.slice(0,3)}-${digits.slice(3)}`;
-  } else if (digits.length > 6) {
-    contractor.phone = `${digits.slice(0,3)}-${digits.slice(3,6)}-${digits.slice(6,10)}`;
-  } else {
-    contractor.phone = digits;
-  }
-};
 
 const sortedContractors = computed(() => {
   if (!sortField.value) return filteredContractors.value
@@ -366,14 +681,66 @@ const visiblePages = computed(() => {
   return rangeWithDots.filter(() => totalPages.value > 1)
 })
 
+// Computed for Trained Table
+const filteredTrainedContractors = computed(() => 
+  !searchTermTrained.value ? trainedContractors.value : 
+  trainedContractors.value.filter(c => ['firstName', 'lastName', 'idCard', 'phone'].some(field => 
+    c[field]?.toLowerCase().includes(searchTermTrained.value.toLowerCase())
+  ))
+)
+
+const sortedTrainedContractors = computed(() => {
+  if (!sortFieldTrained.value) return filteredTrainedContractors.value
+  return [...filteredTrainedContractors.value].sort((a, b) => {
+    const aVal = typeof a[sortFieldTrained.value] === 'string' ? a[sortFieldTrained.value].toLowerCase() : a[sortFieldTrained.value]
+    const bVal = typeof b[sortFieldTrained.value] === 'string' ? b[sortFieldTrained.value].toLowerCase() : b[sortFieldTrained.value]
+    return sortDirectionTrained.value === 'asc' ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1)
+  })
+})
+
+const totalPagesTrained = computed(() => Math.ceil(sortedTrainedContractors.value.length / entriesPerPage.value))
+const paginatedTrainedContractors = computed(() => sortedTrainedContractors.value.slice((currentPageTrained.value - 1) * entriesPerPage.value, currentPageTrained.value * entriesPerPage.value))
+const startEntryTrained = computed(() => sortedTrainedContractors.value.length === 0 ? 0 : (currentPageTrained.value - 1) * entriesPerPage.value + 1)
+const endEntryTrained = computed(() => Math.min(currentPageTrained.value * entriesPerPage.value, sortedTrainedContractors.value.length))
+const totalEntriesTrained = computed(() => sortedTrainedContractors.value.length)
+const selectedTrainedContractors = computed(() => trainedContractors.value.filter(c => c.selected))
+
+const visiblePagesTrained = computed(() => {
+  const delta = 2, range = [], rangeWithDots = []
+  for (let i = Math.max(2, currentPageTrained.value - delta); i <= Math.min(totalPagesTrained.value - 1, currentPageTrained.value + delta); i++) range.push(i)
+  if (currentPageTrained.value - delta > 2) rangeWithDots.push(1, '...'); else rangeWithDots.push(1)
+  rangeWithDots.push(...range)
+  if (currentPageTrained.value + delta < totalPagesTrained.value - 1) rangeWithDots.push('...', totalPagesTrained.value); else rangeWithDots.push(totalPagesTrained.value)
+  return rangeWithDots.filter(() => totalPagesTrained.value > 1)
+})
+
 // Methods
+const formatPhone = (contractor) => {
+  let digits = contractor.phone.replace(/\D/g, ''); // เอาเฉพาะตัวเลข
+  if (digits.length > 3 && digits.length <= 6) {
+    contractor.phone = `${digits.slice(0,3)}-${digits.slice(3)}`;
+  } else if (digits.length > 6) {
+    contractor.phone = `${digits.slice(0,3)}-${digits.slice(3,6)}-${digits.slice(6,10)}`;
+  } else {
+    contractor.phone = digits;
+  }
+};
+
 const sortBy = (field) => {
   if (['choose', 'actions', 'EmployeePicture', 'IDCardPicture', 'SocialSecurityPicture', 'Certificate'].includes(field)) return
   if (sortField.value === field) sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
   else { sortField.value = field; sortDirection.value = 'asc' }
 }
 
+const sortByTrained = (field) => {
+  if (['choose', 'actions', 'EmployeePicture', 'IDCardPicture', 'SocialSecurityPicture', 'Certificate'].includes(field)) return
+  if (sortFieldTrained.value === field) sortDirectionTrained.value = sortDirectionTrained.value === 'asc' ? 'desc' : 'asc'
+  else { sortFieldTrained.value = field; sortDirectionTrained.value = 'asc' }
+}
+
 const getSortIcon = (field) => sortField.value !== field ? 'text-gray-400' : (sortDirection.value === 'asc' ? 'fa-sort-up text-blue-600' : 'fa-sort-down text-blue-600')
+
+const getSortIconTrained = (field) => sortFieldTrained.value !== field ? 'text-gray-400' : (sortDirectionTrained.value === 'asc' ? 'fa-sort-up text-green-600' : 'fa-sort-down text-green-600')
 
 const getHeaderClass = (key) => {
   const baseClass = 'text-left cursor-pointer'
@@ -382,8 +749,8 @@ const getHeaderClass = (key) => {
   const widthClass = {
     'choose': 'min-w-[60px]', 'id': 'min-w-[60px]', 'firstName': 'min-w-[80px]', 'lastName': 'min-w-[80px]',
     'idCard': 'min-w-[120px]', 'phone': 'min-w-[100px]', 'status': 'min-w-[80px]',
-    'EmployeePicture': 'min-w-[80px]', 'IDCardPicture': 'min-w-[80px]', 'SocialSecurityPicture': 'min-w-[80px]',
-    'Certificate': 'min-w-[80px]', 'actions': 'min-w-[100px]'
+    'trainingDate': 'min-w-[100px]', 'EmployeePicture': 'min-w-[80px]', 'IDCardPicture': 'min-w-[80px]', 'SocialSecurityPicture': 'min-w-[80px]',
+    'Certificate': 'min-w-[80px]', 'actions': 'min-w-[150px]'
   }[key] || ''
   return `${baseClass} ${centerClass} ${widthClass}`
 }
@@ -392,7 +759,9 @@ const getStatusClass = (status) => ({
   'อนุมัติแล้ว': 'bg-green-100 text-green-800',
   'ไม่อนุมัติ': 'bg-red-100 text-red-800',
   'รอการอนุมัติ': 'bg-yellow-100 text-yellow-800',
-  'กำลังดำเนินการ': 'bg-yellow-100 text-yellow-800'
+  'กำลังดำเนินการ': 'bg-yellow-100 text-yellow-800',
+  'หมดอายุ': 'bg-gray-100 text-gray-800',
+  'อบรมแล้ว': 'bg-green-100 text-green-800'
 }[status] || 'bg-gray-100 text-gray-800')
 
 const getImageLinkClass = (type) => ({ 
@@ -420,7 +789,6 @@ const getUploadButtonClass = (type) => ({
 }[type])
 
 const openImageInNewTab = (imageSrc, title) => {
-  // สร้าง Blob URL สำหรับ data URL
   if (imageSrc.startsWith('data:')) {
     const newWindow = window.open('', '_blank')
     newWindow.document.write(`
@@ -444,13 +812,11 @@ const openImageInNewTab = (imageSrc, title) => {
     `)
     newWindow.document.close()
   } else {
-    // สำหรับ URL ปกติ
     window.open(imageSrc, '_blank')
   }
 }
 
 const editContractor = (contractor) => {
-  // เก็บข้อมูลเดิมไว้สำหรับยกเลิก
   contractor.originalData = {
     firstName: contractor.firstName,
     lastName: contractor.lastName,
@@ -460,13 +826,11 @@ const editContractor = (contractor) => {
 }
 
 const saveContractor = (contractor) => {
-  // ตรวจสอบข้อมูล
   if (!contractor.firstName.trim() || !contractor.lastName.trim() || !contractor.idCard.trim()) {
     alert('กรุณากรอกข้อมูลให้ครบถ้วน')
     return
   }
   
-  // ตรวจสอบรูปแบบเลขบัตรประชาชน (13 หลัก)
   const idCardDigits = contractor.idCard.replace(/\D/g, '')
   if (idCardDigits.length !== 13) {
     alert('กรุณากรอกเลขบัตรประชาชนให้ครบ 13 หลัก')
@@ -479,7 +843,6 @@ const saveContractor = (contractor) => {
 }
 
 const cancelEdit = (contractor) => {
-  // คืนข้อมูลเดิม
   contractor.firstName = contractor.originalData.firstName
   contractor.lastName = contractor.originalData.lastName
   contractor.idCard = contractor.originalData.idCard
@@ -496,14 +859,6 @@ const handleImageUpload = (event, contractor, type) => {
   }
 }
 
-const handleDocumentUpload = (event, contractor) => {
-  Array.from(event.target.files).forEach(file => {
-    const reader = new FileReader()
-    reader.onload = (e) => contractor.images.documents.push(e.target.result)
-    reader.readAsDataURL(file)
-  })
-}
-
 const deleteContractor = (contractor) => {
   if (confirm(`คุณต้องการลบพนักงาน ${contractor.firstName} ${contractor.lastName} หรือไม่?`)) {
     const index = contractors.value.findIndex(c => c.id === contractor.id)
@@ -513,7 +868,6 @@ const deleteContractor = (contractor) => {
 
 const addCertificate = (contractor) => console.log('Add certificate:', contractor)
 
-// New submit function
 const submitForm = () => {
   if (!selectedSupervisor.value) {
     alert('กรุณาเลือกหัวหน้างาน')
@@ -536,6 +890,9 @@ const submitForm = () => {
 <style scoped>
 .bg-gray-25 { 
   background-color: #fafafa; 
+}
+.bg-green-25 { 
+  background-color: #f0fdf4; 
 }
 .min-w-\[1200px\] { 
   min-width: 1200px; 

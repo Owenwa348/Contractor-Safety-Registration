@@ -1,8 +1,8 @@
 //StepProgress.vue
 <template>
-  <div v-if="!shouldHide" class="mb-4 bg-white rounded-md border border-gray-200 shadow-sm p-6">
+  <div v-if="!shouldHide" class="mb-4 bg-white rounded-md border border-gray-200 shadow-sm p-5">
     <!-- Progress Header -->
-    <div class="mb-6">
+    <div class="mb-4">
       <h2 class="text-lg font-semibold text-gray-900">ขั้นตอนการดำเนินการ</h2>
       <p class="text-sm text-gray-600 mt-1">
         ขั้นตอนที่ {{ currentStepNumber }}/{{ totalSteps }}: {{ currentStepTitle }}
@@ -104,7 +104,7 @@ export default {
   name: 'StepProgress',
   computed: {
     shouldHide() {
-      const hidePaths = ['/approval-officer', '/approval-safety' , '/download-list-qr' , '/print-card']
+      const hidePaths = ['/approval-officer', '/approval-safety' , '/print-card' , '/create-training', '/setting' ,'/list-employees']
       return hidePaths.includes(this.$route.path)
     },
     steps() {

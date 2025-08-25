@@ -4,6 +4,60 @@
 body {
   font-family: 'Kanit', sans-serif;
 }
+
+/* src/assets/layout.css */
+
+/* กำหนด layout สำหรับหน้าที่มี sidebar */
+.main-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* เนื้อหาหลักให้เลื่อนไปข้างขวา เท่ากับความกว้างของ sidebar */
+.main-content {
+  margin-left: 288px; /* 18rem = w-72 = 288px */
+  flex: 1;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+/* สำหรับหน้าที่ไม่มี sidebar (เช่น Login) */
+.full-layout {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Responsive - ในหน้าจอเล็กให้ซ่อน sidebar */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+  }
+  
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  /* เพิ่ม backdrop เมื่อ sidebar เปิดในมือถือ */
+  .sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 30;
+    display: none;
+  }
+  
+  .sidebar-backdrop.active {
+    display: block;
+  }
+}
 /* :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
