@@ -11,6 +11,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
     "lucide-vue-next": "^0.540.0",
+    "qrcode": "^1.5.4",
     "tailwindcss": "^4.1.11",
     "tesseract.js": "^6.0.1",
     "vue": "^3.5.18",

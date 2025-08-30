@@ -1,36 +1,71 @@
 // src/router/index.ts
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from '../views/Login.vue'
-import ContractorRegistration from '../views/ContractorRegistration.vue'
-import AddContractor from '../views/AddContractor.vue'
-import ManageTeam from '../views/ManageTeam.vue'
-import TrainingBooking from '../views/TrainingBooking.vue'
-import ListEmployees from '../views/ListEmployees.vue'
-import TakeExam from '../views/TakeExam.vue'
-import PrintCard from '../views/PrintCard.vue'
+//Login/contractor
+import Login from '../views/Login/Coordinator/LoginCoordinator.vue'
+import CheckPermissions from '../views/Login/Coordinator/CheckPermissionsContractor.vue'
+import ContractorRegistration from '../views/Login/Coordinator/ContractorRegistration.vue'
+//
+//Login/Owner and safety
+import LoginOwnerAndSafety from '../views/Login/Owner and safety/LoginOwnerAndSafety.vue'
+import SetPasswordOwnerAndSafety from '../views/Login/Owner and safety/SetPasswordOwnerAndSafety.vue'
+//
+import AddContractor from '../views/contractor/ManageTeam/AddContractor.vue'
+import ManageTeam from '../views/contractor/ManageTeam/ManageTeam.vue'
+import TrainingBooking from '../views/contractor/TrainingBooking.vue'
+import ListEmployees from '../views/SecurityDepartment/ListEmployees.vue'
+import TakeExam from '../views/contractor/TakeExam.vue'
+import PrintCard from '../views/SecurityDepartment/PrintCard.vue'
+import DownloadTrainingList from '../views/SecurityDepartment/DownloadTrainingList.vue'
 import NotFound from '../views/NotFound.vue'
-import ApprovalOfficer from '../views/ApprovalOfficer.vue'
-import ApprovalSafety from '../views/ApprovalSafety.vue'// เพิ่มการนำเข้า ApprovalSafety
-import CertificaAdd from '../views/CertificaAdd.vue' // เพิ่มการนำเข้า CertificaAdd
-import BookTraining from '../views/BookTraining.vue' // เพิ่มการนำเข้า BookTraining
-import CreateTraining from '../views/CreateTraining.vue'
-import Setting from '../views/Setting.vue' // เพิ่มการนำเข้า Settings
+import ApprovalOfficer from '../views/Manager/ApprovalOfficer.vue'
+import ApprovalSafety from '../views/SecurityDepartment/ApprovalSafety.vue'// เพิ่มการนำเข้า ApprovalSafety
+import CertificaAdd from '../views/contractor/CertificaAdd/CertificaAdd.vue' // เพิ่มการนำเข้า CertificaAdd
+import BookTraining from '../views/contractor/BookTraining.vue' // เพิ่มการนำเข้า BookTraining
+import CreateTraining from '../views/SecurityDepartment/CreateTraining.vue'
+import Setting from '../views/SecurityDepartment/SettingSecurityDepartment/Setting.vue' // เพิ่มการนำเข้า Settings
 
 const routes = [
+
+  //Login/contractor
   {
     path: '/',
     component: Login,
-    meta: { title: 'เข้าสู่ระบบ', public: true },
+    meta: { title: 'เข้าสู่ระบบคู่ธุรกิจ', public: true },
+  },
+  {
+    path: '/check-permissions',
+    component: CheckPermissions,
+    meta: { title: 'ตรวจสอบสิทธิ์การเข้าใช้งาน', public: true }
   },
   {
     path: '/contractor-registration',
     component: ContractorRegistration,
     meta: { title: 'หน้าหลักลงทะเบียนผู้รับเหมา', public: true }
   },
+  //----------------------------------------------------------
+  //Login/Owner and safety
+  {
+    path: '/loginownerandsafety',
+    component: LoginOwnerAndSafety,
+    meta: { title: 'เข้าสู่ระบบเจ้าของงานกับSafety', public: true },
+  },
+
+  {
+    path: '/setpasswordownerandsafety',
+    component: SetPasswordOwnerAndSafety,
+    meta: { title: 'เข้าสู่ระบบเจ้าของงานกับSafety', public: true },
+  },
+  //
+
   {
     path: '/add-contractor',
     component: AddContractor,
     meta: { step: 1, title: 'เพิ่มผู้รับเหมา' }
+  },
+  {
+    path: '/download-training-list',
+    component: DownloadTrainingList,
+    meta: { step: 1, title: 'ดาวน์โหลดรายชื่อผู้อบรม' }
   },
   {
     path: '/manage-team',

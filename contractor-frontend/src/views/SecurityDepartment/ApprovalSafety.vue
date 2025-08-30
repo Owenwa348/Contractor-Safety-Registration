@@ -261,7 +261,7 @@ export default {
       
       departments: ['รอการอนุมัติ', 'อนุมัติแล้ว', 'ไม่อนุมัติ'],
       organizations: ['บริษัท ABC จำกัด', 'บริษัท XYZ จำกัด', 'บริษัท DEF จำกัด', 'มหาวิทยาลัย GHI', 'โรงพยาบาล JKL'],
-      predefinedReasons: ['ไม่อนุมัติการ', 'เอกสารไม่ครบ', 'อื่นๆ'],
+      predefinedReasons: ['ไม่อนุมัติ', 'เอกสารไม่ครบ', 'อื่นๆ'],
 
       tableData: [
         { id: 1, name: 'ธันวา ชัยรัตนานนท์', phoneNumber: '0617153737', organization: 'บริษัท ABC จำกัด', ownerImage: 'main3.jpg', idCard: 'บัตรประชาชน_ธันวา.pdf', socialSecurity: 'ประกันสังคม_ธันวา.pdf', approvalDocument: 'เอกสารประกอบการพิจารณาอนุมัติให้ทำหน้าที่ในสถานที่นี้_ธันวา.pdf', certificate: 'เอกสารใบ certificate.pdf', status: 'อนุมัติแล้ว', rejectReason: '' },

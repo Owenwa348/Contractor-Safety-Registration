@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen from-blue-50 to-indigo-100">
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
     <!-- Preview Mode -->
     <div v-if="showPreview" class="max-w-5xl mx-auto p-6 print:p-0 print:max-w-none">
       <!-- Control Panel - Hidden in Print -->
@@ -7,7 +7,7 @@
         <div class="flex justify-between items-center">
           <div>
             <h2 class="text-2xl font-bold text-gray-800">ตัวอย่างบัตรพนักงาน</h2>
-            <p class="text-gray-600">ตรวจสอบข้อมูลก่อนพิมพ์</p>
+            <p class="text-gray-600">{{ selectedTrainingType }} - ตรวจสอบข้อมูลก่อนพิมพ์</p>
           </div>
           <div class="flex space-x-3">
             <button
@@ -18,9 +18,10 @@
               พิมพ์บัตร
             </button>
             <button
-              @click="showPreview = false"
-              class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-all duration-200 shadow-md hover:shadow-lg"
+              @click="goBackToTraining"
+              class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2"
             >
+              <ArrowLeftIcon class="w-5 h-5" />
               กลับ
             </button>
           </div>
@@ -32,7 +33,7 @@
         <div
           v-for="contractor in selectedContractorData"
           :key="contractor.id"
-          class="bg-white rounded-xl shadow-lg overflow-hidden print:shadow-none print:border print:border-gray-300 print:page-break-inside-avoid print:rounded-none"
+          class="bg-white rounded-xl shadow-lg overflow-hidden print:shadow-none print:border print:border-gray-300 print:break-inside-avoid print:rounded-none"
         >
           <!-- Card Header -->
           <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 text-center print:p-4">
@@ -78,11 +79,11 @@
                 <div class="bg-gray-50 rounded-lg p-3 grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <p class="text-gray-600 font-medium">วันที่ออกบัตร</p>
-                    <p class="text-gray-800 font-semibold">{{ currentDateThai }}</p>
+                    <p class="text-gray-800 font-semibold">{{ formatDateThai(issueDate) }}</p>
                   </div>
                   <div>
                     <p class="text-red-600 font-medium">วันหมดอายุ</p>
-                    <p class="text-red-700 font-bold">{{ expiryDate }}</p>
+                    <p class="text-red-700 font-bold">{{ formatDateThai(expiryDate) }}</p>
                   </div>
                 </div>
               </div>
@@ -91,7 +92,13 @@
               <div class="flex-shrink-0">
                 <div class="w-20 h-20 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center">
                   <div class="text-center">
-                    <div class="w-16 h-16 border-2 border-gray-300 rounded flex items-center justify-center">
+                    <img 
+                      v-if="contractor.qrCode" 
+                      :src="contractor.qrCode" 
+                      :alt="`QR Code for ${contractor.name}`"
+                      class="w-16 h-16 rounded"
+                    />
+                    <div v-else class="w-16 h-16 border-2 border-gray-300 rounded flex items-center justify-center">
                       <span class="text-xs text-gray-500 font-mono">QR</span>
                     </div>
                   </div>
@@ -107,7 +114,7 @@
                 รหัสบัตร: EMP-{{ String(contractor.id).padStart(4, '0') }}
               </span>
               <span class="text-gray-600 bg-gray-200 px-2 py-1 rounded-full text-xs">
-                อายุบัตร {{ validityPeriod }} {{ validityPeriod === '0.5' ? 'เดือน' : 'ปี' }}
+                อายุบัตร {{ calculateCardAge(issueDate, expiryDate) }} ปี
               </span>
             </div>
           </div>
@@ -115,13 +122,67 @@
       </div>
     </div>
 
-    <!-- Main View -->
-    <div v-else class="max-w-7xl mx-auto p-6">
+    <!-- Training Selection View -->
+    <div v-else-if="!selectedTrainingType" class="max-w-6xl mx-auto p-6">
       <!-- Header -->
       <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
         <div class="text-center">
           <h1 class="text-3xl font-bold text-gray-800 mb-2">พิมพ์บัตรพนักงาน</h1>
-          <p class="text-gray-600">เลือกรายชื่อพนักงานที่ผ่านการอบรมแล้วและกำหนดระยะเวลาการใช้งานบัตร</p>
+          <p class="text-gray-600">เลือกหลักสูตรการอบรมที่ต้องการพิมพ์บัตร</p>
+        </div>
+      </div>
+
+      <!-- Training Types Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div
+          v-for="(training, index) in trainingTypes"
+          :key="index"
+          @click="selectTrainingType(training.type)"
+          class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105 border-2 border-transparent hover:border-blue-200"
+        >
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AwardIcon class="w-8 h-8 text-blue-600" />
+            </div>
+            <h3 class="text-lg font-bold text-gray-800 mb-2">{{ training.type }}</h3>
+            <p class="text-gray-600 text-sm mb-4">{{ training.description }}</p>
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-gray-500">พนักงานที่ผ่านการอบรม</span>
+              <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-semibold">
+                {{ getTrainingCount(training.type) }} คน
+              </span>
+            </div>
+            <div class="flex items-center justify-center mt-4 text-blue-600">
+              <span class="text-sm font-medium">เลือกหลักสูตรนี้</span>
+              <ChevronRightIcon class="w-4 h-4 ml-1" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Employee List View -->
+    <div v-else class="max-w-7xl mx-auto p-6">
+      <!-- Header -->
+      <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+        <div class="flex items-center justify-between">
+          <div>
+            <button
+              @click="selectedTrainingType = null"
+              class="flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-2"
+            >
+              <ArrowLeftIcon class="w-4 h-4" />
+              <span class="text-sm">กลับไปเลือกหลักสูตร</span>
+            </button>
+            <h1 class="text-3xl font-bold text-gray-800">{{ selectedTrainingType }}</h1>
+            <p class="text-gray-600">เลือกพนักงานที่ต้องการพิมพ์บัตร</p>
+          </div>
+          <div class="text-right">
+            <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg">
+              <UsersIcon class="w-5 h-5 inline mr-2" />
+              <span class="font-semibold">{{ filteredContractors.length }} คน</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -131,35 +192,60 @@
           <div class="bg-white rounded-xl shadow-lg p-6 space-y-6 sticky top-6">
             <h3 class="text-lg font-bold text-gray-800 border-b border-gray-100 pb-3">ตัวเลือก</h3>
             
-            <!-- Search Box -->
-            <div class="relative">
-              <SearchIcon class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <!-- Search by Company -->
+            <div>
+              <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                <BuildingIcon class="w-4 h-4 mr-2" />
+                ค้นหาบริษัท
+              </label>
+              <div class="relative">
+                <SearchIcon class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="ชื่อบริษัท..."
+                  v-model="searchCompany"
+                  class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                />
+              </div>
+            </div>
+
+            <!-- Search by Training Date -->
+            <div>
+              <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                <CalendarIcon class="w-4 h-4 mr-2" />
+                ค้นหาวันที่อบรม
+              </label>
               <input
-                type="text"
-                placeholder="ค้นหาชื่อ, บริษัท, ตำแหน่ง..."
-                v-model="searchTerm"
-                class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                type="date"
+                v-model="searchDate"
+                class="w-full px-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               />
             </div>
 
-            <!-- Validity Period -->
+            <!-- Issue Date -->
             <div>
-              <label class="flex items-center text-sm font-semibold text-gray-700 mb-3">
+              <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
                 <CalendarIcon class="w-4 h-4 mr-2" />
-                ระยะเวลาบัตร
+                วันที่ออกบัตร
               </label>
-              <select
-                v-model="validityPeriod"
+              <input
+                type="date"
+                v-model="issueDate"
                 class="w-full px-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-              >
-                <option value="0.5">6 เดือน</option>
-                <option value="1">1 ปี</option>
-                <option value="2">2 ปี</option>
-                <option value="3">3 ปี</option>
-              </select>
-              <p class="text-xs text-gray-500 mt-2 bg-blue-50 p-2 rounded">
-                หมดอายุ: {{ expiryDate }}
-              </p>
+              />
+            </div>
+
+            <!-- Expiry Date -->
+            <div>
+              <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                <CalendarIcon class="w-4 h-4 mr-2" />
+                วันหมดอายุ
+              </label>
+              <input
+                type="date"
+                v-model="expiryDate"
+                class="w-full px-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              />
             </div>
 
             <!-- Statistics -->
@@ -218,7 +304,6 @@
                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">บริษัท</th>
                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">ตำแหน่ง</th>
                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">วันที่อบรม</th>
-                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">หลักสูตร</th>
                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">สถานะ</th>
                   </tr>
                 </thead>
@@ -255,7 +340,6 @@
                     <td class="px-6 py-4 text-sm text-gray-700">
                       {{ formatDateThai(contractor.trainingDate) }}
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-700">{{ contractor.trainingType }}</td>
                     <td class="px-6 py-4">
                       <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
                         <CheckIcon class="w-3 h-3" />
@@ -279,7 +363,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import QRCode from 'qrcode'
 import { 
   Search as SearchIcon,
   Printer as PrinterIcon,
@@ -288,52 +373,75 @@ import {
   User as UserIcon,
   Building as BuildingIcon,
   Phone as PhoneIcon,
-  Award as AwardIcon
+  Award as AwardIcon,
+  ArrowLeft as ArrowLeftIcon,
+  Users as UsersIcon,
+  ChevronRight as ChevronRightIcon
 } from 'lucide-vue-next'
+
+// ข้อมูลหลักสูตรการอบรม
+const trainingTypes = [
+  {
+    type: 'อบรมพื้นฐานความปลอดภัย',
+    description: 'หลักสูตรพื้นฐานเกี่ยวกับความปลอดภัยในการทำงาน'
+  },
+  {
+    type: 'อบรมการใช้เครื่องมือ',
+    description: 'การใช้เครื่องมือและอุปกรณ์อย่างปลอดภัย'
+  },
+  {
+    type: 'อบรมการใช้เครื่องจักร',
+    description: 'การควบคุมและใช้เครื่องจักรในงานก่อสร้าง'
+  },
+  {
+    type: 'อบรมการประกอบอุปกรณ์',
+    description: 'การประกอบอุปกรณ์เบื้องต้นในสถานที่ทำงาน'
+  }
+]
 
 // ข้อมูลตัวอย่างพนักงานที่ผ่านการอบรม
 const contractors = ref([
   {
     id: 1,
-    name: 'สมชาย ใจดี',
+    name: 'ธันวา ชัยรัตนานนท์',
     company: 'บริษัท ก่อสร้าง ABC จำกัด',
     position: 'หัวหน้าช่าง',
     phone: '081-234-5678',
-    trainingDate: '2024-01-15',
-    trainingType: 'ความปลอดภัยในการทำงาน',
+    trainingDate: '2025-08-20',
+    trainingType: 'อบรมพื้นฐานความปลอดภัย',
     photo: null,
     status: 'ผ่านการอบรม'
   },
   {
     id: 2,
-    name: 'สมหญิง รักงาน',
+    name: 'ประยุทธ์ ศรีสวัสดิ์',
     company: 'บริษัท XYZ Engineering',
     position: 'วิศวกร',
     phone: '082-345-6789',
-    trainingDate: '2024-02-10',
-    trainingType: 'การจัดการความเสี่ยง',
+    trainingDate: '2025-08-24',
+    trainingType: 'อบรมการใช้เครื่องมือ',
     photo: null,
     status: 'ผ่านการอบรม'
   },
   {
     id: 3,
-    name: 'วิชัย มั่นคง',
+    name: 'วิไล สุขใส',
     company: 'ห้างหุ้นส่วน DEF',
     position: 'ช่างเชื่อม',
     phone: '083-456-7890',
-    trainingDate: '2024-01-20',
-    trainingType: 'ความปลอดภัยในการเชื่อม',
+    trainingDate: '2025-09-08',
+    trainingType: 'อบรมการใช้เครื่องจักร',
     photo: null,
     status: 'ผ่านการอบรม'
   },
   {
     id: 4,
-    name: 'อนุชา ขยันทำงาน',
+    name: 'สมชาย ใจดี',
     company: 'บริษัท GHI Construction',
     position: 'ช่างไฟฟ้า',
     phone: '084-567-8901',
-    trainingDate: '2024-03-05',
-    trainingType: 'ความปลอดภัยทางไฟฟ้า',
+    trainingDate: '2025-08-20',
+    trainingType: 'อบรมพื้นฐานความปลอดภัย',
     photo: null,
     status: 'ผ่านการอบรม'
   },
@@ -343,45 +451,100 @@ const contractors = ref([
     company: 'บริษัท JKL Services',
     position: 'ช่างประปา',
     phone: '085-678-9012',
-    trainingDate: '2024-02-28',
-    trainingType: 'การติดตั้งระบบประปา',
+    trainingDate: '2025-08-21',
+    trainingType: 'อบรมการประกอบอุปกรณ์',
+    photo: null,
+    status: 'ผ่านการอบรม'
+  },
+  {
+    id: 6,
+    name: 'มานะ ทำงานหนัก',
+    company: 'บริษัท ก่อสร้าง ABC จำกัด',
+    position: 'ช่างก่อสร้าง',
+    phone: '086-789-0123',
+    trainingDate: '2025-08-24',
+    trainingType: 'อบรมการใช้เครื่องมือ',
+    photo: null,
+    status: 'ผ่านการอบรม'
+  },
+  {
+    id: 7,
+    name: 'สุดา เอาใจใส่',
+    company: 'บริษัท MNO Engineering',
+    position: 'ช่างสำรวจ',
+    phone: '087-890-1234',
+    trainingDate: '2025-09-08',
+    trainingType: 'อบรมการใช้เครื่องจักร',
+    photo: null,
+    status: 'ผ่านการอบรม'
+  },
+  {
+    id: 8,
+    name: 'ประยุทธ์ มุ่งมั่น',
+    company: 'ห้างหุ้นส่วน PQR',
+    position: 'หัวหน้าโครงการ',
+    phone: '088-901-2345',
+    trainingDate: '2025-09-03',
+    trainingType: 'อบรมการประกอบอุปกรณ์',
     photo: null,
     status: 'ผ่านการอบรม'
   }
 ])
 
-const searchTerm = ref('')
+const searchCompany = ref('')
+const searchDate = ref('')
 const selectedContractors = ref([])
-const validityPeriod = ref('1')
+const selectedTrainingType = ref(null)
 const showPreview = ref(false)
+const qrCodes = ref({})
 
-// กรองข้อมูลตามคำค้นหา
+// วันที่ออกบัตรและวันหมดอายุ
+const issueDate = ref(new Date().toISOString().split('T')[0])
+const expiryDate = ref('')
+
+// ตั้งค่าวันหมดอายุเริ่มต้น (1 ปีจากวันที่ออกบัตร)
+const initializeExpiryDate = () => {
+  const issue = new Date(issueDate.value)
+  const expiry = new Date(issue)
+  expiry.setFullYear(issue.getFullYear() + 1)
+  expiryDate.value = expiry.toISOString().split('T')[0]
+}
+
+// เรียกใช้ตอนเริ่มต้น
+initializeExpiryDate()
+
+// นับจำนวนพนักงานตามหลักสูตร
+const getTrainingCount = (trainingType) => {
+  return contractors.value.filter(c => c.trainingType === trainingType).length
+}
+
+// เลือกหลักสูตร
+const selectTrainingType = (trainingType) => {
+  selectedTrainingType.value = trainingType
+  selectedContractors.value = []
+}
+
+// กรองข้อมูลตามหลักสูตรที่เลือกและการค้นหา
 const filteredContractors = computed(() => {
-  return contractors.value.filter(contractor =>
-    contractor.name.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-    contractor.company.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-    contractor.position.toLowerCase().includes(searchTerm.value.toLowerCase())
-  )
+  if (!selectedTrainingType.value) return []
+  
+  return contractors.value.filter(contractor => {
+    const matchTraining = contractor.trainingType === selectedTrainingType.value
+    const matchCompany = !searchCompany.value || 
+      contractor.company.toLowerCase().includes(searchCompany.value.toLowerCase())
+    const matchDate = !searchDate.value || 
+      contractor.trainingDate === searchDate.value
+    
+    return matchTraining && matchCompany && matchDate
+  })
 })
 
 // ข้อมูลพนักงานที่เลือก
 const selectedContractorData = computed(() => {
-  return contractors.value.filter(c => selectedContractors.value.includes(c.id))
-})
-
-// วันที่ปัจจุบันในรูปแบบไทย
-const currentDateThai = computed(() => {
-  return new Date().toLocaleDateString('th-TH')
-})
-
-// คำนวณวันหมดอายุ
-const expiryDate = computed(() => {
-  const today = new Date()
-  const years = parseFloat(validityPeriod.value)
-  const expiryDate = new Date(today)
-  expiryDate.setFullYear(today.getFullYear() + Math.floor(years))
-  expiryDate.setMonth(today.getMonth() + Math.floor((years % 1) * 12))
-  return expiryDate.toLocaleDateString('th-TH')
+  return contractors.value.filter(c => selectedContractors.value.includes(c.id)).map(contractor => ({
+    ...contractor,
+    qrCode: qrCodes.value[contractor.id]
+  }))
 })
 
 // จัดการการเลือก/ไม่เลือกพนักงาน
@@ -408,19 +571,86 @@ const formatDateThai = (dateString) => {
   return new Date(dateString).toLocaleDateString('th-TH')
 }
 
+// การสร้าง QR Code สำหรับบัตรพนักงาน
+const generateQRCode = async (contractor) => {
+  try {
+    // สร้างข้อมูลสำหรับ QR Code
+    const qrData = {
+      employeeId: `EMP-${String(contractor.id).padStart(4, '0')}`,
+      name: contractor.name,
+      company: contractor.company,
+      position: contractor.position,
+      trainingType: contractor.trainingType,
+      trainingDate: contractor.trainingDate,
+      issueDate: issueDate.value,
+      expiryDate: expiryDate.value,
+      phone: contractor.phone,
+      status: contractor.status
+    }
+    
+    // แปลงเป็น JSON สตริง
+const qrString = JSON.stringify(qrData)
+    
+    // สร้าง QR Code เป็น Data URL
+    const qrCodeDataURL = await QRCode.toDataURL(qrString, {
+      width: 128,
+      margin: 1,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      }
+    })
+    
+    return qrCodeDataURL
+  } catch (error) {
+    console.error('Error generating QR code:', error)
+    return null
+  }
+}
+
+// สร้าง QR Code สำหรับพนักงานที่เลือก
+const generateQRCodes = async () => {
+  const codes = {}
+  for (const contractorId of selectedContractors.value) {
+    const contractor = contractors.value.find(c => c.id === contractorId)
+    if (contractor) {
+      codes[contractorId] = await generateQRCode(contractor)
+    }
+  }
+  qrCodes.value = codes
+}
+
+// คำนวณอายุบัตร
+const calculateCardAge = (issueDateStr, expiryDateStr) => {
+  const issueDate = new Date(issueDateStr)
+  const expiryDate = new Date(expiryDateStr)
+  const diffTime = Math.abs(expiryDate - issueDate)
+  const diffYears = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 365))
+  return diffYears
+}
+
 // แสดงตัวอย่างก่อนพิมพ์
-const handlePrint = () => {
+const handlePrint = async () => {
   if (selectedContractors.value.length === 0) {
     alert('กรุณาเลือกพนักงานที่ต้องการพิมพ์บัตร')
     return
   }
+  
+  // สร้าง QR Codes ก่อนแสดงตัวอย่าง
+  await generateQRCodes()
   showPreview.value = true
 }
 
-// ฟังก์ชันพิมพ์บัตร - พิมพ์เฉพาะ div.print-area
+// กลับไปหน้าเลือกหลักสูตร
+const goBackToTraining = () => {
+  showPreview.value = false
+}
+
+// ฟังก์ชันพิมพ์บัตร
 const printCards = () => {
-  // ซ่อนทุกอย่างยกเว้นส่วนบัตร
   const printArea = document.querySelector('.print-area')
+  if (!printArea) return
+  
   const body = document.body
   const originalContents = body.innerHTML
   
@@ -451,60 +681,6 @@ const printCards = () => {
     top: 0;
     width: 100%;
   }
-  
-  .print\:p-0 {
-    padding: 0 !important;
-  }
-  
-  .print\:max-w-none {
-    max-width: none !important;
-  }
-  
-  .print\:grid-cols-1 {
-    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
-  }
-  
-  .print\:gap-4 {
-    gap: 1rem !important;
-  }
-  
-  .print\:shadow-none {
-    box-shadow: none !important;
-  }
-  
-  .print\:border {
-    border-width: 1px !important;
-  }
-  
-  .print\:border-gray-300 {
-    border-color: #d1d5db !important;
-  }
-  
-  .print\:page-break-inside-avoid {
-    page-break-inside: avoid !important;
-  }
-  
-  .print\:rounded-none {
-    border-radius: 0 !important;
-  }
-  
-  .print\:p-4 {
-    padding: 1rem !important;
-  }
-  
-  .print\:px-4 {
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-  }
-  
-  .print\:py-3 {
-    padding-top: 0.75rem !important;
-    padding-bottom: 0.75rem !important;
-  }
-  
-  .print\:hidden {
-    display: none !important;
-  }
 }
 
 /* Custom animations */
@@ -513,7 +689,23 @@ const printCards = () => {
 }
 
 /* Hover effects */
-.hover\:shadow-lg:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+.hover\:scale-105:hover {
+  transform: scale(1.05);
+}
+
+/* Card hover animation */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-enter-active {
+  animation: slideInUp 0.3s ease-out;
 }
 </style>
