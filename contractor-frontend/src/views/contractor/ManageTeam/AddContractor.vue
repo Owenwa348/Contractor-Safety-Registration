@@ -179,7 +179,7 @@ const isValidThaiId = (id) => {
   return expectedCheck === digits[12]
 }
 
-// ✅ Enhanced image preprocessing for better OCR accuracy
+//  Enhanced image preprocessing for better OCR accuracy
 const preprocessImageFile = (file) => new Promise((resolve, reject) => {
   const img = new Image()
   const url = URL.createObjectURL(file)
@@ -247,7 +247,7 @@ const tableData = ref([createEmptyRow()])
 // Modal state
 const selectedImage = ref(null)
 
-// ✅ ต้องกรอกครบทุกช่อง + ต้องมีรูปด้วย
+//  ต้องกรอกครบทุกช่อง + ต้องมีรูปด้วย
 const isFormValid = computed(() => {
   if (tableData.value.length === 0) return false
   return tableData.value.every(
@@ -288,7 +288,7 @@ const closeModal = () => {
   selectedImage.value = null
 }
 
-// ✅ อัปโหลดรูป + OCR รวมจุดเด่นของทั้งสองโค้ด
+// อัปโหลดรูป + OCR รวมจุดเด่นของทั้งสองโค้ด
 const handleFileUpload = (event, index) => {
   const file = event.target.files[0]
   if (file) {
@@ -343,7 +343,7 @@ const handleFileUpload = (event, index) => {
         tableData.value[index].ocrText = text
         console.log('OCR Text:', text)
 
-        // ✅ Enhanced ID number extraction with validation
+        // Enhanced ID number extraction with validation
         let foundIdCard = ''
         
         // Method 1: Find 13-digit pattern with spaces/dashes
@@ -384,7 +384,7 @@ const handleFileUpload = (event, index) => {
           tableData.value[index].idCard = foundIdCard
         }
 
-        // ✅ Enhanced Thai name extraction with better patterns
+        // Enhanced Thai name extraction with better patterns
         const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean)
         const cleanThai = (s) => s.replace(/[^\u0E00-\u0E7F\s]/g, '').trim()
         const isValidThaiName = (name) => name && /^[ก-๙]{2,}$/.test(name) && name.length <= 20

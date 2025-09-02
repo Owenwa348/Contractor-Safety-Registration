@@ -32,6 +32,13 @@
             >
               ห้องประชุม
             </button>
+            <!-- <button 
+              @click="activeTab = 'data'"
+              :class="activeTab === 'data' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+              class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap"
+            >
+              จัดการข้อมูล
+            </button> -->
           </nav>
         </div>
 
@@ -65,6 +72,14 @@
             @room-availability-changed="handleRoomAvailabilityChanged"
             ref="roomManagement"
           />
+
+          <!-- Data Management Tab -->
+          <DataManagement 
+            v-if="activeTab === 'data'"
+            :current-user="currentUser"
+            @data-cleared="handleDataCleared"
+            ref="dataManagement"
+          />
         </div>
       </div>
     </div>
@@ -76,6 +91,7 @@ import { ref, onMounted } from 'vue'
 import UserManagement from './UserManagement.vue'
 import ActivityManagement from './ActivityManagement.vue'
 import RoomManagement from './RoomManagement.vue'
+import DataManagement from './DataManagement.vue'
 
 const activeTab = ref('permissions')
 
@@ -96,6 +112,7 @@ const rooms = ref([
 const activities = ref([])
 const roomManagement = ref(null)
 const activityManagement = ref(null)
+const dataManagement = ref(null)
 
 // Get rooms data from RoomManagement component
 onMounted(() => {
@@ -245,5 +262,39 @@ const updateCalendarParticipants = (activity) => {
 const getRoomName = (roomId) => {
   const room = rooms.value.find(room => room.id === roomId)
   return room?.name || 'ไม่ระบุ'
+}
+
+// Event handler for data management
+const handleDataCleared = (data) => {
+  console.log('Data cleared:', data)
+  
+  // Optionally refresh data or notify other components
+  // You can add logic here to reset component data based on what was cleared
+  switch (data.type) {
+    case 'employees':
+      // Notify if needed - employee data was cleared
+      console.log('Employee data has been cleared')
+      break
+    case 'users':
+      // Notify if needed - user data was cleared
+      console.log('User data has been cleared')
+      break
+    case 'activities':
+      // Clear activities data
+      activities.value = []
+      if (activityManagement.value?.clearActivities) {
+        activityManagement.value.clearActivities()
+      }
+      console.log('Activity data has been cleared')
+      break
+    case 'system_reset':
+      // Reset everything
+      activities.value = []
+      if (activityManagement.value?.clearActivities) {
+        activityManagement.value.clearActivities()
+      }
+      console.log('System has been reset')
+      break
+  }
 }
 </script>

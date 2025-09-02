@@ -3,7 +3,7 @@
     <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
       <!-- Header -->
       <div class="text-center mb-8">
-        <h1 class="text-2xl font-bold text-gray-800 mb-2">เตั้งรหัสผ่านสำหรับผู้ใช้งานครั้งแรก</h1>
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">ตั้งรหัสผ่านสำหรับผู้ใช้งานครั้งแรก</h1>
       </div>
 
       <form @submit.prevent="handleSetPassword" class="space-y-6">
@@ -175,7 +175,7 @@ export default {
       
       // Mock database - ในการใช้งานจริงควรเรียก API
       mockDatabase: [
-        { email: 'safety01@gmail.com', hasPassword: true, password: 'password123', username: 'safety_user01' },
+        { email: 'safety01@gmail.com', hasPassword: true, password: '123456', username: 'safety_user01' },
         { email: 'safety02@gmail.com', hasPassword: true, password: 'securepass456', username: 'safety_user02' },
         { email: 'safety03@gmail.com', hasPassword: false, username: '' },
         { email: 'safety04@gmail.com', hasPassword: false, username: '' },

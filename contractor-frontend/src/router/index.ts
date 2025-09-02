@@ -4,10 +4,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../views/Login/Coordinator/LoginCoordinator.vue'
 import CheckPermissions from '../views/Login/Coordinator/CheckPermissionsContractor.vue'
 import ContractorRegistration from '../views/Login/Coordinator/ContractorRegistration.vue'
+import ForgotPasswordCoordinator from '../views/Login/Coordinator/ForgotPasswordCoordinator.vue'
 //
 //Login/Owner and safety
 import LoginOwnerAndSafety from '../views/Login/Owner and safety/LoginOwnerAndSafety.vue'
 import SetPasswordOwnerAndSafety from '../views/Login/Owner and safety/SetPasswordOwnerAndSafety.vue'
+import ForgotPasswordOwnerAndSafety from '../views/Login/Owner and safety/ForgotPasswordOwnerAndSafety.vue'
 //
 import AddContractor from '../views/contractor/ManageTeam/AddContractor.vue'
 import ManageTeam from '../views/contractor/ManageTeam/ManageTeam.vue'
@@ -24,6 +26,11 @@ import BookTraining from '../views/contractor/BookTraining.vue' // เพิ่�
 import CreateTraining from '../views/SecurityDepartment/CreateTraining.vue'
 import Setting from '../views/SecurityDepartment/SettingSecurityDepartment/Setting.vue' // เพิ่มการนำเข้า Settings
 
+// Caretaker imports
+import UserManagement from '../views/Caretaker/UserManagement/UserManagement.vue'
+import SystemConfig from '../views/Caretaker/SystemConfig.vue'
+import DatabaseManagement from '../views/Caretaker/DatabaseManagement.vue'
+
 const routes = [
 
   //Login/contractor
@@ -37,10 +44,14 @@ const routes = [
     component: CheckPermissions,
     meta: { title: 'ตรวจสอบสิทธิ์การเข้าใช้งาน', public: true }
   },
-  {
-    path: '/contractor-registration',
+  {    path: '/contractor-registration',
     component: ContractorRegistration,
     meta: { title: 'หน้าหลักลงทะเบียนผู้รับเหมา', public: true }
+  },
+  {
+    path: '/forgot-password-coordinator',
+    component: ForgotPasswordCoordinator,
+    meta: { title: 'ลืมรหัสผ่าน - คู่ธุรกิจ', public: true }
   },
   //----------------------------------------------------------
   //Login/Owner and safety
@@ -54,6 +65,11 @@ const routes = [
     path: '/setpasswordownerandsafety',
     component: SetPasswordOwnerAndSafety,
     meta: { title: 'เข้าสู่ระบบเจ้าของงานกับSafety', public: true },
+  },
+  {
+    path: '/forgot-password-owner-safety',
+    component: ForgotPasswordOwnerAndSafety,
+    meta: { title: 'ลืมรหัสผ่าน - บุคลากรภายใน', public: true }
   },
   //
 
@@ -121,6 +137,22 @@ const routes = [
     path: '/setting',
     component: Setting,
     meta: { title: 'การตั้งค่า' }
+  },
+  // Caretaker routes
+  {
+    path: '/caretaker-user-management',
+    component: UserManagement,
+    meta: { title: 'จัดการผู้ใช้งาน', requiresAuth: true, role: 'caretaker' }
+  },
+  {
+    path: '/caretaker-system-config',
+    component: SystemConfig,
+    meta: { title: 'การตั้งค่าระบบ', requiresAuth: true, role: 'caretaker' }
+  },
+  {
+    path: '/caretaker-database-management',
+    component: DatabaseManagement,
+    meta: { title: 'จัดการฐานข้อมูล', requiresAuth: true, role: 'caretaker' }
   },
   {
     path: '/:pathMatch(.*)*',

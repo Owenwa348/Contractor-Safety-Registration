@@ -36,22 +36,12 @@
           >
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700">ระดับหัวหน้างาน</label>
-          <select 
-            v-model="newUser.role"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          >
-            <option value="2">หัวหน้างานระดับ 1</option>
-            <option value="3">หัวหน้างานระดับ 2</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">รหัสผ่านเริ่มต้น</label>
+          <label class="block text-sm font-medium text-gray-700">หัวหน้างาน</label>
           <input 
-            type="password" 
-            v-model="newUser.password"
+            type="text" 
+            v-model="newUser.position"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            placeholder="ระบุรหัสผ่านเริ่มต้น"
+            placeholder="หัวหน้างาน"
           >
         </div>
       </div>
@@ -130,21 +120,9 @@
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div v-if="editingUserId === user.id">
-                  <select 
-                    v-model="editingUser.hasLoggedIn"
-                    class="px-2 py-1 border border-gray-300 rounded text-xs"
-                    @change="saveUser(user.id)"
-                  >
-                    <option :value="false">ยังไม่ล็อก</option>
-                    <option :value="true">ล็อกอิน</option>
-                  </select>
-                </div>
-                <div v-else class="cursor-pointer" @click="startEdit(user)">
-                  <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" :class="getLoginStatusClass(user.hasLoggedIn)">
-                    {{ user.hasLoggedIn ? 'ล็อกอิน' : 'ยังไม่ล็อก' }}
-                  </span>
-                </div>
+                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" :class="getLoginStatusClass(user.hasLoggedIn)">
+                  {{ user.hasLoggedIn ? 'ล็อกอิน' : 'ยังไม่ล็อก' }}
+                </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center gap-2">
@@ -152,15 +130,13 @@
                   <button 
                     v-if="!user.hasPassword"
                     @click="sendPasswordResetLink(user)"
-                    class="text-blue-600 hover:text-blue-800 text-xs underline"
-                  >
+                    class="text-blue-600 hover:text-blue-800 text-xs underline">
                     ส่งลิงค์ตั้งรหัส
                   </button>
                   <button 
                     v-else
                     @click="resetPassword(user)"
-                    class="text-orange-600 hover:text-orange-800 text-xs underline"
-                  >
+                    class="text-orange-600 hover:text-orange-800 text-xs underline">
                     รีเซ็ต
                   </button>
                 </div>
@@ -173,21 +149,18 @@
                   <button 
                     v-if="editingUserId === user.id"
                     @click="cancelEdit"
-                    class="text-gray-600 hover:text-gray-900"
-                  >
+                    class="text-gray-600 hover:text-gray-900">
                     ยกเลิก
                   </button>
                   <button 
                     v-else
                     @click="startEdit(user)"
-                    class="text-blue-600 hover:text-blue-900"
-                  >
+                    class="text-blue-600 hover:text-blue-900">
                     แก้ไข
                   </button>
                   <button 
                     @click="deleteUser(user.id)"
-                    class="text-red-600 hover:text-red-900"
-                  >
+                    class="text-red-600 hover:text-red-900">
                     ลบ
                   </button>
                 </div>
@@ -219,8 +192,8 @@ const users = ref([
   {
     id: 1,
     email: 'supervisor1@company.com',
-    username: 'หัวหน้างาน001',
-    role: 2,
+    username: 'หัวหน้างานขนส่ง',
+    position: 'หัวหน้างาน',
     hasLoggedIn: true,
     hasPassword: true,
     lastLogin: '2024-08-29',
@@ -229,8 +202,8 @@ const users = ref([
   {
     id: 2,
     email: 'supervisor2@company.com',
-    username: 'หัวหน้างาน002',
-    role: 3,
+    username: 'หัวหน้างานปั้นจันยกของ',
+    position: 'หัวหน้างาน',
     hasLoggedIn: true,
     hasPassword: true,
     lastLogin: '2024-08-28',
@@ -239,8 +212,8 @@ const users = ref([
   {
     id: 3,
     email: 'supervisor3@company.com',
-    username: 'หัวหน้างาน003',
-    role: 2,
+    username: 'หัวหน้างานจัดการ',
+    position: 'หัวหน้างาน',
     hasLoggedIn: false,
     hasPassword: false,
     lastLogin: null,
@@ -249,8 +222,8 @@ const users = ref([
   {
     id: 4,
     email: 'safety.manager@company.com',
-    username: 'ผู้จัดการความปลอดภัย',
-    role: 3,
+    username: 'หัวหน้างานอับอากาศ',
+    position: 'หัวหน้างาน',
     hasLoggedIn: true,
     hasPassword: true,
     lastLogin: '2024-08-30',
@@ -259,34 +232,12 @@ const users = ref([
   {
     id: 5,
     email: 'team.lead@company.com',
-    username: 'หัวหน้าทีม001',
-    role: 2,
+    username: 'หัวหน้างานสถาปนิก',
+    position: 'หัวหน้างาน',
     hasLoggedIn: false,
-    hasPassword: true,
+    hasPassword: false,
     lastLogin: null,
     createdAt: '2024-08-20'
-  }
-])
-
-// User roles and permissions
-const userRoles = ref([
-  { 
-    id: 1, 
-    name: 'พนักงานทั่วไป', 
-    level: 1, 
-    permissions: ['view_activities'] 
-  },
-  { 
-    id: 2, 
-    name: 'หัวหน้างานระดับ 1', 
-    level: 2, 
-    permissions: ['view_activities', 'join_activities'] 
-  },
-  { 
-    id: 3, 
-    name: 'หัวหน้างานระดับ 2', 
-    level: 3, 
-    permissions: ['view_activities', 'join_activities', 'create_activities', 'manage_rooms'] 
   }
 ])
 
@@ -294,8 +245,7 @@ const userRoles = ref([
 const newUser = ref({
   email: '',
   username: '',
-  role: '2',
-  password: ''
+  position: ''
 })
 
 const showAddUserForm = ref(false)
@@ -303,11 +253,6 @@ const editingUserId = ref(null)
 const editingUser = ref({})
 
 // Methods
-const getUserRoleName = (roleLevel) => {
-  const role = userRoles.value.find(role => role.level === parseInt(roleLevel))
-  return role?.name || 'ไม่ระบุ'
-}
-
 const getLoginStatusClass = (hasLoggedIn) => {
   return hasLoggedIn ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
 }
@@ -325,7 +270,7 @@ const formatDate = (dateString) => {
 }
 
 const addUser = () => {
-  if (!newUser.value.email || !newUser.value.username || !newUser.value.password) {
+  if (!newUser.value.email || !newUser.value.username || !newUser.value.position) {
     alert('กรุณากรอกข้อมูลให้ครบถ้วน')
     return
   }
@@ -341,9 +286,9 @@ const addUser = () => {
     id: Math.max(...users.value.map(u => u.id)) + 1,
     email: newUser.value.email,
     username: newUser.value.username,
-    role: parseInt(newUser.value.role),
+    position: newUser.value.position,
     hasLoggedIn: false,
-    hasPassword: true,
+    hasPassword: false,
     lastLogin: null,
     createdAt: new Date().toISOString().split('T')[0]
   }
@@ -355,12 +300,15 @@ const addUser = () => {
   newUser.value = {
     email: '',
     username: '',
-    role: '2',
-    password: ''
+    position: 'หัวหน้างาน'
   }
 
   showAddUserForm.value = false
-  alert('เพิ่มผู้ใช้เรียบร้อยแล้ว')
+  
+  // Send password setup link after user creation
+  sendPasswordResetLink(user)
+  
+  alert('เพิ่มผู้ใช้เรียบร้อยแล้ว ลิงค์ตั้งรหัสผ่านได้ถูกคัดลอกแล้ว กรุณาส่งให้ผู้ใช้')
 }
 
 const startEdit = (user) => {
