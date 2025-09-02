@@ -104,7 +104,7 @@
           <!-- หนังสือรับรองบริษัท -->
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">
-              หนังสือรับรองบริษัท <span class="text-red-500">*</span>
+              หนังสือรับรองบริษัท 
             </label>
             <div class="relative border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-blue-400 transition-colors"
                  :class="{'border-blue-500 bg-blue-50': isDraggingCompanyCert}">
@@ -171,7 +171,7 @@
           <!-- ภพ.20 -->
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">
-              แบบ ภพ.20 <span class="text-red-500">*</span>
+              ภพ 20
             </label>
             <div class="relative border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-blue-400 transition-colors"
                  :class="{'border-blue-500 bg-blue-50': isDraggingPorPor20}">
@@ -650,40 +650,7 @@ computed: {
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
     },
-    // ฟังก์ชันสำหรับส่งอีเมลไปยังผู้ดูแลระบบ,
-    async submitForm() {
-      if (!this.isFormValid) return
-      this.isLoading = true
-      try {
-        const formData = new FormData()
-        formData.append("taxId", this.form.taxId)
-        formData.append("companyName", this.form.companyName)
-        formData.append("username", this.form.username)
-        formData.append("fullName", this.form.fullName)
-        formData.append("email", this.form.email)
-        formData.append("phone", this.form.phone)
-        formData.append("password", this.form.password)
-        formData.append("companyCertificate", this.form.companyCertificate)
-        formData.append("porpor20", this.form.porpor20)
 
-        const res = await fetch("/api/partners/register", {
-          method: "POST",
-          body: formData
-        })
-        const data = await res.json()
-
-        if (data.success) {
-          this.showSuccessModal = true
-        } else {
-          alert(data.message || "เกิดข้อผิดพลาด")
-        }
-      } catch (err) {
-        console.error(err)
-        alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้")
-      } finally {
-        this.isLoading = false
-      }
-    },
     resetForm() {
       this.form = {
         taxId: '',
@@ -697,10 +664,406 @@ computed: {
         companyCertificate: null,
         porpor20: null
       }
+      
+      // Reset file input elements properly
+      if (this.$refs.companyCertInput) {
+        this.$refs.companyCertInput.value = ''
+      }
+      if (this.$refs.porpor20Input) {
+        this.$refs.porpor20Input.value = ''
+      }
+      
+      // Reset all validation states
+      this.emailError = ''
+      this.passwordChecks = {
+        uppercase: false,
+        lowercase: false,
+        number: false
+      }
+      
+      // Reset preview states
+      this.showPreview = false
+      this.currentPreviewFile = null
+      this.previewImageUrl = null
+      this.imageLoaded = false
+      this.imageError = false
+      
       this.showSuccessModal = false
     },
     redirectToLogin() {
       this.$router.push('/')
+    },
+
+    async submitForm() {
+      if (!this.isFormValid) {
+        alert('กรุณากรอกข้อมูลให้ครบถ้วน')
+        return
+      }
+
+      this.isLoading = true
+
+      try {
+        // สร้างข้อมูลสำหรับส่ง
+        const registrationData = {
+          taxId: this.form.taxId,
+          companyName: this.form.companyName,
+          username: this.form.username,
+          fullName: this.form.fullName,
+          email: this.form.email,
+          phone: this.form.phone,
+          companyCertificate: this.form.companyCertificate,
+          porpor20: this.form.porpor20,
+          registrationDate: new Date().toLocaleString('th-TH', {
+            timeZone: 'Asia/Bangkok',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })
+        }
+
+        // จำลองการส่งข้อมูลไปยัง API
+        await this.simulateApiCall(registrationData)
+
+        // ส่งอีเมลยืนยันไปยังผู้ใช้
+        await this.sendConfirmationEmail(registrationData)
+
+        // แสดง Modal สำเร็จ
+        this.showSuccessModal = true
+
+      } catch (error) {
+        console.error('เกิดข้อผิดพลาดในการลงทะเบียน:', error)
+        alert('เกิดข้อผิดพลาดในการลงทะเบียน กรุณาลองใหม่อีกครั้ง')
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async simulateApiCall(data) {
+      // จำลองการเรียก API (ใช้เวลา 2 วินาที)
+      return new Promise(resolve => {
+        setTimeout(() => {
+          console.log('ข้อมูลการลงทะเบียน:', data)
+          resolve()
+        }, 2000)
+      })
+    },
+
+    async sendConfirmationEmail(registrationData) {
+      try {
+        // EmailJS configuration (you need to set up EmailJS account and get these values)
+        const serviceId = 'YOUR_SERVICE_ID' // Replace with your EmailJS service ID
+        const templateId = 'YOUR_TEMPLATE_ID' // Replace with your EmailJS template ID
+        const publicKey = 'YOUR_PUBLIC_KEY' // Replace with your EmailJS public key
+        
+        const emailParams = {
+          to_email: registrationData.email,
+          to_name: registrationData.fullName,
+          company_name: registrationData.companyName,
+          tax_id: registrationData.taxId,
+          username: registrationData.username,
+          full_name: registrationData.fullName,
+          email: registrationData.email,
+          phone: registrationData.phone,
+          registration_date: registrationData.registrationDate,
+          subject: 'ยืนยันการลงทะเบียนคู่ธุรกิจ - ระบบความปลอดภัย'
+        }
+
+        // Method 1: Using EmailJS (Recommended for frontend)
+        if (typeof emailjs !== 'undefined') {
+          console.log('Sending email via EmailJS...')
+          const response = await emailjs.send(serviceId, templateId, emailParams, publicKey)
+          console.log('EmailJS response:', response)
+          
+          if (response.status === 200) {
+            console.log('อีเมลส่งสำเร็จผ่าน EmailJS!')
+            return true
+          }
+        }
+        
+        // Method 2: Using Fetch API to backend email service (if available)
+        try {
+          console.log('Attempting to send email via backend API...')
+          const response = await fetch('/api/send-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              to: registrationData.email,
+              subject: 'ยืนยันการลงทะเบียนคู่ธุรกิจ - ระบบความปลอดภัย',
+              html: this.generateEmailHTML(registrationData)
+            })
+          })
+          
+          if (response.ok) {
+            const result = await response.json()
+            console.log('Backend email API response:', result)
+            console.log('อีเมลส่งสำเร็จผ่าน Backend API!')
+            return true
+          } else {
+            console.warn('Backend email API failed:', response.statusText)
+          }
+        } catch (apiError) {
+          console.warn('Backend email API not available:', apiError.message)
+        }
+        
+        // Method 3: Using mailto as fallback (opens email client)
+        console.log('Using mailto fallback...')
+        const subject = encodeURIComponent('ยืนยันการลงทะเบียนคู่ธุรกิจ')
+        const body = encodeURIComponent(`
+เรียน คุณ${registrationData.fullName}
+
+ขอขอบคุณที่ลงทะเบียนเป็นคู่ธุรกิจกับเรา
+
+ข้อมูลการลงทะเบียน:
+- เลขประจำตัวผู้เสียภาษี: ${registrationData.taxId}
+- ชื่อบริษัท: ${registrationData.companyName}
+- ชื่อผู้ใช้งาน: ${registrationData.username}
+- ชื่อ-สกุล: ${registrationData.fullName}
+- อีเมล: ${registrationData.email}
+- เบอร์โทรศัพท์: ${registrationData.phone}
+- วันที่ลงทะเบียน: ${registrationData.registrationDate}
+
+ทีมงานจะตรวจสอบข้อมูลและติดต่อกลับภายใน 3-5 วันทำการ
+
+ขอบคุณครับ/ค่ะ`)
+        
+        const mailtoLink = `mailto:${registrationData.email}?subject=${subject}&body=${body}`
+        window.open(mailtoLink, '_blank')
+        
+        console.log('อีเมลถูกเปิดในโปรแกรมอีเมลเริ่มต้น')
+        return true
+
+      } catch (error) {
+        console.error('เกิดข้อผิดพลาดในการส่งอีเมล:', error)
+        
+        // Show user-friendly error message
+        alert(`ไม่สามารถส่งอีเมลยืนยันได้ในขณะนี้\n\nกรุณาบันทึกข้อมูลการลงทะเบียนต่อไปนี้:\n\nเลขประจำตัวผู้เสียภาษี: ${registrationData.taxId}\nชื่อบริษัท: ${registrationData.companyName}\nชื่อผู้ใช้งาน: ${registrationData.username}\n\nทีมงานจะติดต่อกลับภายใน 3-5 วันทำการ`)
+        
+        // Don't let email error prevent registration completion
+        return false
+      }
+    },
+    
+    generateEmailHTML(registrationData) {
+      return `
+        <!DOCTYPE html>
+        <html lang="th">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>ยืนยันการลงทะเบียน</title>
+          <style>
+            body {
+              font-family: 'Sarabun', Arial, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              max-width: 600px;
+              margin: 0 auto;
+              background-color: #f7f9fc;
+              padding: 20px;
+            }
+            .container {
+              background: white;
+              border-radius: 12px;
+              padding: 30px;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 30px;
+              padding-bottom: 20px;
+              border-bottom: 3px solid #3b82f6;
+            }
+            .logo {
+              width: 80px;
+              height: 80px;
+              background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+              border-radius: 50%;
+              margin: 0 auto 15px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-size: 32px;
+              font-weight: bold;
+            }
+            .title {
+              color: #1e40af;
+              font-size: 24px;
+              font-weight: bold;
+              margin: 0;
+            }
+            .subtitle {
+              color: #6b7280;
+              font-size: 16px;
+              margin: 5px 0 0;
+            }
+            .content {
+              margin: 25px 0;
+            }
+            .greeting {
+              font-size: 18px;
+              color: #374151;
+              margin-bottom: 20px;
+            }
+            .info-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin: 20px 0;
+              background: #f8fafc;
+              border-radius: 8px;
+              overflow: hidden;
+            }
+            .info-table th,
+            .info-table td {
+              padding: 12px 15px;
+              text-align: left;
+              border-bottom: 1px solid #e5e7eb;
+            }
+            .info-table th {
+              background: #3b82f6;
+              color: white;
+              font-weight: 600;
+            }
+            .info-table tr:last-child td {
+              border-bottom: none;
+            }
+            .status-box {
+              background: linear-gradient(135deg, #10b981, #059669);
+              color: white;
+              padding: 15px;
+              border-radius: 8px;
+              text-align: center;
+              margin: 20px 0;
+            }
+            .next-steps {
+              background: #fef3c7;
+              border: 1px solid #f59e0b;
+              border-radius: 8px;
+              padding: 20px;
+              margin: 20px 0;
+            }
+            .next-steps h3 {
+              color: #92400e;
+              margin-top: 0;
+            }
+            .step-list {
+              color: #78350f;
+              margin: 0;
+              padding-left: 20px;
+            }
+            .contact-info {
+              background: #eff6ff;
+              border: 1px solid #3b82f6;
+              border-radius: 8px;
+              padding: 20px;
+              margin: 20px 0;
+            }
+            .contact-info h3 {
+              color: #1e40af;
+              margin-top: 0;
+            }
+            .footer {
+              text-align: center;
+              margin-top: 30px;
+              padding-top: 20px;
+              border-top: 1px solid #e5e7eb;
+              color: #6b7280;
+              font-size: 14px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <div class="logo">🛡️</div>
+              <h1 class="title">ยืนยันการลงทะเบียนสำเร็จ</h1>
+              <p class="subtitle">ระบบจัดการความปลอดภัยคู่ธุรกิจ</p>
+            </div>
+            
+            <div class="content">
+              <div class="greeting">
+                เรียน คุณ${registrationData.fullName}
+              </div>
+              
+              <p>ขอขอบคุณที่ลงทะเบียนเป็นคู่ธุรกิจกับเรา การลงทะเบียนของท่านได้รับการบันทึกเรียบร้อยแล้ว</p>
+              
+              <div class="status-box">
+                <strong>สถานะ: ลงทะเบียนสำเร็จ</strong><br>
+                <small>ข้อมูลของท่านได้ถูกส่งไปยังแผนกที่เกี่ยวข้องเพื่อดำเนินการตรวจสอบ</small>
+              </div>
+              
+              <table class="info-table">
+                <thead>
+                  <tr>
+                    <th colspan="2">ข้อมูลการลงทะเบียน</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>เลขประจำตัวผู้เสียภาษี:</strong></td>
+                    <td>${registrationData.taxId}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>ชื่อบริษัท:</strong></td>
+                    <td>${registrationData.companyName}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>ชื่อผู้ใช้งาน:</strong></td>
+                    <td>${registrationData.username}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>ชื่อ-สกุล:</strong></td>
+                    <td>${registrationData.fullName}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>อีเมล:</strong></td>
+                    <td>${registrationData.email}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>เบอร์โทรศัพท์:</strong></td>
+                    <td>${registrationData.phone}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>วันที่ลงทะเบียน:</strong></td>
+                    <td>${registrationData.registrationDate}</td>
+                  </tr>
+                </tbody>
+              </table>
+              
+              <div class="next-steps">
+                <h3>📋 ขั้นตอนต่อไป</h3>
+                <ol class="step-list">
+                  <li>ทีมงานจะตรวจสอบข้อมูลและเอกสารของท่านภายใน 3-5 วันทำการ</li>
+                  <li>ท่านจะได้รับอีเมลแจ้งผลการอนุมัติ</li>
+                  <li>หากผ่านการอนุมัติ ท่านสามารถเข้าสู่ระบบเพื่อดำเนินการขั้นตอนต่อไปได้</li>
+                  <li>หากมีข้อมูลที่ต้องแก้ไข ทีมงานจะติดต่อกลับไป</li>
+                </ol>
+              </div>
+              
+              <div class="contact-info">
+                <h3>📞 ช่องทางติดต่อ</h3>
+                <p><strong>แผนกความปลอดภัย:</strong><br>
+                อีเมล: safety@company.com<br>
+                โทร: 02-xxx-xxxx ต่อ 1234<br>
+                เวลาทำการ: จันทร์-ศุกร์ 08:00-17:00 น.</p>
+              </div>
+              
+              <p><strong>หมายเหตุ:</strong> กรุณาเก็บอีเมลนี้ไว้เป็นหลักฐานการลงทะเบียน</p>
+            </div>
+            
+            <div class="footer">
+              <p>อีเมลนี้ถูกส่งโดยอัตโนมัติ กรุณาอย่าตอบกลับ<br>
+              หากมีข้อสงสัย กรุณาติดต่อแผนกความปลอดภัยโดยตรง</p>
+              <p>&copy; 2024 ระบบจัดการความปลอดภัยคู่ธุรกิจ</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
     }
   }
 }

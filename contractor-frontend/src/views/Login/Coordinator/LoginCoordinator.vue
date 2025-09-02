@@ -146,13 +146,10 @@
         <div class="space-y-3 pt-4 border-t border-gray-100">
           <p class="text-sm text-center">
             <router-link
-              to="/check-permissions"
-              class="text-blue-600 hover:text-blue-700 font-medium hover:underline transition-all duration-200 flex items-center justify-center gap-1"
+              to="/forgot-password-coordinator"
+              class="text-blue-600 hover:text-blue-700 font-medium hover:underline transition-all duration-200"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              ตรวจสอบสิทธิ์การเข้าใช้งาน
+              ลืมรหัสผ่าน?
             </router-link>
           </p>
 

@@ -179,6 +179,16 @@
             </router-link>
           </p>
         </div>
+        
+        <!-- Forgot Password Link -->
+        <div class="text-center pt-4 border-t border-gray-100 mt-4">
+          <router-link
+            to="/forgot-password-owner-safety"
+            class="text-blue-600 hover:text-blue-700 font-medium hover:underline transition-all duration-200 text-sm"
+          >
+            ลืมรหัสผ่าน?
+          </router-link>
+        </div>
       </form>
     </div>
   </div>

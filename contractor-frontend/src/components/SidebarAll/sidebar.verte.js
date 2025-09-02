@@ -95,61 +95,26 @@ export const VERTE_ICONS = {
  */
 export const VERTE_MENU_ITEMS = [
   {
-    path: '/verte/user-management',
+    path: '/caretaker-user-management',
     name: 'จัดการผู้ใช้งาน',
     icon: 'UsersIcon',
     description: 'จัดการบัญชีผู้ใช้งานและสิทธิ์การเข้าถึง',
     category: 'user'
   },
-  {
-    path: '/verte/system-config',
-    name: 'การตั้งค่าระบบ',
-    icon: 'CogIcon',
-    description: 'กำหนดค่าระบบและพารามิเตอร์ต่างๆ',
-    category: 'system'
-  },
-  {
-    path: '/verte/database-management',
-    name: 'จัดการฐานข้อมูล',
-    icon: 'DatabaseIcon',
-    description: 'จัดการฐานข้อมูลและการสำรองข้อมูล',
-    category: 'database'
-  },
-  {
-    path: '/verte/reports',
-    name: 'รายงานระบบ',
-    icon: 'ChartBarIcon',
-    description: 'ดูรายงานและสถิติการใช้งานระบบ',
-    category: 'report'
-  },
-  {
-    path: '/verte/permissions',
-    name: 'จัดการสิทธิ์การเข้าถึง',
-    icon: 'UserShieldIcon',
-    description: 'กำหนดสิทธิ์และระดับการเข้าถึงข้อมูล',
-    category: 'security'
-  },
-  {
-    path: '/verte/system-maintenance',
-    name: 'บำรุงรักษาระบบ',
-    icon: 'WrenchIcon',
-    description: 'การบำรุงรักษาและแก้ไขปัญหาระบบ',
-    category: 'maintenance'
-  },
-  {
-    path: '/verte/notifications',
-    name: 'จัดการการแจ้งเตือน',
-    icon: 'BellIcon',
-    description: 'ตั้งค่าและจัดการระบบแจ้งเตือน',
-    category: 'notification'
-  },
-  {
-    path: '/verte/backup',
-    name: 'สำรองข้อมูล',
-    icon: 'CloudDownloadIcon',
-    description: 'จัดการการสำรองข้อมูลและการกู้คืน',
-    category: 'backup'
-  }
+  // {
+  //   path: '/caretaker-system-config',
+  //   name: 'การตั้งค่าระบบ',
+  //   icon: 'CogIcon',
+  //   description: 'กำหนดค่าระบบและพารามิเตอร์ต่างๆ',
+  //   category: 'system'
+  // },
+  // {
+  //   path: '/caretaker-database-management',
+  //   name: 'จัดการฐานข้อมูล',
+  //   icon: 'DatabaseIcon',
+  //   description: 'จัดการฐานข้อมูลและการสำรองข้อมูล',
+  //   category: 'database'
+  // },
 ];
 
 /**

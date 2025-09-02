@@ -9,7 +9,7 @@
           </div>
           <div>
             <h1 class="text-2xl font-bold text-gray-800">จัดการรายชื่อพนักงานตามสังกัด</h1>
-            <p class="text-gray-600 text-sm mt-1">ระบบจัดการข้อมูลพนักงานและการส่งให้หัวหน้างาน</p>
+            <p class="text-gray-600 text-sm mt-1">ระบบจัดการข้อมูลพนักงานและการส่งให้หัวหน้างาน พร้อมรายละเอียดสถานะการอนุมัติ</p>
           </div>
         </div>
       </div>
@@ -109,9 +109,9 @@ const selectedSupervisor = ref('')
 const selectedStatus = ref('')
 // Sample supervisors data
 const supervisors = ref([
-  { id: 1, name: 'นายมนสม หัวหน้า', department: 'แผนกก่อสร้าง' },
-  { id: 2, name: 'นางสาวปานี หัวหน้า', department: 'แผนกควบคุมคุณภาพ' },
-  { id: 3, name: 'นายวิรง หัวหน้า', department: 'แผนกความปลอดภัย' }
+  { id: 1, name: 'นายสมชัย แสงโสม ', department: 'หัวหน้างานขนส่ง' },
+  { id: 2, name: 'นายสุรพล กรมหนึ่ง', department: 'หัวหน้างานปั้นจันยกของ' },
+  { id: 3, name: 'นายประเสริฐ เริสบาระ', department: 'หัวหน้างานจัดการ' }
 ])
 
 // Headers
@@ -192,6 +192,8 @@ const contractors = ref([
     idCard: '1-2345-67891-12-4', 
     phone: '082-345-6789', 
     status: 'ไม่อนุมัติ', 
+    rejectionReason: 'เอกสารไม่ครบ',
+    rejectionDetail: 'ขาดใบประกันสังคม และรูปถ่ายไม่ชัดเจน',
     selected: false, 
     isEditing: false,
     originalData: {},
@@ -204,6 +206,8 @@ const contractors = ref([
     idCard: '1-2345-67891-12-4', 
     phone: '082-345-6789', 
     status: 'ไม่อนุมัติ', 
+    rejectionReason: 'อื่นๆ',
+    rejectionDetail: 'ข้อมูลบัตรประชาชนไม่ตรงกับฐานข้อมูลราชการ',
     selected: false, 
     isEditing: false,
     originalData: {},
@@ -288,6 +292,7 @@ const contractors = ref([
     idCard: '1-3333-33333-33-3', 
     phone: '086-789-3456', 
     status: 'ไม่ผ่าน', 
+    failureReason: 'คะแนนสอบไม่ผ่าน (45%)',
     selected: false, 
     isEditing: false,
     originalData: {},
@@ -300,6 +305,7 @@ const contractors = ref([
     idCard: '1-2222-22222-22-2', 
     phone: '085-678-2345', 
     status: 'ไม่ผ่าน', 
+    failureReason: 'ไม่เข้าร่วมการอบรม',
     selected: false, 
     isEditing: false,
     originalData: {},
@@ -307,17 +313,32 @@ const contractors = ref([
   },
   { 
     id: 14, 
-    firstName: 'สุพจน์', 
-    lastName: 'วัฒนกิจ', 
-    idCard: '1-2222-22222-22-2', 
-    phone: '085-678-2345', 
+    firstName: 'ประหยัด', 
+    lastName: 'ทำงาน', 
+    idCard: '1-7777-77777-77-7', 
+    phone: '087-678-2345', 
     status: 'ไม่ผ่าน', 
+    failureReason: 'ขาดการอบรมหัวข้อสำคัญ',
     selected: false, 
     isEditing: false,
     originalData: {},
     images: { employee: null, idcard: 'https://example.com/idcard5.jpg', social: null, documents: [] }
   },
-])
+    { 
+      id: 15, 
+      firstName: 'วิชาญ', 
+      lastName: 'กล้าหาญ', 
+      idCard: '1-8888-88888-88-8', 
+      phone: '089-123-4567', 
+      status: 'ไม่อนุมัติ', 
+      rejectionReason: 'ไม่อนุมัติ',
+      rejectionDetail: 'ผลการตรวจสุขภาพพบว่ามีปัญหาด้านสุขภาพ ไม่สามารถทำงานได้',
+      selected: false, 
+      isEditing: false,
+      originalData: {},
+      images: { employee: null, idcard: 'https://example.com/idcard9.jpg', social: null, documents: [] }
+    }
+  ])
 
 
 const trainedContractors = ref([

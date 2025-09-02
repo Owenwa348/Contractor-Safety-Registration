@@ -5,7 +5,7 @@
       <div class="md:col-span-2">
         <label class="block text-sm font-medium text-gray-700 mb-2">
           {{ document.name }}
-          <span class="text-red-500">*</span>
+          <!-- <span class="text-red-500">*</span> -->
         </label>
         <input 
           type="file" 

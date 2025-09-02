@@ -165,14 +165,14 @@
               <h4 class="text-xl font-bold text-gray-900">{{ selectedEvent.title }}</h4>
             </div>
             
-            <div class="grid grid-cols-2 gap-6 text-sm">
+            <div class="grid grid-cols-1 gap-6 text-sm">
               <div class="bg-gray-50 p-4 rounded-lg">
                 <label class="text-gray-600 font-semibold block mb-1">วันที่</label>
                 <p class="text-gray-900 font-medium">{{ getDisplayDateText(selectedEvent, selectedDate) }}</p>
               </div>
-              <div v-if="!selectedEvent.isAllDay" class="bg-gray-50 p-4 rounded-lg">
+              <div class="bg-gray-50 p-4 rounded-lg">
                 <label class="text-gray-600 font-semibold block mb-1">เวลา</label>
-                <p class="text-gray-900 font-medium">{{ selectedEvent.time }}:00 น.</p>
+                <p class="text-gray-900 font-medium">{{ getEventTimeRange(selectedEvent) }}</p>
               </div>
             </div>
             
@@ -217,7 +217,7 @@
 
       <!-- Participants List Modal -->
       <div v-if="showParticipantsModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 backdrop-blur-sm" @click.self="closeParticipantsModal">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full p-8 max-h-[85vh] overflow-hidden flex flex-col">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-6xl w-full p-8 max-h-[85vh] overflow-hidden flex flex-col">
           <div class="flex justify-between items-center mb-6">
             <h3 class="text-xl font-bold text-gray-900">
               รายชื่อผู้เข้าร่วม - {{ selectedEvent?.title }}
@@ -233,11 +233,11 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               <div>
                 <strong class="text-gray-700">วันที่:</strong> 
-                <span class="text-gray-900">{{ getEventDateText(selectedEvent) }}</span>
+                <span class="text-gray-900">{{ getDisplayDateText(selectedEvent, selectedDate) }}</span>
               </div>
               <div>
                 <strong class="text-gray-700">เวลา:</strong> 
-                <span class="text-gray-900">{{ selectedEvent.isAllDay ? 'ทั้งวัน' : selectedEvent.time + ':00 น.' }}</span>
+                <span class="text-gray-900">{{ getEventTimeRange(selectedEvent) }}</span>
               </div>
               <div>
                 <strong class="text-gray-700">จำนวนผู้เข้าร่วม:</strong> 
@@ -251,10 +251,10 @@
             <table class="w-full bg-white">
               <thead class="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10">
                 <tr>
-                  <th class="border-b border-gray-200 px-6 py-4 text-left text-sm font-bold text-gray-700 w-20">ลำดับ</th>
+                  <th class="border-b border-gray-200 px-6 py-4 text-left text-sm font-bold text-gray-700 w-16">ลำดับ</th>
                   <th class="border-b border-gray-200 px-6 py-4 text-left text-sm font-bold text-gray-700">ชื่อ-นามสกุล</th>
-                  <th class="border-b border-gray-200 px-6 py-4 text-left text-sm font-bold text-gray-700 w-40">เบอร์โทรศัพท์</th>
-                  <th class="border-b border-gray-200 px-6 py-4 text-left text-sm font-bold text-gray-700 w-48">เลขบัตรประชาชน</th>
+                  <th class="border-b border-gray-200 px-6 py-4 text-left text-sm font-bold text-gray-700 w-32">เบอร์โทรศัพท์</th>
+                  <th class="border-b border-gray-200 px-6 py-4 text-left text-sm font-bold text-gray-700 w-40">เลขบัตรประชาชน</th>
                 </tr>
               </thead>
               <tbody>
@@ -308,7 +308,7 @@
                 <div>
                   <div class="font-semibold" :class="getEventTitleClass(event)">{{ event.title }}</div>
                   <div class="text-sm" :class="getEventTimeClass(event)">
-                    {{ event.isAllDay ? 'ทั้งวัน' : event.time + ':00 น.' }}
+                    {{ getEventTimeRange(event) }}
                   </div>
                 </div>
               </div>
@@ -359,7 +359,7 @@ const censorIdCard = (idCard) => {
   return `${first}*******${last}`;
 };
 
-// Training Events Data
+// Training Events Data with time ranges
 const events = ref([
   {
     id: 1,
@@ -367,7 +367,9 @@ const events = ref([
     startDate: "2025-08-20",
     endDate: "2025-08-20",
     isMultiDay: false,
-    isAllDay: true,
+    isAllDay: false,
+    startTime: "08:00",
+    endTime: "17:00",
     time: 8,
     participantCount: 5,
     capacity: 30,
@@ -385,8 +387,10 @@ const events = ref([
     startDate: "2025-08-22",
     endDate: "2025-08-24",
     isMultiDay: true,
-    isAllDay: true,
-    time: 8,
+    isAllDay: false,
+    startTime: "09:00",
+    endTime: "16:00",
+    time: 9,
     participantCount: 5,
     capacity: 30,
     participants: [
@@ -403,8 +407,10 @@ const events = ref([
     startDate: "2025-08-27",
     endDate: "2025-08-30", 
     isMultiDay: true,
-    isAllDay: true,
-    time: 8,
+    isAllDay: false,
+    startTime: "09:00",
+    endTime: "13:30",
+    time: 9,
     participantCount: 5,
     capacity: 30,
     participants: [
@@ -421,7 +427,9 @@ const events = ref([
     startDate: "2025-09-12",
     endDate: "2025-09-18", 
     isMultiDay: true,
-    isAllDay: true,
+    isAllDay: false,
+    startTime: "08:30",
+    endTime: "16:30",
     time: 8,
     participantCount: 5,
     capacity: 30,
@@ -434,6 +442,19 @@ const events = ref([
     ]
   },
 ]);
+
+// Time Range Function
+const getEventTimeRange = (event) => {
+  if (!event) return '';
+  if (event.isAllDay) return 'ทั้งวัน';
+  
+  if (event.startTime && event.endTime) {
+    return `${event.startTime} - ${event.endTime} น.`;
+  }
+  
+  // Fallback for old format
+  return event.time ? `${event.time}:00 น.` : 'ไม่ระบุเวลา';
+};
 
 // Computed Properties
 const currentMonthYear = computed(() => {
@@ -714,29 +735,8 @@ const closeParticipantsModal = () => {
   showModal.value = true;
 };
 
-// Thai character utilities for better PDF handling
-const isThaiCharacter = (char) => {
-  const code = char.charCodeAt(0);
-  return (code >= 0x0E00 && code <= 0x0E7F);
-};
-
-const containsThaiText = (text) => {
-  return text.split('').some(char => isThaiCharacter(char));
-};
-
-const sanitizeThaiText = (text) => {
-  if (!text) return '';
-  
-  // Remove problematic zero-width characters that might interfere with PDF rendering
-  return text
-    .replace(/[\u200B-\u200D\uFEFF]/g, '') // Remove zero-width spaces
-    .replace(/[\u0E33]/g, '\u0E32\u0E4D') // Normalize sara am
-    .trim();
-};
-
-// Enhanced error handling and user feedback
+// Enhanced notification system
 const showNotification = (message, type = 'info') => {
-  // Create a simple toast notification
   const toast = document.createElement('div');
   toast.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg max-w-sm transition-all duration-300 transform translate-x-full`;
   
@@ -752,12 +752,10 @@ const showNotification = (message, type = 'info') => {
   
   document.body.appendChild(toast);
   
-  // Animate in
   setTimeout(() => {
     toast.style.transform = 'translateX(0)';
   }, 100);
   
-  // Auto remove after 4 seconds
   setTimeout(() => {
     toast.style.transform = 'translateX(100%)';
     setTimeout(() => {
@@ -768,7 +766,7 @@ const showNotification = (message, type = 'info') => {
   }, 4000);
 };
 
-// Load jsPDF library with enhanced Thai font support
+// Load external libraries
 const loadJsPDF = () => {
   return new Promise((resolve, reject) => {
     if (window.jsPDF) {
@@ -776,7 +774,6 @@ const loadJsPDF = () => {
       return;
     }
     
-    // Load jsPDF latest version for better Unicode support
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
     
@@ -796,7 +793,6 @@ const loadJsPDF = () => {
   });
 };
 
-// Alternative PDF generation using HTML2Canvas + jsPDF for better Thai support
 const loadHTML2Canvas = () => {
   return new Promise((resolve, reject) => {
     if (window.html2canvas) {
@@ -822,7 +818,7 @@ const loadHTML2Canvas = () => {
   });
 };
 
-// HTML-to-PDF generation with proper Thai character support
+// Enhanced PDF generation with signature column
 const generateHTMLToPDF = async (event) => {
   console.log('Generating PDF using HTML-to-Canvas method for Thai support');
   showNotification('กำลังสร้าง PDF ด้วยเทคนิคพิเศษ...', 'info');
@@ -830,54 +826,55 @@ const generateHTMLToPDF = async (event) => {
   try {
     await Promise.all([loadJsPDF(), loadHTML2Canvas()]);
     
-    // Create a temporary HTML container with proper Thai fonts
     const container = document.createElement('div');
-    // Set container styles using string concatenation to avoid Vue template conflicts
     let cssText = '';
     cssText += 'position: absolute;';
     cssText += 'top: -9999px;';
     cssText += 'left: -9999px;';
-    cssText += 'width: 210mm;';  // A4 width
+    cssText += 'width: 210mm;';
     cssText += 'height: auto;';
     cssText += 'background: white;';
     cssText += 'font-family: "Sarabun", "Kanit", "Prompt", "Mitr", sans-serif;';
-    cssText += 'font-size: 16px;';  // Set to requested size
+    cssText += 'font-size: 16px;';
     cssText += 'line-height: 1.5;';
     cssText += 'color: #000;';
-    cssText += 'padding: 20mm;';  // A4 standard margins
+    cssText += 'padding: 20mm;';
     cssText += 'box-sizing: border-box;';
     container.style.cssText = cssText;
     
-    // Generate HTML content using string concatenation to avoid Vue template conflicts
     let htmlContent = '';
     htmlContent += '<div style="text-align: center; margin-bottom: 25px;">';
     htmlContent += '<h1 style="font-size: 18px; margin: 0 0 8px 0; font-weight: bold;">รายชื่อผู้เข้าร่วมอบรม - รายละเอียด</h1>';
     htmlContent += '<h2 style="font-size: 16px; margin: 0 0 15px 0; color: #333;">' + event.title + '</h2>';
     htmlContent += '</div>';
     htmlContent += '<div style="margin-bottom: 15px; font-size: 16px;">';
-    htmlContent += '<p><strong>วันที่อบรม:</strong> ' + getEventDateText(event) + '</p>';
+    htmlContent += '<p><strong>วันที่อบรม:</strong> ' + getDisplayDateText(event, selectedDate.value) + '</p>';
+    htmlContent += '<p><strong>เวลาอบรม:</strong> ' + getEventTimeRange(event) + '</p>';
     htmlContent += '<p><strong>จำนวนผู้เข้าอบรม:</strong> ' + event.participantCount + '/' + event.capacity + ' คน</p>';
     htmlContent += '</div>';
-    htmlContent += '<table style="width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 16px;">';
+    htmlContent += '<table style="width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px;">';
     htmlContent += '<thead>';
     htmlContent += '<tr style="background-color: #f5f5f5;">';
-    htmlContent += '<th style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; font-size: 16px;">ลำดับ</th>';
-    htmlContent += '<th style="border: 1px solid #ddd; padding: 10px; text-align: left; font-weight: bold; font-size: 16px;">ชื่อ-นามสกุล</th>';
-    htmlContent += '<th style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; font-size: 16px;">เบอร์โทรศัพท์</th>';
-    htmlContent += '<th style="border: 1px solid #ddd; padding: 10px; text-align: center; font-weight: bold; font-size: 16px;">เลขบัตรประชาชน</th>';
+    htmlContent += '<th style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold; width: 8%;">ลำดับ</th>';
+    htmlContent += '<th style="border: 1px solid #ddd; padding: 8px; text-align: left; font-weight: bold; width: 30%;">ชื่อ-นามสกุล</th>';
+    htmlContent += '<th style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold; width: 18%;">เบอร์โทรศัพท์</th>';
+    htmlContent += '<th style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold; width: 20%;">เลขบัตรประชาชน</th>';
+    htmlContent += '<th style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold; width: 24%;">ลายเซ็นผู้เข้าร่วม</th>';
     htmlContent += '</tr>';
     htmlContent += '</thead>';
     htmlContent += '<tbody>';
     
-    // Add participant rows
     if (event.participants) {
       event.participants.forEach((participant, index) => {
         const bgColor = index % 2 === 0 ? 'background-color: #fafafa;' : '';
         htmlContent += '<tr style="' + bgColor + '">';
-        htmlContent += '<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 16px;">' + (index + 1) + '</td>';
-        htmlContent += '<td style="border: 1px solid #ddd; padding: 8px; font-size: 16px;">' + participant.name + '</td>';
-        htmlContent += '<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-family: monospace; font-size: 16px;">' + censorPhone(participant.phone) + '</td>';
-        htmlContent += '<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-family: monospace; font-size: 16px;">' + censorIdCard(participant.idCard) + '</td>';
+        htmlContent += '<td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' + (index + 1) + '</td>';
+        htmlContent += '<td style="border: 1px solid #ddd; padding: 8px;">' + participant.name + '</td>';
+        htmlContent += '<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-family: monospace;">' + censorPhone(participant.phone) + '</td>';
+        htmlContent += '<td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-family: monospace;">' + censorIdCard(participant.idCard) + '</td>';
+        htmlContent += '<td style="border: 1px solid #ddd; padding: 20px 8px; text-align: center; height: 50px;">';
+        htmlContent += '<div style="border-bottom: 1px dotted #999; height: 30px; width: 100%;"></div>';
+        htmlContent += '</td>';
         htmlContent += '</tr>';
       });
     }
@@ -885,14 +882,17 @@ const generateHTMLToPDF = async (event) => {
     htmlContent += '</tbody>';
     htmlContent += '</table>';
     htmlContent += '<div style="margin-top: 20px; font-size: 12px; color: #666; text-align: center;">';
-    htmlContent += '<p>สร้างรายงานเมื่อ: ' + new Date().toLocaleDateString('th-TH', {
+    const currentDateTime = new Date();
+    const thaiDateTime = currentDateTime.toLocaleDateString('th-TH', {
       year: 'numeric',
       month: '2-digit', 
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
+      second: '2-digit',
       timeZone: 'Asia/Bangkok'
-    }) + '</p>';
+    });
+    htmlContent += '<p>สร้างรายงานเมื่อ: ' + thaiDateTime + '</p>';
     htmlContent += '<p style="margin-top: 8px;">** ข้อมูลนี้มีข้อมูลส่วนบุคคล กรุณาเก็บรักษาอย่างปลอดภัย **</p>';
     htmlContent += '<p>** ห้ามเผยแพร่หรือนำไปใช้โดยไม่ได้รับอนุญาต **</p>';
     htmlContent += '</div>';
@@ -900,45 +900,38 @@ const generateHTMLToPDF = async (event) => {
     container.innerHTML = htmlContent;
     document.body.appendChild(container);
     
-    // Wait for fonts to load
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Convert HTML to canvas with high quality
     const canvas = await window.html2canvas(container, {
-      scale: 2, // High resolution
+      scale: 2,
       useCORS: true,
       allowTaint: false,
       backgroundColor: '#ffffff',
-      width: 794,  // A4 width in pixels at 96 DPI
+      width: 794,
       height: container.scrollHeight,
       logging: false
     });
     
-    // Remove temporary container
     document.body.removeChild(container);
     
-    // Create PDF from canvas with proper A4 dimensions
     const { jsPDF } = window;
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
-      format: 'a4'  // Standard A4 format
+      format: 'a4'
     });
     
-    // Calculate proper scaling for A4
-    const imgWidth = 210;  // A4 width in mm
-    const pageHeight = 297;  // A4 height in mm
+    const imgWidth = 210;
+    const pageHeight = 297;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     let heightLeft = imgHeight;
     
     let position = 0;
     
-    // Add canvas as image to PDF with proper A4 scaling
     const imgData = canvas.toDataURL('image/png');
     pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
     heightLeft -= pageHeight;
     
-    // Add new pages if content exceeds one page
     while (heightLeft >= 0) {
       position = heightLeft - imgHeight;
       pdf.addPage();
@@ -946,7 +939,6 @@ const generateHTMLToPDF = async (event) => {
       heightLeft -= pageHeight;
     }
     
-    // Generate safe filename
     const dateStr = new Date().toISOString().split('T')[0];
     let safeTitle = event.title.replace(/[\\/:*?"<>|]/g, '_').substring(0, 30);
     if (!/[a-zA-Z0-9]/.test(safeTitle)) {
@@ -958,7 +950,6 @@ const generateHTMLToPDF = async (event) => {
     try {
       pdf.save(fileName);
     } catch (e) {
-      // Fallback filename
       pdf.save(`Training_Participants_${safeTitle}_${dateStr}.pdf`);
     }
     
@@ -970,15 +961,12 @@ const generateHTMLToPDF = async (event) => {
   }
 };
 
-// Enhanced PDF generation using browser's print functionality
 const generatePrintToPDF = async (event) => {
   console.log('Generating PDF using browser print functionality');
   showNotification('กำลังเปิดหน้าต่างพิมพ์...', 'info');
   
-  // Create a new window for printing
   const printWindow = window.open('', '_blank', 'width=800,height=600');
   
-  // Create HTML content using string concatenation to avoid Vue template conflicts
   let htmlContent = '';
   htmlContent += '<!DOCTYPE html>';
   htmlContent += '<html>';
@@ -989,17 +977,19 @@ const generatePrintToPDF = async (event) => {
   htmlContent += '<style>';
   htmlContent += '@page { size: A4; margin: 20mm; }';
   htmlContent += '* { margin: 0; padding: 0; box-sizing: border-box; }';
-  htmlContent += 'body { font-family: \'Sarabun\', \'Kanit\', \'Prompt\', sans-serif; font-size: 16px; line-height: 1.5; color: #000; background: white; }';
+  htmlContent += 'body { font-family: \'Sarabun\', \'Kanit\', \'Prompt\', sans-serif; font-size: 14px; line-height: 1.5; color: #000; background: white; }';
   htmlContent += '.header { text-align: center; margin-bottom: 25px; }';
   htmlContent += '.header h1 { font-size: 18px; margin-bottom: 8px; font-weight: bold; }';
   htmlContent += '.header h2 { font-size: 16px; color: #333; margin-bottom: 15px; }';
-  htmlContent += '.info { margin-bottom: 15px; font-size: 16px; }';
+  htmlContent += '.info { margin-bottom: 15px; font-size: 14px; }';
   htmlContent += '.info p { margin-bottom: 5px; }';
-  htmlContent += 'table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 16px; }';
+  htmlContent += 'table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }';
   htmlContent += 'th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }';
-  htmlContent += 'th { background-color: #f5f5f5; font-weight: bold; text-align: center; font-size: 16px; }';
+  htmlContent += 'th { background-color: #f5f5f5; font-weight: bold; text-align: center; }';
   htmlContent += 'tr:nth-child(even) { background-color: #fafafa; }';
   htmlContent += '.text-center { text-align: center; }';
+  htmlContent += '.signature-cell { padding: 20px 8px !important; height: 50px; }';
+  htmlContent += '.signature-line { border-bottom: 1px dotted #999; height: 30px; width: 100%; }';
   htmlContent += '.footer { margin-top: 20px; font-size: 12px; color: #666; text-align: center; }';
   htmlContent += '.footer p { margin-bottom: 5px; }';
   htmlContent += '@media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }';
@@ -1011,28 +1001,32 @@ const generatePrintToPDF = async (event) => {
   htmlContent += '<h2>' + event.title + '</h2>';
   htmlContent += '</div>';
   htmlContent += '<div class="info">';
-  htmlContent += '<p><strong>วันที่อบรม:</strong> ' + getEventDateText(event) + '</p>';
+  htmlContent += '<p><strong>วันที่อบรม:</strong> ' + getDisplayDateText(event, selectedDate.value) + '</p>';
+  htmlContent += '<p><strong>เวลาอบรม:</strong> ' + getEventTimeRange(event) + '</p>';
   htmlContent += '<p><strong>จำนวนผู้เข้าอบรม:</strong> ' + event.participantCount + '/' + event.capacity + ' คน</p>';
   htmlContent += '</div>';
   htmlContent += '<table>';
   htmlContent += '<thead>';
   htmlContent += '<tr>';
-  htmlContent += '<th style="width: 10%;">ลำดับ</th>';
-  htmlContent += '<th style="width: 40%;">ชื่อ-นามสกุล</th>';
-  htmlContent += '<th style="width: 25%;">เบอร์โทรศัพท์</th>';
-  htmlContent += '<th style="width: 25%;">เลขบัตรประชาชน</th>';
+  htmlContent += '<th style="width: 8%;">ลำดับ</th>';
+  htmlContent += '<th style="width: 30%;">ชื่อ-นามสกุล</th>';
+  htmlContent += '<th style="width: 18%;">เบอร์โทรศัพท์</th>';
+  htmlContent += '<th style="width: 20%;">เลขบัตรประชาชน</th>';
+  htmlContent += '<th style="width: 24%;">ลายเซ็นผู้เข้าร่วม</th>';
   htmlContent += '</tr>';
   htmlContent += '</thead>';
   htmlContent += '<tbody>';
   
-  // Add participant rows
   if (event.participants) {
     event.participants.forEach((participant, index) => {
       htmlContent += '<tr>';
       htmlContent += '<td class="text-center">' + (index + 1) + '</td>';
-      htmlContent += '<td style="font-size: 16px;">' + participant.name + '</td>';
-      htmlContent += '<td class="text-center" style="font-family: monospace; font-size: 16px;">' + censorPhone(participant.phone) + '</td>';
-      htmlContent += '<td class="text-center" style="font-family: monospace; font-size: 16px;">' + censorIdCard(participant.idCard) + '</td>';
+      htmlContent += '<td>' + participant.name + '</td>';
+      htmlContent += '<td class="text-center" style="font-family: monospace;">' + censorPhone(participant.phone) + '</td>';
+      htmlContent += '<td class="text-center" style="font-family: monospace;">' + censorIdCard(participant.idCard) + '</td>';
+      htmlContent += '<td class="signature-cell text-center">';
+      htmlContent += '<div class="signature-line"></div>';
+      htmlContent += '</td>';
       htmlContent += '</tr>';
     });
   }
@@ -1040,14 +1034,17 @@ const generatePrintToPDF = async (event) => {
   htmlContent += '</tbody>';
   htmlContent += '</table>';
   htmlContent += '<div class="footer">';
-  htmlContent += '<p>สร้างรายงานเมื่อ: ' + new Date().toLocaleDateString('th-TH', {
+  const currentDateTime = new Date();
+  const thaiDateTime = currentDateTime.toLocaleDateString('th-TH', {
     year: 'numeric',
     month: '2-digit', 
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
+    second: '2-digit',
     timeZone: 'Asia/Bangkok'
-  }) + '</p>';
+  });
+  htmlContent += '<p>สร้างรายงานเมื่อ: ' + thaiDateTime + '</p>';
   htmlContent += '<p>** ข้อมูลนี้มีข้อมูลส่วนบุคคล กรุณาเก็บรักษาอย่างปลอดภัย **</p>';
   htmlContent += '<p>** ห้ามเผยแพร่หรือนำไปใช้โดยไม่ได้รับอนุญาต **</p>';
   htmlContent += '</div>';
@@ -1062,7 +1059,6 @@ const generatePrintToPDF = async (event) => {
   htmlContent += '};';
   htmlContent += '<' + '/script>';
   htmlContent += '</body>';
-  htmlContent += '</html>';
   
   printWindow.document.write(htmlContent);
   printWindow.document.close();
@@ -1082,7 +1078,6 @@ const generateFallbackPDF = async (event) => {
     format: 'a4'
   });
   
-  // Use only ASCII characters for maximum compatibility
   pdf.setFont('helvetica', 'normal');
   
   // Header in English
@@ -1090,7 +1085,6 @@ const generateFallbackPDF = async (event) => {
   pdf.text('Training Participant List - Details', 105, 20, { align: 'center' });
   
   pdf.setFontSize(14);
-  // Convert Thai title to transliteration or use placeholder
   const safeTitle = event.title.replace(/[^\x00-\x7F]/g, '[Thai Text]');
   pdf.text(safeTitle || 'Training Session', 105, 30, { align: 'center' });
   
@@ -1098,7 +1092,10 @@ const generateFallbackPDF = async (event) => {
   pdf.setFontSize(11);
   let yPos = 45;
   
-  pdf.text(`Training Date: ${getEventDateText(event)}`, 20, yPos);
+  pdf.text(`Training Date: ${getDisplayDateText(event, selectedDate.value)}`, 20, yPos);
+  yPos += 8;
+  
+  pdf.text(`Training Time: ${getEventTimeRange(event)}`, 20, yPos);
   yPos += 8;
   
   pdf.text(`Participants: ${event.participantCount}/${event.capacity} people`, 20, yPos);
@@ -1109,41 +1106,45 @@ const generateFallbackPDF = async (event) => {
   pdf.setFillColor(240, 240, 240);
   pdf.rect(15, headerY - 5, 180, 10, 'F');
   
-  pdf.setFontSize(10);
+  pdf.setFontSize(9);
   pdf.text('No.', 25, headerY, { align: 'center' });
-  pdf.text('Name', 60, headerY, { align: 'center' });
-  pdf.text('Phone', 120, headerY, { align: 'center' });
-  pdf.text('ID Card', 160, headerY, { align: 'center' });
+  pdf.text('Name', 55, headerY, { align: 'center' });
+  pdf.text('Phone', 95, headerY, { align: 'center' });
+  pdf.text('ID Card', 130, headerY, { align: 'center' });
+  pdf.text('Signature', 170, headerY, { align: 'center' });
   
   yPos = headerY + 15;
   
   // Participant data
-  pdf.setFontSize(9);
+  pdf.setFontSize(8);
   event.participants?.forEach((participant, index) => {
-    if (yPos > 260) {
+    if (yPos > 250) {
       pdf.addPage();
       yPos = 25;
     }
     
     pdf.text((index + 1).toString(), 25, yPos, { align: 'center' });
     
-    // Convert Thai names to safe ASCII or use placeholder
     const safeName = participant.name.replace(/[^\x00-\x7F]/g, '[Thai Name]') || `Participant ${index + 1}`;
-    pdf.text(safeName.substring(0, 25), 40, yPos);
+    pdf.text(safeName.substring(0, 20), 35, yPos);
     
-    pdf.text(censorPhone(participant.phone) || '-', 120, yPos, { align: 'center' });
-    pdf.text(censorIdCard(participant.idCard) || '-', 160, yPos, { align: 'center' });
+    pdf.text(censorPhone(participant.phone) || '-', 95, yPos, { align: 'center' });
+    pdf.text(censorIdCard(participant.idCard) || '-', 130, yPos, { align: 'center' });
     
-    yPos += 8;
+    // Draw signature line
+    pdf.line(160, yPos + 2, 185, yPos + 2);
+    
+    yPos += 12;
   });
   
   // Footer
   const pageHeight = pdf.internal.pageSize.height;
   pdf.setFontSize(8);
-  pdf.text(`Generated: ${new Date().toISOString().split('T')[0]}`, 20, pageHeight - 30);
+  const currentDateTime = new Date();
+  const dateTimeStr = `${currentDateTime.getFullYear()}-${String(currentDateTime.getMonth() + 1).padStart(2, '0')}-${String(currentDateTime.getDate()).padStart(2, '0')} ${String(currentDateTime.getHours()).padStart(2, '0')}:${String(currentDateTime.getMinutes()).padStart(2, '0')}:${String(currentDateTime.getSeconds()).padStart(2, '0')}`;
+  pdf.text(`Generated: ${dateTimeStr}`, 20, pageHeight - 30);
   pdf.text('** CONFIDENTIAL: Personal Data - Handle with Care **', 105, pageHeight - 20, { align: 'center' });
   
-  // Save with safe filename
   const dateStr = new Date().toISOString().split('T')[0];
   const fileName = `Training_Participants_Report_${dateStr}.pdf`;
   pdf.save(fileName);
@@ -1154,52 +1155,47 @@ const generateFallbackPDF = async (event) => {
 const downloadParticipantListPDF = async () => {
   if (!selectedEvent.value) return;
   
-  // Set loading state only temporarily to show feedback
   pdfLoading.value = true;
   const event = selectedEvent.value;
   
-  // Method 1: Try HTML-to-Canvas approach (BEST for Thai characters)
   try {
     console.log('Attempting Method 1: HTML-to-Canvas PDF generation');
     await generateHTMLToPDF(event);
     
     showNotification('ดาวน์โหลด PDF สำเร็จ! (คุณภาพสูง)', 'success');
-    pdfLoading.value = false;  // Reset immediately after success
+    pdfLoading.value = false;
     return;
   } catch (error) {
     console.warn('Method 1 (HTML-to-Canvas) failed:', error);
   }
   
-  // Method 2: Try Browser Print-to-PDF
   try {
     console.log('Attempting Method 2: Browser Print-to-PDF');
     await generatePrintToPDF(event);
     
     showNotification('เปิดหน้าต่างพิมพ์สำเร็จ! กรุณาเลือก "Save as PDF"', 'info');
-    pdfLoading.value = false;  // Reset immediately after success
+    pdfLoading.value = false;
     return;
   } catch (error) {
     console.warn('Method 2 (Print-to-PDF) failed:', error);
   }
   
-  // Method 3: ASCII Fallback (Last resort)
   try {
     console.log('Attempting Method 3: ASCII Fallback');
     await generateFallbackPDF(event);
     
     showNotification('ดาวน์โหลด PDF สำเร็จ (แบบสำรอง)', 'warning');
-    pdfLoading.value = false;  // Reset immediately after success
+    pdfLoading.value = false;
     return;
     
   } catch (fallbackError) {
     console.error('All PDF generation methods failed:', fallbackError);
   }
   
-  // If all methods fail
   const errorMessage = 'ไม่สามารถสร้าง PDF ได้ กรุณาลองใช้บราวเซอร์อื่นหรือกดปุ่ม "Print" แล้วเลือก "Save as PDF"';
   showNotification(errorMessage, 'error');
   
-  pdfLoading.value = false;  // Always reset loading state
+  pdfLoading.value = false;
 };
 
 // Date formatting function
@@ -1211,11 +1207,9 @@ const getEventDateText = (event) => {
 
 // Display date text based on clicked date or event date
 const getDisplayDateText = (event, clickedDate) => {
-  // If a specific date was clicked and the event spans multiple days, show that specific date
   if (clickedDate && event.isMultiDay) {
     return formatThaiDate(clickedDate);
   }
-  // Otherwise, show the full event date range or single date
   return getEventDateText(event);
 };
 

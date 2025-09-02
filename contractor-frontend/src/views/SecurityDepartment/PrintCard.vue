@@ -12,7 +12,8 @@
           <div class="flex space-x-3">
             <button
               @click="printCards"
-              class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2"
+              :disabled="!issueDate || !expiryDate"
+              class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2"
             >
               <PrinterIcon class="w-5 h-5" />
               พิมพ์บัตร
@@ -24,6 +25,22 @@
               <ArrowLeftIcon class="w-5 h-5" />
               กลับ
             </button>
+          </div>
+        </div>
+        
+        <!-- Warning message for missing dates in preview -->
+        <div v-if="!issueDate || !expiryDate" class="bg-red-50 border-l-4 border-red-500 p-4 mt-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-red-700">
+                <strong>เตือน:</strong> กรุณากรอกวันที่ออกบัตรและวันหมดอายุก่อนพิมพ์บัตร กลับไปหน้าก่อนหน้าเพื่อกรอกข้อมูลให้ครบถ้วน
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -226,26 +243,34 @@
             <div>
               <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
                 <CalendarIcon class="w-4 h-4 mr-2" />
+                <span class="text-red-500">*</span>
                 วันที่ออกบัตร
               </label>
               <input
                 type="date"
                 v-model="issueDate"
+                required
                 class="w-full px-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                :class="{ 'border-red-500 bg-red-50': !issueDate }"
               />
+              <p v-if="!issueDate" class="text-red-500 text-xs mt-1">กรุณากรอกวันที่ออกบัตร</p>
             </div>
 
             <!-- Expiry Date -->
             <div>
               <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
                 <CalendarIcon class="w-4 h-4 mr-2" />
+                <span class="text-red-500">*</span>
                 วันหมดอายุ
               </label>
               <input
                 type="date"
                 v-model="expiryDate"
+                required
                 class="w-full px-3 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                :class="{ 'border-red-500 bg-red-50': !expiryDate }"
               />
+              <p v-if="!expiryDate" class="text-red-500 text-xs mt-1">กรุณากรอกวันหมดอายุ</p>
             </div>
 
             <!-- Statistics -->
@@ -271,12 +296,19 @@
               
               <button
                 @click="handlePrint"
-                :disabled="selectedContractors.length === 0"
+                :disabled="selectedContractors.length === 0 || !issueDate || !expiryDate"
                 class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-md hover:shadow-lg"
               >
                 <PrinterIcon class="w-4 h-4" />
                 พิมพ์บัตร ({{ selectedContractors.length }})
               </button>
+              
+              <!-- ข้อความแจ้งเตือน -->
+              <div v-if="selectedContractors.length > 0 && (!issueDate || !expiryDate)" class="text-center">
+                <p class="text-red-500 text-sm font-medium">
+                  กรุณากรอกวันที่ออกบัตรและวันหมดอายุก่อนพิมพ์
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -363,7 +395,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import QRCode from 'qrcode'
 import { 
   Search as SearchIcon,
@@ -510,8 +542,22 @@ const initializeExpiryDate = () => {
   expiryDate.value = expiry.toISOString().split('T')[0]
 }
 
+// อัปเดตวันหมดอายุเมื่อวันที่ออกบัตรเปลี่ยน
+const updateExpiryDateWhenIssueChanges = () => {
+  if (issueDate.value) {
+    initializeExpiryDate()
+  }
+}
+
 // เรียกใช้ตอนเริ่มต้น
 initializeExpiryDate()
+
+// ติดตามการเปลี่ยนแปลงวันที่ออกบัตร
+watch(issueDate, (newIssueDate) => {
+  if (newIssueDate) {
+    updateExpiryDateWhenIssueChanges()
+  }
+})
 
 // นับจำนวนพนักงานตามหลักสูตร
 const getTrainingCount = (trainingType) => {
@@ -636,6 +682,26 @@ const handlePrint = async () => {
     return
   }
   
+  // ตรวจสอบว่าได้กรอกวันที่ออกบัตรและวันหมดอายุแล้วหรือไม่
+  if (!issueDate.value) {
+    alert('กรุณากรอกวันที่ออกบัตร')
+    return
+  }
+  
+  if (!expiryDate.value) {
+    alert('กรุณากรอกวันหมดอายุ')
+    return
+  }
+  
+  // ตรวจสอบว่าวันหมดอายุต้องมาหลังวันที่ออกบัตร
+  const issueDateTime = new Date(issueDate.value)
+  const expiryDateTime = new Date(expiryDate.value)
+  
+  if (expiryDateTime <= issueDateTime) {
+    alert('วันหมดอายุต้องมาหลังวันที่ออกบัตร')
+    return
+  }
+  
   // สร้าง QR Codes ก่อนแสดงตัวอย่าง
   await generateQRCodes()
   showPreview.value = true
@@ -648,6 +714,26 @@ const goBackToTraining = () => {
 
 // ฟังก์ชันพิมพ์บัตร
 const printCards = () => {
+  // ตรวจสอบว่าได้กรอกวันที่ออกบัตรและวันหมดอายุแล้วหรือไม่
+  if (!issueDate.value) {
+    alert('กรุณากรอกวันที่ออกบัตรก่อนพิมพ์')
+    return
+  }
+  
+  if (!expiryDate.value) {
+    alert('กรุณากรอกวันหมดอายุก่อนพิมพ์')
+    return
+  }
+  
+  // ตรวจสอบว่าวันหมดอายุต้องมาหลังวันที่ออกบัตร
+  const issueDateTime = new Date(issueDate.value)
+  const expiryDateTime = new Date(expiryDate.value)
+  
+  if (expiryDateTime <= issueDateTime) {
+    alert('วันหมดอายุต้องมาหลังวันที่ออกบัตร')
+    return
+  }
+  
   const printArea = document.querySelector('.print-area')
   if (!printArea) return
   

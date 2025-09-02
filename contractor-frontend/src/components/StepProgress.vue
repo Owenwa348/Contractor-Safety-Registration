@@ -148,7 +148,19 @@ export default {
   name: 'StepProgress',
   computed: {
     shouldHide() {
-      const hidePaths = ['/approval-officer', '/approval-safety' , '/print-card' , '/create-training', '/setting' ,'/list-employees' , '/download-training-list']
+      const hidePaths = [
+        '/approval-officer', 
+        '/approval-safety' , 
+        '/print-card' , 
+        '/create-training', 
+        '/setting' ,
+        '/list-employees' , 
+        '/download-training-list',
+        '/caretaker-user-management',
+        '/caretaker-system-config',
+        '/caretaker-database-management',
+        '/caretaker-permissions'
+      ]
       return hidePaths.includes(this.$route.path)
     },
     steps() {

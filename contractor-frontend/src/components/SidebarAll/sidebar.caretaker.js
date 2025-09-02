@@ -1,0 +1,249 @@
+// sidebar.caretaker.js
+
+/**
+ * การกำหนดค่าคงที่สำหรับเมนูผู้ดูแลระบบ Caretaker
+ * ไฟล์นี้จัดการเมนูและไอคอนของผู้ดูแลระบบระดับสูงสุด
+ */
+
+// ไอคอนสำหรับเมนูผู้ดูแลระบบ Caretaker
+export const CARETAKER_ICONS = {
+  // ไอคอนจัดการผู้ใช้งาน
+  UsersIcon: {
+    template: `
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+    `
+  },
+
+  // ไอคอนการตั้งค่าระบบ
+  CogIcon: {
+    template: `
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    `
+  },
+
+  // ไอคอนจัดการฐานข้อมูล
+  DatabaseIcon: {
+    template: `
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+      </svg>
+    `
+  },
+
+  // ไอคอนจัดการสิทธิ์
+  ShieldIcon: {
+    template: `
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+    `
+  },
+
+  // ไอคอนรายงานระบบ
+  ChartBarIcon: {
+    template: `
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+    `
+  },
+
+  // ไอคอนการแจ้งเตือน
+  BellIcon: {
+    template: `
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M15 17h5l-3.405-3.405A3.5 3.5 0 0115 9.5V7a6 6 0 00-6-6c-3.314 0-6 2.686-6 6v2.5a3.5 3.5 0 01-1.595 3.095L5 17h5m5 0v1a3 3 0 11-6 0v-1m6 0H9" />
+      </svg>
+    `
+  },
+
+  // ไอคอนออกจากระบบ
+  LogoutIcon: {
+    template: `
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+      </svg>
+    `
+  }
+};
+
+/**
+ * รายการเมนูผู้ดูแลระบบ Caretaker
+ * สำหรับผู้ดูแลระบบที่มีสิทธิ์สูงสุด
+ */
+export const CARETAKER_MENU_ITEMS = [
+  {
+    path: '/caretaker-user-management',
+    name: 'จัดการผู้ใช้งาน',
+    icon: 'UsersIcon',
+    description: 'จัดการบัญชีผู้ใช้งาน บทบาท และสิทธิ์การเข้าถึง',
+    category: 'user-management',
+    priority: 1
+  },
+  {
+    path: '/caretaker-permissions',
+    name: 'จัดการสิทธิ์การเข้าถึง',
+    icon: 'ShieldIcon',
+    description: 'กำหนดสิทธิ์และระดับการเข้าถึงข้อมูล',
+    category: 'security',
+    priority: 2
+  },
+  {
+    path: '/caretaker-system-config',
+    name: 'การตั้งค่าระบบ',
+    icon: 'CogIcon',
+    description: 'กำหนดค่าระบบและพารามิเตอร์ต่างๆ',
+    category: 'system',
+    priority: 3
+  },
+  {
+    path: '/caretaker-database-management',
+    name: 'จัดการฐานข้อมูล',
+    icon: 'DatabaseIcon',
+    description: 'จัดการฐานข้อมูล การสำรองข้อมูล และการบำรุงรักษา',
+    category: 'database',
+    priority: 4
+  }
+];
+
+/**
+ * เมนูรายงานและสถิติสำหรับ Caretaker
+ */
+export const CARETAKER_REPORT_ITEMS = [
+  {
+    path: '/caretaker-system-reports',
+    name: 'รายงานระบบ',
+    icon: 'ChartBarIcon',
+    description: 'รายงานการใช้งานระบบและสถิติต่างๆ',
+    category: 'reports'
+  },
+  {
+    path: '/caretaker-audit-logs',
+    name: 'บันทึกการตรวจสอบ',
+    icon: 'BellIcon',
+    description: 'ประวัติการใช้งานและการเปลี่ยนแปลงในระบบ',
+    category: 'audit'
+  }
+];
+
+/**
+ * ฟังก์ชันช่วยกรองเมนู Caretaker ตามหมวดหมู่
+ * @param {string} category - หมวดหมู่ ('user-management', 'security', 'system', 'database', 'reports', 'audit')
+ * @returns {Array} รายการเมนูในหมวดหมู่ที่ระบุ
+ */
+export const getCaretakerMenuByCategory = (category) => {
+  const allMenus = [...CARETAKER_MENU_ITEMS, ...CARETAKER_REPORT_ITEMS];
+  return allMenus.filter(item => item.category === category);
+};
+
+/**
+ * ฟังก์ชันช่วยเรียงเมนู Caretaker ตามลำดับความสำคัญ
+ * @returns {Array} รายการเมนูที่เรียงแล้ว
+ */
+export const getSortedCaretakerMenu = () => {
+  return CARETAKER_MENU_ITEMS.sort((a, b) => {
+    return (a.priority || 999) - (b.priority || 999);
+  });
+};
+
+/**
+ * ฟังก์ชันตรวจสอบสิทธิ์เข้าถึงเมนู
+ * @param {string} userRole - บทบาทของผู้ใช้
+ * @param {string} menuPath - path ของเมนู
+ * @returns {boolean} true หากมีสิทธิ์เข้าถึง
+ */
+export const canAccessCaretakerMenu = (userRole, menuPath) => {
+  // เฉพาะ caretaker เท่านั้นที่เข้าถึงเมนูนี้ได้
+  if (userRole !== 'caretaker') {
+    return false;
+  }
+  
+  // ตรวจสอบว่าเป็นเมนู caretaker หรือไม่
+  const allMenus = [...CARETAKER_MENU_ITEMS, ...CARETAKER_REPORT_ITEMS];
+  return allMenus.some(menu => menu.path === menuPath);
+};
+
+/**
+ * ฟังก์ชันสำหรับจัดกลุ่มเมนูตามหมวดหมู่
+ * @returns {Object} เมนูที่จัดกลุ่มแล้ว
+ */
+export const getGroupedCaretakerMenus = () => {
+  const groups = {
+    core: {
+      title: 'การจัดการหลัก',
+      items: getCaretakerMenuByCategory('user-management')
+        .concat(getCaretakerMenuByCategory('security'))
+    },
+    system: {
+      title: 'ระบบและฐานข้อมูล',
+      items: getCaretakerMenuByCategory('system')
+        .concat(getCaretakerMenuByCategory('database'))
+    },
+    monitoring: {
+      title: 'การตรวจสอบและรายงาน',
+      items: getCaretakerMenuByCategory('reports')
+        .concat(getCaretakerMenuByCategory('audit'))
+    }
+  };
+  
+  return groups;
+};
+
+/**
+ * คอนฟิกพิเศษสำหรับ Caretaker Dashboard
+ */
+export const CARETAKER_DASHBOARD_CONFIG = {
+  defaultRoute: '/caretaker-user-management',
+  features: {
+    showSystemHealth: true,
+    showUserStatistics: true,
+    showSecurityAlerts: true,
+    showDatabaseStatus: true,
+    autoRefreshInterval: 30000 // 30 วินาที
+  },
+  permissions: {
+    canModifyAllUsers: true,
+    canAccessSystemLogs: true,
+    canBackupDatabase: true,
+    canModifySystemSettings: true,
+    canViewAuditTrails: true
+  }
+};
+
+/**
+ * ฟังก์ชันสำหรับสร้างเมนูแบบ responsive
+ * @param {boolean} isMobile - true ถ้าเป็นมือถือ
+ * @returns {Array} รายการเมนูที่เหมาะสมกับอุปกรณ์
+ */
+export const getCaretakerMenuForDevice = (isMobile = false) => {
+  const baseMenus = getSortedCaretakerMenu();
+  
+  if (isMobile) {
+    // สำหรับมือถือ แสดงเฉพาะเมนูสำคัญ
+    return baseMenus.filter(menu => menu.priority <= 2);
+  }
+  
+  return baseMenus;
+};
+
+/**
+ * ฟังก์ชันตรวจสอบสถานะเมนู
+ * @param {string} currentPath - path ปัจจุบัน
+ * @param {string} menuPath - path ของเมนู
+ * @returns {boolean} true ถ้าเป็นเมนูที่ active
+ */
+export const isCaretakerMenuActive = (currentPath, menuPath) => {
+  return currentPath === menuPath || currentPath.startsWith(menuPath + '/');
+};

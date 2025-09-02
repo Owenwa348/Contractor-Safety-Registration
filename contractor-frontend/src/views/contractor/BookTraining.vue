@@ -62,6 +62,20 @@
         </button>
         
         <button
+          @click="selectOnlyApproved"
+          class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+          เลือกเฉพาะคนอนุมัติ
+        </button>
+        
+        <button
+          @click="selectOnlyNotPassed"
+          class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+        >
+          เลือกเฉพาะคนไม่ผ่าน
+        </button>
+        
+        <button
           @click="clearSelection"
           class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 disabled:bg-gray-300"
           :disabled="selectedCount === 0"
@@ -75,52 +89,127 @@
         <p class="text-blue-800">เลือกแล้ว {{ selectedCount }} คน สำหรับอบรม "{{ selectedEvent.title }}"</p>
       </div>
 
-      <!-- ตารางรายชื่อ -->
-      <div class="border rounded">
-        <table class="w-full">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="p-2 text-center w-12">
-                <input 
-                  type="checkbox" 
-                  @change="selectAll" 
-                  :checked="allSelected"
-                >
-              </th>
-              <th class="p-2 text-center w-16">ลำดับ</th>
-              <th class="p-2 text-left">ชื่อ</th>
-              <th class="p-2 text-center">เบอร์</th>
-              <th class="p-2 text-center">บัตรประชาชน</th>
-              <th class="p-2 text-center">วันที่ทำข้อสอบ</th>
-              <th class="p-2 text-center w-20">จัดการ</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(person, index) in filteredPeople" :key="person.id" class="border-t">
-              <td class="p-2 text-center">
-                <input type="checkbox" v-model="person.selected" />
-              </td>
-              <td class="p-2 text-center">{{ index + 1 }}</td>
-              <td class="p-2">{{ person.name }}</td>
-              <td class="p-2 text-center">{{ person.phone || '-' }}</td>
-              <td class="p-2 text-center">{{ person.idcard }}</td>
-              <td class="p-2 text-center text-sm">
-                <span v-if="person.examDate" class="bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                  {{ person.examDate }}
-                </span>
-                <span v-else class="text-gray-400">-</span>
-              </td>
-              <td class="p-2 text-center">
-                <button 
-                  class="bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600" 
-                  @click="removePerson(person.id)"
-                >
-                  ลบ
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- สถิติแยกตามสถานะ -->
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+          <h3 class="text-green-800 font-semibold mb-2">อนุมัติแล้ว</h3>
+          <p class="text-green-700">จำนวน {{ approvedPeople.length }} คน</p>
+        </div>
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+          <h3 class="text-red-800 font-semibold mb-2">ไม่ผ่าน</h3>
+          <p class="text-red-700">จำนวน {{ notPassedPeople.length }} คน</p>
+        </div>
+      </div>
+
+      <!-- ตารางคนที่อนุมัติแล้ว -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-green-800 mb-3 flex items-center">
+          <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+          รายชื่อผู้ได้รับอนุมัติ ({{ approvedPeople.length }} คน)
+        </h3>
+        <div class="border rounded-lg overflow-hidden">
+          <table class="w-full">
+            <thead class="bg-green-100">
+              <tr>
+                <th class="p-2 text-center w-12">
+                  <input 
+                    type="checkbox" 
+                    @change="selectAllApproved" 
+                    :checked="allApprovedSelected"
+                  >
+                </th>
+                <th class="p-2 text-center w-16">ลำดับ</th>
+                <th class="p-2 text-left">ชื่อ</th>
+                <th class="p-2 text-center">เบอร์</th>
+                <th class="p-2 text-center">บัตรประชาชน</th>
+                <th class="p-2 text-center w-20">จัดการ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(person, index) in approvedPeople" :key="person.id" class="border-t hover:bg-green-50">
+                <td class="p-2 text-center">
+                  <input type="checkbox" v-model="person.selected" />
+                </td>
+                <td class="p-2 text-center">{{ index + 1 }}</td>
+                <td class="p-2">{{ person.name }}</td>
+                <td class="p-2 text-center">{{ person.phone || '-' }}</td>
+                <td class="p-2 text-center">{{ person.idcard }}</td>
+                <td class="p-2 text-center">
+                  <button 
+                    class="bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600" 
+                    @click="removePerson(person.id)"
+                  >
+                    ลบ
+                  </button>
+                </td>
+              </tr>
+              <tr v-if="approvedPeople.length === 0">
+                <td colspan="6" class="p-4 text-center text-gray-500">
+                  ไม่มีรายชื่อผู้ได้รับอนุมัติ
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ตารางคนที่ไม่ผ่าน -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-red-800 mb-3 flex items-center">
+          <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+          รายชื่อผู้ไม่ผ่านการอนุมัติ ({{ notPassedPeople.length }} คน)
+        </h3>
+        <div class="border rounded-lg overflow-hidden">
+          <table class="w-full">
+            <thead class="bg-red-100">
+              <tr>
+                <th class="p-2 text-center w-12">
+                  <input 
+                    type="checkbox" 
+                    @change="selectAllNotPassed" 
+                    :checked="allNotPassedSelected"
+                  >
+                </th>
+                <th class="p-2 text-center w-16">ลำดับ</th>
+                <th class="p-2 text-left">ชื่อ</th>
+                <th class="p-2 text-center">เบอร์</th>
+                <th class="p-2 text-center">บัตรประชาชน</th>
+                <th class="p-2 text-center">สอบไม่ผ่านอบรมอะไร</th>
+                <th class="p-2 text-center w-20">จัดการ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(person, index) in notPassedPeople" :key="person.id" class="border-t hover:bg-red-50">
+                <td class="p-2 text-center">
+                  <input type="checkbox" v-model="person.selected" />
+                </td>
+                <td class="p-2 text-center">{{ index + 1 }}</td>
+                <td class="p-2">{{ person.name }}</td>
+                <td class="p-2 text-center">{{ person.phone || '-' }}</td>
+                <td class="p-2 text-center">{{ person.idcard }}</td>
+                <td class="p-2 text-center text-sm">
+                  <span v-if="person.failedTraining" class="bg-red-100 text-red-800 px-2 py-1 rounded-full">
+                    {{ person.failedTraining }}
+                  </span>
+                  <span v-else class="text-gray-400">-</span>
+                </td>
+                <td class="p-2 text-center">
+                  <button 
+                    class="bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600" 
+                    @click="removePerson(person.id)"
+                  >
+                    ลบ
+                  </button>
+                </td>
+              </tr>
+              <tr v-if="notPassedPeople.length === 0">
+                <td colspan="7" class="p-4 text-center text-gray-500">
+                  ไม่มีรายชื่อผู้ไม่ผ่านการอนุมัติ
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -218,12 +307,12 @@ const events = ref([
 
 // ข้อมูลบุคคล
 const people = ref([
-  { id: 1, name: 'ธันวา ชัยรัตนานนท์', phone: '0874569215', idcard: '11********66', selected: false, examDate: null },
-  { id: 2, name: 'ภาคิน รินนาน', phone: '0874569216', idcard: '01********12', selected: false, examDate: null },
-  { id: 3, name: 'กรรณ วรรณ', phone: '0874569217', idcard: '85********58', selected: false, examDate: null },
-  { id: 4, name: 'กรรณา ไอมั่น', phone: '0617153737', idcard: '33********38', selected: false, examDate: null },
-  { id: 5, name: 'สมชาย ใจดี', phone: '0812345678', idcard: '12********89', selected: false, examDate: null },
-  { id: 6, name: 'วิชัย มั่นคง', phone: '0823456789', idcard: '34********01', selected: false, examDate: null }
+  { id: 1, name: 'ธันวา ชัยรัตนานนท์', phone: '0874569215', idcard: '11********66', selected: false, examDate: null, status: 'approved' },
+  { id: 2, name: 'ภาคิน รินนาน', phone: '0874569216', idcard: '01********12', selected: false, examDate: null, status: 'approved' },
+  { id: 3, name: 'กรรณ วรรณ', phone: '0874569217', idcard: '85********58', selected: false, examDate: null, status: 'not_passed', failedTraining: 'อบรมความปลอดภัย' },
+  { id: 4, name: 'กรรณา ไอมั่น', phone: '0617153737', idcard: '33********38', selected: false, examDate: null, status: 'approved' },
+  { id: 5, name: 'สมชาย ใจดี', phone: '0812345678', idcard: '12********89', selected: false, examDate: null, status: 'not_passed', failedTraining: 'อบรมการใช้เครื่องมือ' },
+  { id: 6, name: 'วิชัย มั่นคง', phone: '0823456789', idcard: '34********01', selected: false, examDate: null, status: 'approved' }
 ])
 
 const selectedEventId = ref('')
@@ -363,12 +452,28 @@ const filteredPeople = computed(() => {
   )
 })
 
+const approvedPeople = computed(() => {
+  return filteredPeople.value.filter(p => p.status === 'approved')
+})
+
+const notPassedPeople = computed(() => {
+  return filteredPeople.value.filter(p => p.status === 'not_passed')
+})
+
 const selectedCount = computed(() => {
   return people.value.filter(p => p.selected).length
 })
 
 const allSelected = computed(() => {
   return filteredPeople.value.length > 0 && filteredPeople.value.every(p => p.selected)
+})
+
+const allApprovedSelected = computed(() => {
+  return approvedPeople.value.length > 0 && approvedPeople.value.every(p => p.selected)
+})
+
+const allNotPassedSelected = computed(() => {
+  return notPassedPeople.value.length > 0 && notPassedPeople.value.every(p => p.selected)
 })
 
 const availableSlots = computed(() => {
@@ -504,9 +609,35 @@ const selectAll = (event) => {
   })
 }
 
+const selectAllApproved = (event) => {
+  const checked = event.target.checked
+  approvedPeople.value.forEach(person => {
+    person.selected = checked
+  })
+}
+
+const selectAllNotPassed = (event) => {
+  const checked = event.target.checked
+  notPassedPeople.value.forEach(person => {
+    person.selected = checked
+  })
+}
+
 const selectAllPeople = () => {
   people.value.forEach(person => {
     person.selected = true
+  })
+}
+
+const selectOnlyApproved = () => {
+  people.value.forEach(person => {
+    person.selected = person.status === 'approved'
+  })
+}
+
+const selectOnlyNotPassed = () => {
+  people.value.forEach(person => {
+    person.selected = person.status === 'not_passed'
   })
 }
 

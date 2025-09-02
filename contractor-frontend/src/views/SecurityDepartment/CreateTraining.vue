@@ -129,7 +129,7 @@
                 <h4 class="font-bold text-green-800">ข้อมูลการอบรม</h4>
               </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">หัวข้อการอบรม <span class="text-red-500">*</span></label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">หัวข้อการอบรม</label>
               <select v-model="eventForm.type" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 <option value="">เลือกหัวข้อการอบรม</option>
                 <option v-for="type in trainingTypes" :key="type" :value="type">{{ type }}</option>
@@ -146,11 +146,11 @@
             <!-- Date Range Selection -->
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">วันที่เริ่มต้น <span class="text-red-500">*</span></label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">วันที่เริ่มต้น</label>
                 <input v-model="eventForm.startDate" type="date" required :min="minDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" @change="validateDateRange" />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">วันที่สิ้นสุด <span class="text-red-500">*</span></label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">วันที่สิ้นสุด</label>
                 <input v-model="eventForm.endDate" type="date" required :min="eventForm.startDate || minDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" @change="validateDateRange" />
               </div>
             </div>
@@ -303,14 +303,14 @@
             <!-- Time Range Selection -->
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">เวลาเริ่มต้น <span class="text-red-500">*</span></label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">เวลาเริ่มต้น</label>
                 <select v-model.number="eventForm.startTime" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" @change="validateTimeRange">
                   <option value="">เลือกเวลาเริ่มต้น</option>
                   <option v-for="hour in allTimeSlots" :key="`start-${hour}`" :value="hour">{{ formatTimeDisplay(hour) }}</option>
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">เวลาสิ้นสุด <span class="text-red-500">*</span></label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">เวลาสิ้นสุด</label>
                 <select v-model.number="eventForm.endTime" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                   <option value="">เลือกเวลาสิ้นสุด</option>
                   <option v-for="hour in availableEndTimes" :key="`end-${hour}`" :value="hour">{{ formatTimeDisplay(hour) }}</option>
@@ -318,22 +318,23 @@
               </div>
             </div>
             </div>
-            
+
             <!-- Training Details Section -->
             <div class="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg p-4">
               <div class="flex items-center gap-2 mb-3">
                 <h4 class="font-bold text-orange-800">รายละเอียดการอบรม</h4>
               </div>
               
-
-
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">ผู้สอน/ผู้ตรวจ <span class="text-red-500">*</span></label>
-              <input v-model.trim="eventForm.examiner" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="ชื่อผู้สอน" maxlength="50" />
+              <label class="block text-sm font-medium text-gray-700 mb-1">ผู้สอน</label>
+              <select v-model="eventForm.examiner" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">เลือกผู้สอน</option>
+                <option v-for="manager in managers" :key="manager" :value="manager">{{ manager }}</option>
+              </select>
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">ห้องอบรม <span class="text-red-500">*</span></label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">ห้องอบรม</label>
               <select v-model="eventForm.room" required @change="updateMaxParticipantsFromRoom" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 <option value="">เลือกห้อง</option>
                 <option v-for="room in rooms" :key="room.name" :value="room.name">{{ room.name }} ({{ room.capacity }} ที่นั่ง)</option>
@@ -341,11 +342,11 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">จำนวนผู้เข้าอบรมสูงสุด <span class="text-red-500">*</span></label>
-              <input v-model.number="eventForm.maxParticipants" type="number" min="1" :max="getMaxCapacityForSelectedRoom()" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="จำนวนสูงสุด" />
-              <p v-if="eventForm.room" class="text-xs text-gray-500 mt-1">ห้องนี้รองรับได้สูงสุด {{ getMaxCapacityForSelectedRoom() }} คน</p>
+              <label class="block text-sm font-medium text-gray-700 mb-1">จำนวนผู้เข้าอบรมสูงสุด</label>
+              <input v-model.number="eventForm.maxParticipants" type="number" readonly class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed" placeholder="เลือกห้องอบรมก่อน" />
+              <p v-if="eventForm.room" class="text-xs text-gray-500 mt-1">จำนวนนี้จะปรับตามความจุของห้องอบรมที่เลือก</p>
             </div>
-            </div>
+          </div>
 
             <!-- Enhanced Preview Section -->
             <div v-if="trainingPreview.length > 0" class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4">
@@ -567,6 +568,7 @@ const events = ref([
 const daysOfWeek = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
 const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
 const trainingTypes = ["อบรมพื้นฐานความปลอดภัย", "อบรมผู้ควบคุมงาน", "อบรมการใช้เครื่องมือ", "อบรมการใช้เครื่องจักร", "อบรมการประกอบอุปกรณ์", "อบรมการดับเพลิง"];
+const managers = ["นายสมชัย แสงโสม หัวหน้างานขนส่ง", "นายสุรพล กรมหนึ่ง หัวหน้างานปั้นจันยกของ", "นายประเสริฐ เริสบาระ หัวหน้างานจัดการ"];
 const rooms = [
   { name: "ห้อง A (30 ที่นั่ง)", capacity: 30 },
   { name: "ห้อง B (50 ที่นั่ง)", capacity: 50 },
@@ -720,7 +722,6 @@ const isFormValid = computed(() => {
          eventForm.value.examiner.trim() && 
          eventForm.value.room && 
          eventForm.value.maxParticipants > 0 &&
-         eventForm.value.maxParticipants <= getMaxCapacityForSelectedRoom() &&
          trainingPreview.value.length > 0;
 });
 
@@ -729,9 +730,6 @@ const hasFormErrors = computed(() => {
 });
 
 const formErrorMessage = computed(() => {
-  if (eventForm.value.maxParticipants > getMaxCapacityForSelectedRoom()) {
-    return 'จำนวนผู้เข้าอบรมเกินความจุของห้อง';
-  }
   if (eventForm.value.startDate && isPastDate(eventForm.value.startDate)) {
     return 'ไม่สามารถสร้างการอบรมในวันที่ผ่านมาแล้ว';
   }
@@ -1117,8 +1115,10 @@ const validateTimeRange = () => {
 
 const updateMaxParticipantsFromRoom = () => {
   const selectedRoom = rooms.find(room => room.name === eventForm.value.room);
-  if (selectedRoom && !eventForm.value.maxParticipants) {
+  if (selectedRoom) {
     eventForm.value.maxParticipants = selectedRoom.capacity;
+  } else {
+    eventForm.value.maxParticipants = null;
   }
 };
 
@@ -1135,11 +1135,6 @@ const saveEvent = () => {
 
   if (isPastDate(eventForm.value.startDate)) {
     alert('ไม่สามารถสร้างการอบรมในวันที่ผ่านมาแล้ว');
-    return;
-  }
-
-  if (eventForm.value.maxParticipants > getMaxCapacityForSelectedRoom()) {
-    alert(`ห้องนี้รองรับได้สูงสุด ${getMaxCapacityForSelectedRoom()} คน`);
     return;
   }
   
@@ -1323,7 +1318,7 @@ const clearSearch = () => {
 
 // Watchers for better UX
 watch(() => eventForm.value.room, (newRoom) => {
-  if (newRoom && !eventForm.value.maxParticipants) {
+  if (newRoom) {
     updateMaxParticipantsFromRoom();
   }
 });

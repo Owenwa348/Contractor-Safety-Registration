@@ -9,12 +9,6 @@
           <p class="text-gray-600">จัดการและดาวน์โหลดข้อมูลผู้ประสานงานคู่ธุรกิจ</p>
         </div>
         <div class="flex items-center space-x-4">
-          <button @click="showExportModal = true" class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-            ดาวน์โหลด
-          </button>
           <div class="text-right">
             <div class="text-2xl font-bold text-blue-600">{{ filteredTableData.length }}</div>
             <div class="text-sm text-gray-500">รายการทั้งหมด</div>
@@ -173,7 +167,15 @@
           </svg>
           รายชื่อทั้งหมด
         </h3>
-        <div class="text-sm text-blue-100">แสดง {{ paginatedData.length }} จาก {{ filteredTableData.length }} รายการ</div>
+        <div class="flex items-center space-x-3">
+          <div class="text-sm text-blue-100">แสดง {{ paginatedData.length }} จาก {{ filteredTableData.length }} รายการ</div>
+          <button @click="showDeletedModal = true" class="flex items-center px-3 py-1 bg-white bg-opacity-20 rounded-md hover:bg-opacity-30 transition-colors text-sm">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+            รายการที่ลบ ({{ deletedEmployees.length }})
+          </button>
+        </div>
       </div>
 
       <div class="overflow-x-auto">
@@ -354,70 +356,6 @@
       </div>
     </div>
 
-    <!-- Export Modal -->
-    <div v-if="showExportModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
-        <div class="flex items-center mb-4">
-          <svg class="h-6 w-6 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-          </svg>
-          <h3 class="text-lg font-medium text-gray-900">ดาวน์โหลดข้อมูل</h3>
-        </div>
-        <p class="text-sm text-gray-600 mb-4">เลือกรูปแบบไฟล์ที่ต้องการดาวน์โหลด ({{ filteredTableData.length }} รายการ)</p>
-        
-        <div class="space-y-3 mb-6">
-          <div class="flex items-center p-2 rounded hover:bg-gray-50 transition-colors">
-            <input id="excel" type="radio" value="excel" v-model="exportFormat" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
-            <label for="excel" class="ml-3 flex items-center cursor-pointer">
-              <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zM3.293 7.293A1 1 0 014 7h12a1 1 0 01.707.293l2 2a1 1 0 010 1.414l-2 2A1 1 0 0116 13H4a1 1 0 01-.707-.293l-2-2a1 1 0 010-1.414l2-2z" clip-rule="evenodd"/>
-              </svg>
-              <div>
-                <div class="text-sm font-medium text-gray-900">Excel (.xlsx)</div>
-                <div class="text-xs text-gray-500">เหมาะสำหรับการวิเคราะห์ข้อมูล</div>
-              </div>
-            </label>
-          </div>
-          
-          <div class="flex items-center p-2 rounded hover:bg-gray-50 transition-colors">
-            <input id="csv" type="radio" value="csv" v-model="exportFormat" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
-            <label for="csv" class="ml-3 flex items-center cursor-pointer">
-              <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zM3.293 7.293A1 1 0 014 7h12a1 1 0 01.707.293l2 2a1 1 0 010 1.414l-2 2A1 1 0 0116 13H4a1 1 0 01-.707-.293l-2-2a1 1 0 010-1.414l2-2z" clip-rule="evenodd"/>
-              </svg>
-              <div>
-                <div class="text-sm font-medium text-gray-900">CSV (.csv)</div>
-                <div class="text-xs text-gray-500">เหมาะสำหรับการนำเข้าข้อมูล</div>
-              </div>
-            </label>
-          </div>
-          
-          <div class="flex items-center p-2 rounded hover:bg-gray-50 transition-colors">
-            <input id="pdf" type="radio" value="pdf" v-model="exportFormat" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
-            <label for="pdf" class="ml-3 flex items-center cursor-pointer">
-              <svg class="w-5 h-5 text-red-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-              </svg>
-              <div>
-                <div class="text-sm font-medium text-gray-900">PDF (.pdf)</div>
-                <div class="text-xs text-gray-500">เหมาะสำหรับการพิมพ์และเก็บเอกสาร</div>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <div class="flex justify-end space-x-3">
-          <button @click="closeExportModal" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">ยกเลิก</button>
-          <button @click="handleExport" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-            ดาวน์โหลด
-          </button>
-        </div>
-      </div>
-    </div>
-
     <!-- Success/Error Messages -->
     <div v-if="showMessage" :class="[
         'fixed top-4 right-4 p-4 rounded-lg shadow-lg transition-all duration-300 z-50 flex items-center',
@@ -430,6 +368,303 @@
         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
       </svg>
       {{ message }}
+    </div>
+
+    <!-- Deleted Employees Modal -->
+    <div v-if="showDeletedModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-60">
+      <div class="bg-white rounded-lg max-w-6xl w-full mx-4 shadow-xl max-h-[90vh] overflow-hidden">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+          <div class="flex items-center">
+            <svg class="h-6 w-6 text-gray-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-900">รายการที่ลบแล้ว ({{ deletedEmployees.length }} รายการ)</h3>
+          </div>
+          <button @click="showDeletedModal = false" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="p-6">
+          <!-- Bulk Actions Toolbar -->
+          <div v-if="selectedDeletedItems.length > 0" class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="text-blue-800 font-medium">เลือกแล้ว {{ selectedDeletedItems.length }} รายการ</span>
+              </div>
+              <div class="flex space-x-3">
+                <button @click="bulkRestore" class="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                  </svg>
+                  กู้คืนข้อมูล
+                </button>
+                <button @click="bulkPermanentDelete" class="flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                  ลบข้อมูลถาวร
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="deletedEmployees.length === 0" class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+            </svg>
+            <p class="text-lg font-medium text-gray-900 mb-2">ไม่มีข้อมูลที่ลบแล้ว</p>
+            <p class="text-gray-500">รายการที่ถูกลบจะแสดงที่นี่</p>
+          </div>
+          
+          <div v-else class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <input 
+                      type="checkbox" 
+                      v-model="selectAllDeleted"
+                      @change="toggleSelectAllDeleted"
+                      class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                  </th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ลำดับ</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">รายชื่อ</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">เบอร์โทรศัพท์</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">องค์กร</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">วันที่ลบ</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ลบโดย</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr v-for="(employee, index) in deletedEmployees" :key="employee.id" class="hover:bg-gray-50">
+                  <td class="px-4 py-3 text-center">
+                    <input 
+                      type="checkbox" 
+                      :value="employee.id"
+                      v-model="selectedDeletedItems"
+                      class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                  </td>
+                  <td class="px-4 py-3 text-center text-sm font-medium text-gray-900">{{ index + 1 }}</td>
+                  
+                  <td class="px-4 py-3 text-sm text-gray-900">
+                    <div>
+                      <div class="font-medium text-gray-900">{{ employee.name }}</div>
+                      <div class="text-xs text-gray-500">ID: {{ employee.id }}</div>
+                    </div>
+                  </td>
+                  
+                  <td class="px-4 py-3 text-sm text-gray-900">{{ employee.phoneNumber }}</td>
+                  <td class="px-4 py-3 text-sm text-gray-900">{{ employee.organization }}</td>
+                  <td class="px-4 py-3 text-sm text-gray-500">{{ formatDate(employee.deletedAt) }}</td>
+                  <td class="px-4 py-3 text-sm text-gray-500">{{ employee.deletedBy }}</td>
+                  
+                  <td class="px-4 py-3 text-center">
+                    <div class="flex justify-center space-x-2">
+                      <button @click="restoreEmployee(employee)" class="text-green-600 hover:text-green-900 hover:bg-green-50 p-2 rounded-lg transition-colors" title="กู้คืน">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                        </svg>
+                      </button>
+                      <button @click="permanentDelete(employee)" class="text-red-600 hover:text-red-900 hover:bg-red-50 p-2 rounded-lg transition-colors" title="ลบถาวร">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="flex justify-end mt-6">
+            <button @click="showDeletedModal = false" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">ปิด</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Individual Restore Confirmation Modal -->
+    <div v-if="showIndividualRestoreModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-60">
+      <div class="bg-white rounded-lg max-w-lg w-full mx-4 shadow-xl z-70">
+        <div class="p-6">
+          <div class="flex items-center mb-4">
+            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+              <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+              </svg>
+            </div>
+          </div>
+          
+          <div class="text-center">
+            <h3 class="text-lg font-medium text-gray-900 mb-2">ยืนยันการกู้คืนข้อมูล</h3>
+            <p class="text-sm text-gray-600 mb-4">คุณต้องการกู้คืนข้อมูล <strong>{{ individualActionItem?.name }}</strong> หรือไม่?</p>
+            
+            <div class="bg-green-50 border border-green-200 rounded-md p-3 mb-6">
+              <p class="text-sm text-green-800 font-medium">ข้อมูลจะถูกย้ายกลับไปยังรายการหลักและสามารถใช้งานได้ตามปกติ</p>
+            </div>
+          </div>
+          
+          <div class="flex justify-center space-x-3">
+            <button @click="cancelIndividualAction" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">
+              ยกเลิก
+            </button>
+            <button @click="confirmIndividualRestore" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+              </svg>
+              กู้คืนข้อมูล
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Individual Permanent Delete Confirmation Modal -->
+    <div v-if="showIndividualDeleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-60">
+      <div class="bg-white rounded-lg max-w-lg w-full mx-4 shadow-xl z-70">
+        <div class="p-6">
+          <div class="flex items-center mb-4">
+            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+              <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.996-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+              </svg>
+            </div>
+          </div>
+          
+          <div class="text-center">
+            <h3 class="text-lg font-medium text-gray-900 mb-2">ยืนยันการลบข้อมูลถาวร</h3>
+            <p class="text-sm text-gray-600 mb-4">คุณต้องการลบข้อมูล <strong>{{ individualActionItem?.name }}</strong> อย่างถาวรหรือไม่?</p>
+            
+            <div class="bg-yellow-50 border border-yellow-200 rounded-md p-3 mb-6">
+              <div class="flex items-center">
+                <svg class="w-4 h-4 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.996-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+                <p class="text-sm text-yellow-800 font-medium">คำเตือน: การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex justify-center space-x-3">
+            <button @click="cancelIndividualAction" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">
+              ยกเลิก
+            </button>
+            <button @click="confirmIndividualDelete" class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+              ลบถาวร
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bulk Restore Confirmation Modal -->
+    <div v-if="showBulkRestoreModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-60">
+      <div class="bg-white rounded-lg max-w-lg w-full mx-4 shadow-xl z-70">
+        <div class="p-6">
+          <div class="flex items-center mb-4">
+            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+              <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+              </svg>
+            </div>
+          </div>
+          
+          <div class="text-center">
+            <h3 class="text-lg font-medium text-gray-900 mb-2">ยืนยันการกู้คืนข้อมูล</h3>
+            <p class="text-sm text-gray-600 mb-4">คุณต้องการกู้คืนข้อมูล <strong>{{ bulkActionItems.length }}</strong> รายการหรือไม่?</p>
+            
+            <div class="bg-green-50 border border-green-200 rounded-md p-3 mb-4 max-h-32 overflow-y-auto">
+              <h4 class="text-sm font-medium text-green-800 mb-2">รายการที่จะกู้คืน:</h4>
+              <ul class="text-sm text-green-700 space-y-1">
+                <li v-for="item in bulkActionItems" :key="item.id" class="flex justify-between">
+                  <span>{{ item.name }}</span>
+                  <span class="text-xs text-green-600">{{ item.organization }}</span>
+                </li>
+              </ul>
+            </div>
+            
+            <div class="bg-green-50 border border-green-200 rounded-md p-3 mb-6">
+              <p class="text-sm text-green-800 font-medium">ข้อมูลจะถูกย้ายกลับไปยังรายการหลักและสามารถใช้งานได้ตามปกติ</p>
+            </div>
+          </div>
+          
+          <div class="flex justify-center space-x-3">
+            <button @click="cancelBulkAction" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">
+              ยกเลิก
+            </button>
+            <button @click="confirmBulkRestore" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+              </svg>
+              กู้คืนข้อมูล
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bulk Permanent Delete Confirmation Modal -->
+    <div v-if="showBulkDeleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-60">
+      <div class="bg-white rounded-lg max-w-lg w-full mx-4 shadow-xl z-70">
+        <div class="p-6">
+          <div class="flex items-center mb-4">
+            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+              <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.996-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+              </svg>
+            </div>
+          </div>
+          
+          <div class="text-center">
+            <h3 class="text-lg font-medium text-gray-900 mb-2">ยืนยันการลบข้อมูลถาวร</h3>
+            <p class="text-sm text-gray-600 mb-4">คุณต้องการลบข้อมูล <strong>{{ bulkActionItems.length }}</strong> รายการอย่างถาวรหรือไม่?</p>
+            
+            <div class="bg-red-50 border border-red-200 rounded-md p-3 mb-4 max-h-32 overflow-y-auto">
+              <h4 class="text-sm font-medium text-red-800 mb-2">รายการที่จะลบถาวร:</h4>
+              <ul class="text-sm text-red-700 space-y-1">
+                <li v-for="item in bulkActionItems" :key="item.id" class="flex justify-between">
+                  <span>{{ item.name }}</span>
+                  <span class="text-xs text-red-600">{{ item.organization }}</span>
+                </li>
+              </ul>
+            </div>
+            
+            <div class="bg-yellow-50 border border-yellow-200 rounded-md p-3 mb-6">
+              <div class="flex items-center">
+                <svg class="w-4 h-4 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.996-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+                <p class="text-sm text-yellow-800 font-medium">คำเตือน: การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex justify-center space-x-3">
+            <button @click="cancelBulkAction" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">
+              ยกเลิก
+            </button>
+            <button @click="confirmBulkDelete" class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+              ลบถาวร
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -446,13 +681,30 @@ export default {
       },
       currentPage: 1,
       itemsPerPage: 25,
-      showExportModal: false,
       showDeleteModal: false,
+      showDeletedModal: false,
       itemToDelete: null,
-      exportFormat: 'excel',
       showMessage: false,
       message: '',
       messageType: 'success',
+      
+      // Deleted employees storage
+      deletedEmployees: [],
+      
+      // Checkbox selection for deleted employees
+      selectedDeletedItems: [],
+      selectAllDeleted: false,
+      
+      // Confirmation modals for individual operations
+      showIndividualRestoreModal: false,
+      showIndividualDeleteModal: false,
+      individualActionItem: null,
+      
+      // Confirmation modals for bulk operations
+      showBulkRestoreModal: false,
+      showBulkDeleteModal: false,
+      bulkActionType: '',
+      bulkActionItems: [],
       
       departments: ['รอการอนุมัติ', 'อนุมัติแล้ว', 'ไม่อนุมัติ', 'ผ่านการอบรม', 'หมดอายุ'],
       organizations: ['บริษัท ABC จำกัด', 'บริษัท XYZ จำกัด', 'บริษัท DEF จำกัด', 'มหาวิทยาลัย GHI', 'โรงพยาบาล JKL'],
@@ -573,8 +825,17 @@ export default {
       if (this.itemToDelete) {
         const index = this.tableData.findIndex(item => item.id === this.itemToDelete.id);
         if (index !== -1) {
+          // Move to deleted employees list with timestamp
+          const deletedItem = {
+            ...this.itemToDelete,
+            deletedAt: new Date().toISOString(),
+            deletedBy: 'Security Admin' // Could be dynamic based on current user
+          };
+          this.deletedEmployees.push(deletedItem);
+          
+          // Remove from main list
           this.tableData.splice(index, 1);
-          this.showNotification(`ลบข้อมูล ${this.itemToDelete.name} เรียบร้อยแล้ว`, 'success');
+          this.showNotification(`ลบข้อมูล ${this.itemToDelete.name} เรียบร้อยแล้ว (สามารถกู้คืนได้)`, 'success');
           
           // ปรับหน้าหากจำเป็น
           if (this.paginatedData.length === 0 && this.currentPage > 1) {
@@ -585,151 +846,115 @@ export default {
       this.cancelDelete();
     },
 
+    restoreEmployee(employee) {
+      this.individualActionItem = employee;
+      this.showIndividualRestoreModal = true;
+    },
+
+    confirmIndividualRestore() {
+      const employee = this.individualActionItem;
+      // Remove from deleted list
+      const deletedIndex = this.deletedEmployees.findIndex(item => item.id === employee.id);
+      if (deletedIndex !== -1) {
+        this.deletedEmployees.splice(deletedIndex, 1);
+        
+        // Restore to main list (remove deleted metadata)
+        const { deletedAt, deletedBy, ...restoredEmployee } = employee;
+        this.tableData.push(restoredEmployee);
+        
+        this.showNotification(`กู้คืนข้อมูล ${employee.name} เรียบร้อยแล้ว`, 'success');
+      }
+      this.showIndividualRestoreModal = false;
+      this.individualActionItem = null;
+    },
+
+    permanentDelete(employee) {
+      this.individualActionItem = employee;
+      this.showIndividualDeleteModal = true;
+    },
+
+    confirmIndividualDelete() {
+      const employee = this.individualActionItem;
+      const deletedIndex = this.deletedEmployees.findIndex(item => item.id === employee.id);
+      if (deletedIndex !== -1) {
+        this.deletedEmployees.splice(deletedIndex, 1);
+        this.showNotification(`ลบข้อมูล ${employee.name} อย่างถาวรเรียบร้อยแล้ว`, 'success');
+      }
+      this.showIndividualDeleteModal = false;
+      this.individualActionItem = null;
+    },
+
+    cancelIndividualAction() {
+      this.showIndividualRestoreModal = false;
+      this.showIndividualDeleteModal = false;
+      this.individualActionItem = null;
+    },
+
+    bulkRestore() {
+      this.bulkActionItems = this.deletedEmployees.filter(emp => this.selectedDeletedItems.includes(emp.id));
+      this.bulkActionType = 'restore';
+      this.showBulkRestoreModal = true;
+    },
+
+    bulkPermanentDelete() {
+      this.bulkActionItems = this.deletedEmployees.filter(emp => this.selectedDeletedItems.includes(emp.id));
+      this.bulkActionType = 'delete';
+      this.showBulkDeleteModal = true;
+    },
+
+    confirmBulkRestore() {
+      const restoredItems = [];
+      this.bulkActionItems.forEach(employee => {
+        const deletedIndex = this.deletedEmployees.findIndex(item => item.id === employee.id);
+        if (deletedIndex !== -1) {
+          this.deletedEmployees.splice(deletedIndex, 1);
+          const { deletedAt, deletedBy, ...restoredEmployee } = employee;
+          this.tableData.push(restoredEmployee);
+          restoredItems.push(employee.name);
+        }
+      });
+      
+      this.showNotification(`กู้คืนข้อมูล ${restoredItems.length} รายการเรียบร้อยแล้ว`, 'success');
+      this.selectedDeletedItems = [];
+      this.showBulkRestoreModal = false;
+      this.bulkActionItems = [];
+    },
+
+    confirmBulkDelete() {
+      const deletedItems = [];
+      this.bulkActionItems.forEach(employee => {
+        const deletedIndex = this.deletedEmployees.findIndex(item => item.id === employee.id);
+        if (deletedIndex !== -1) {
+          this.deletedEmployees.splice(deletedIndex, 1);
+          deletedItems.push(employee.name);
+        }
+      });
+      
+      this.showNotification(`ลบข้อมูล ${deletedItems.length} รายการอย่างถาวรเรียบร้อยแล้ว`, 'success');
+      this.selectedDeletedItems = [];
+      this.showBulkDeleteModal = false;
+      this.bulkActionItems = [];
+    },
+
+    cancelBulkAction() {
+      this.showBulkRestoreModal = false;
+      this.showBulkDeleteModal = false;
+      this.bulkActionType = '';
+      this.bulkActionItems = [];
+    },
+
+    toggleSelectAllDeleted() {
+      if (this.selectAllDeleted) {
+        this.selectedDeletedItems = this.deletedEmployees.map(emp => emp.id);
+      } else {
+        this.selectedDeletedItems = [];
+      }
+    },
+
     formatDate(dateString) {
       if (!dateString) return '-';
       const options = { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'Asia/Bangkok' };
       return new Date(dateString).toLocaleDateString('th-TH', options);
-    },
-
-    closeExportModal() {
-      this.showExportModal = false;
-    },
-
-    handleExport() {
-      try {
-        const data = this.filteredTableData;
-        const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-        
-        if (this.exportFormat === 'excel') {
-          this.exportToExcel(data, `รายชื่อผู้ลงทะเบียน_${timestamp}.xlsx`);
-        } else if (this.exportFormat === 'csv') {
-          this.exportToCSV(data, `รายชื่อผู้ลงทะเบียน_${timestamp}.csv`);
-        } else if (this.exportFormat === 'pdf') {
-          this.exportToPDF(data, `รายชื่อผู้ลงทะเบียน_${timestamp}.pdf`);
-        }
-        
-        this.showNotification(`ดาวน์โหลดไฟล์ ${this.exportFormat.toUpperCase()} เรียบร้อยแล้ว`, 'success');
-        this.closeExportModal();
-      } catch (error) {
-        console.error('Export error:', error);
-        this.showNotification('เกิดข้อผิดพลาดในการดาวน์โหลด', 'error');
-      }
-    },
-
-    exportToCSV(data, filename) {
-      const headers = ['ลำดับ', 'รายชื่อ', 'เบอร์โทรศัพท์', 'องค์กร', 'วันที่ลงทะเบียน', 'สถานะเอกสาร', 'วันที่อนุมัติ', 'หมายเหตุ'];
-      const csvContent = [
-        headers.join(','),
-        ...data.map((item, index) => [
-          index + 1,
-          `"${item.name}"`,
-          item.phoneNumber,
-          `"${item.organization}"`,
-          this.formatDate(item.registrationDate),
-          `"${item.status}"`,
-          this.formatDate(item.approvalDate) || '',
-          `"${item.rejectReason || ''}"`
-        ].join(','))
-      ].join('\n');
-      
-      const BOM = '\uFEFF';
-      const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = filename;
-      link.click();
-      URL.revokeObjectURL(link.href);
-    },
-
-    exportToExcel(data, filename) {
-      const headers = ['ลำดับ', 'รายชื่อ', 'เบอร์โทรศัพท์', 'องค์กร', 'วันที่ลงทะเบียน', 'สถานะเอกสาร', 'วันที่อนุมัติ', 'หมายเหตุ'];
-      let excelContent = '<table border="1">';
-      excelContent += '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
-      
-      data.forEach((item, index) => {
-        excelContent += '<tr>';
-        excelContent += `<td>${index + 1}</td>`;
-        excelContent += `<td>${item.name}</td>`;
-        excelContent += `<td>${item.phoneNumber}</td>`;
-        excelContent += `<td>${item.organization}</td>`;
-        excelContent += `<td>${this.formatDate(item.registrationDate)}</td>`;
-        excelContent += `<td>${item.status}</td>`;
-        excelContent += `<td>${this.formatDate(item.approvalDate) || ''}</td>`;
-        excelContent += `<td>${item.rejectReason || ''}</td>`;
-        excelContent += '</tr>';
-      });
-      
-      excelContent += '</table>';
-      
-      const blob = new Blob(['\ufeff', excelContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = filename;
-      link.click();
-      URL.revokeObjectURL(link.href);
-    },
-
-    exportToPDF(data, filename) {
-      let pdfContent = `
-        <html>
-        <head>
-          <meta charset="UTF-8">
-          <title>รายชื่อผู้ลงทะเบียน</title>
-          <style>
-            body { font-family: 'Sarabun', sans-serif; font-size: 12px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-            th { background-color: #f2f2f2; font-weight: bold; }
-            .header { text-align: center; margin-bottom: 20px; }
-            .status-approved { color: green; font-weight: bold; }
-            .status-pending { color: orange; font-weight: bold; }
-            .status-rejected { color: red; font-weight: bold; }
-            .status-trained { color: blue; font-weight: bold; }
-            .status-expired { color: gray; font-weight: bold; }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <h2>รายชื่อผู้ลงทะเบียนทั้งหมด</h2>
-            <p>จำนวน ${data.length} รายการ | วันที่พิมพ์: ${new Date().toLocaleDateString('th-TH')}</p>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>ลำดับ</th><th>รายชื่อ</th><th>เบอร์โทรศัพท์</th><th>องค์กร</th><th>วันที่ลงทะเบียน</th><th>สถานะเอกสาร</th><th>วันที่อนุมัติ</th><th>หมายเหตุ</th>
-              </tr>
-            </thead>
-            <tbody>`;
-      
-      data.forEach((item, index) => {
-        const statusClass = item.status === 'อนุมัติแล้ว' ? 'status-approved' : 
-                           item.status === 'รอการอนุมัติ' ? 'status-pending' : 
-                           item.status === 'ผ่านการอบรม' ? 'status-trained' :
-                           item.status === 'หมดอายุ' ? 'status-expired' : 'status-rejected';
-        
-        pdfContent += `
-          <tr>
-            <td>${index + 1}</td>
-            <td>${item.name}</td>
-            <td>${item.phoneNumber}</td>
-            <td>${item.organization}</td>
-            <td>${this.formatDate(item.registrationDate)}</td>
-            <td><span class="${statusClass}">${item.status}</span></td>
-            <td>${this.formatDate(item.approvalDate) || '-'}</td>
-            <td>${item.rejectReason || '-'}</td>
-          </tr>`;
-      });
-      
-      pdfContent += '</tbody></table></body></html>';
-      
-      const printWindow = window.open('', '_blank');
-      printWindow.document.write(pdfContent);
-      printWindow.document.close();
-      printWindow.focus();
-      setTimeout(() => {
-        printWindow.print();
-        printWindow.close();
-      }, 250);
     },
 
     showNotification(msg, type = 'success') {
@@ -743,6 +968,18 @@ export default {
   watch: {
     itemsPerPage() {
       this.currentPage = 1;
+    },
+    
+    selectedDeletedItems() {
+      // Update select all checkbox based on selected items
+      this.selectAllDeleted = this.selectedDeletedItems.length === this.deletedEmployees.length && this.deletedEmployees.length > 0;
+    },
+    
+    deletedEmployees() {
+      // Clear selected items if deleted list changes
+      this.selectedDeletedItems = this.selectedDeletedItems.filter(id => 
+        this.deletedEmployees.some(emp => emp.id === id)
+      );
     }
   },
 

@@ -142,31 +142,6 @@
       </ul>
     </section>
     
-    <!-- Quick Actions Section -->
-    <section class="pt-4 border-t border-gray-100">
-      <div class="grid grid-cols-2 gap-2">
-        <button 
-          @click="$emit('menu-click')"
-          class="flex flex-col items-center justify-center p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors text-blue-700"
-        >
-          <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
-          </svg>
-          <span class="text-xs font-medium">พนักงาน</span>
-        </button>
-        
-        <button 
-          @click="$emit('menu-click')"
-          class="flex flex-col items-center justify-center p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors text-green-700"
-        >
-          <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-          </svg>
-          <span class="text-xs font-medium">อบรม</span>
-        </button>
-      </div>
-    </section>
-    
   </nav>
 </template>
 
