@@ -8,8 +8,9 @@
 
     <!-- Training Selection -->
     <TrainingSelector 
-      v-model:selectedTraining="selectedTraining"
+      :selected-training="selectedTraining"
       :trainings="trainings"
+      @update:selected-training="selectedTraining = $event"
     />
 
     <!-- Training Details or Participants -->
@@ -27,9 +28,10 @@
         v-if="hasExamResults"
         :completed-participants="completedParticipants"
         :filtered-participants="filteredCompletedParticipants"
-        v-model:search-term="searchTerm"
+        :search-term="searchTerm"
         :passed-count="passedCount"
         :failed-count="failedCount"
+        @update:search-term="searchTerm = $event"
         @confirm-exam="handleConfirmExam"
       />
     </div>

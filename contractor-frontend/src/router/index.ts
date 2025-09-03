@@ -14,7 +14,7 @@ import ForgotPasswordOwnerAndSafety from '../views/Login/Owner and safety/Forgot
 import AddContractor from '../views/contractor/ManageTeam/AddContractor.vue'
 import ManageTeam from '../views/contractor/ManageTeam/ManageTeam.vue'
 import TrainingBooking from '../views/contractor/TrainingBooking.vue'
-import ListEmployees from '../views/SecurityDepartment/ListEmployees.vue'
+import ListEmployees from '../views/SecurityDepartment/ListEmployees/ListEmployees.vue'
 import TakeExam from '../views/contractor/TakeExam/TakeExam.vue'
 import PrintCard from '../views/SecurityDepartment/PrintCard.vue'
 import DownloadTrainingList from '../views/SecurityDepartment/DownloadTrainingList.vue'
@@ -23,7 +23,7 @@ import ApprovalOfficer from '../views/Manager/ApprovalOfficer.vue'
 import ApprovalSafety from '../views/SecurityDepartment/ApprovalSafety.vue'// เพิ่มการนำเข้า ApprovalSafety
 import CertificaAdd from '../views/contractor/CertificaAdd/CertificaAdd.vue' // เพิ่มการนำเข้า CertificaAdd
 import BookTraining from '../views/contractor/BookTraining.vue' // เพิ่มการนำเข้า BookTraining
-import CreateTraining from '../views/SecurityDepartment/CreateTraining.vue'
+import CreateTraining from '../views/SecurityDepartment/CreateTraining/CreateTraining.vue'
 import Setting from '../views/SecurityDepartment/SettingSecurityDepartment/Setting.vue' // เพิ่มการนำเข้า Settings
 
 // Caretaker imports

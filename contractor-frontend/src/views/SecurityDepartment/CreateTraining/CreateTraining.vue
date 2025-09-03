@@ -1,3 +1,4 @@
+<!-- CreateTraining.vue -->
 <template>
   <div class="bg-gray-50 min-h-screen">
     <div class="container mx-auto p-6 max-w-7xl">
