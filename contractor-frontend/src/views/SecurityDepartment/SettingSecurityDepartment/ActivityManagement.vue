@@ -61,6 +61,64 @@
       </div>
     </div>
 
+    <!-- Edit Activity Modal -->
+    <div v-if="showEditForm && editingActivity" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-lg shadow-lg max-w-md w-full">
+        <div class="bg-blue-600 p-4 rounded-t-lg">
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-medium text-white">
+              แก้ไขกิจกรรมอบรม
+            </h3>
+            <button 
+              @click="cancelEdit"
+              class="text-white hover:text-gray-200"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        <div class="p-4 space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อกิจกรรม</label>
+            <input 
+              type="text" 
+              v-model="editingActivity.name"
+              class="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
+              placeholder="ระบุชื่อกิจกรรม"
+            >
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">รายละเอียด</label>
+            <textarea 
+              v-model="editingActivity.description"
+              class="w-full px-3 py-2 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
+              rows="4"
+              placeholder="ระบุรายละเอียดกิจกรรม"
+            ></textarea>
+          </div>
+        </div>
+        
+        <div class="flex justify-end gap-2 p-4 border-t">
+          <button 
+            @click="cancelEdit"
+            class="px-4 py-2 text-gray-600 bg-gray-200 rounded hover:bg-gray-300"
+          >
+            ยกเลิก
+          </button>
+          <button 
+            @click="updateActivity"
+            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            บันทึก
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Activities List -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div 
@@ -72,15 +130,26 @@
           <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
             {{ activity.name }}
           </h3>
-          <button 
-            v-if="hasPermission('create_activities')"
-            @click="deleteActivity(activity.id)"
-            class="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-all duration-200"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-            </svg>
-          </button>
+          <div v-if="hasPermission('create_activities')" class="flex gap-2">
+            <button 
+              @click="editActivity(activity)"
+              class="text-blue-400 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-lg transition-all duration-200"
+              title="แก้ไขกิจกรรม"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+            </button>
+            <button 
+              @click="deleteActivity(activity.id)"
+              class="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-all duration-200"
+              title="ลบกิจกรรม"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            </button>
+          </div>
         </div>
         
         <div v-if="activity.description" class="mt-4">
@@ -136,7 +205,7 @@ const props = defineProps({
 })
 
 // Emits
-const emit = defineEmits(['activity-added', 'activity-deleted'])
+const emit = defineEmits(['activity-added', 'activity-deleted', 'activity-updated'])
 
 // Training activities (simplified data)
 const activities = ref([
@@ -191,6 +260,8 @@ const newActivity = ref({
 })
 
 const showActivityForm = ref(false)
+const showEditForm = ref(false)
+const editingActivity = ref(null)
 
 // Methods
 const hasPermission = (permission) => {
@@ -225,7 +296,11 @@ const addActivity = () => {
 }
 
 const deleteActivity = (activityId) => {
-  if (confirm('คุณต้องการลบกิจกรรมนี้หรือไม่?')) {
+  // Find the activity to get its name for confirmation
+  const activity = activities.value.find(activity => activity.id === activityId)
+  const activityName = activity ? activity.name : 'กิจกรรมนี้'
+  
+  if (confirm(`คุณต้องการลบกิจกรรม "${activityName}" หรือไม่?\n\nการลบนี้ไม่สามารถยกเลิกได้`)) {
     const activityIndex = activities.value.findIndex(activity => activity.id === activityId)
     if (activityIndex > -1) {
       const deletedActivity = activities.value.splice(activityIndex, 1)[0]
@@ -233,6 +308,42 @@ const deleteActivity = (activityId) => {
       alert('ลบกิจกรรมเรียบร้อยแล้ว')
     }
   }
+}
+
+const editActivity = (activity) => {
+  editingActivity.value = { ...activity }
+  showEditForm.value = true
+}
+
+const updateActivity = () => {
+  if (!editingActivity.value.name.trim()) {
+    alert('กรุณากรอกชื่อกิจกรรม')
+    return
+  }
+
+  const activityIndex = activities.value.findIndex(activity => activity.id === editingActivity.value.id)
+  if (activityIndex > -1) {
+    // Update the activity
+    activities.value[activityIndex] = {
+      ...editingActivity.value,
+      name: editingActivity.value.name.trim(),
+      description: editingActivity.value.description.trim() || ''
+    }
+    
+    // Emit event to parent
+    emit('activity-updated', activities.value[activityIndex])
+    
+    // Close edit form
+    showEditForm.value = false
+    editingActivity.value = null
+    
+    alert('บันทึกการแก้ไขเรียบร้อยแล้ว')
+  }
+}
+
+const cancelEdit = () => {
+  showEditForm.value = false
+  editingActivity.value = null
 }
 
 // Expose methods and data to parent

@@ -144,7 +144,7 @@ export const MENU_ITEMS = [
     userRole: 'contractor' // เห็นเฉพาะผู้รับเหมา
   },
   {
-    name: 'ดาวโหลดรายชื่อที่มาอบรม',
+    name: 'รายชื่อที่มาอบรม',
     path: '/download-training-list',
     icon: 'DocumentTextIcon',
     userRole: 'safety' // เห็นเฉพาะเจ้าหน้าที่ความปลอดภัย
