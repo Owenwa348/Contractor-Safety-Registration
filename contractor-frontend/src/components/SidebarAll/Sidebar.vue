@@ -1,4 +1,4 @@
-<!-- MobileSidebar.vue -->
+<!-- Sidebar.vue -->
 <template>
   <nav class="p-4 space-y-6">
     
@@ -151,7 +151,7 @@ import { PARTNER_MENU_ITEMS, PARTNER_ICONS } from '../SidebarAll/sidebar.partner
 import { VERTE_MENU_ITEMS, VERTE_ICONS } from '../SidebarAll/sidebar.verte.js'
 
 export default {
-  name: 'MobileSidebar',
+  name: 'Sidebar',
   
   emits: ['menu-click'],
   

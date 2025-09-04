@@ -1,11 +1,23 @@
 <!-- TrainingBooking.vue -->
 <template>
   <div class="bg-gray-50 min-h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+      <div class="flex items-center">
+        <div class="bg-blue-500 p-3 rounded-lg mr-4">
+          <i class="fas fa-users text-white text-xl"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-800">จองอบรม</h1>
+          <p class="text-gray-600 text-sm mt-1">ระบบจองอบรมสำหรับพนักงาน</p>
+        </div>
+      </div>
+    </div>
     <!-- Statistics -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
       <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div class="flex items-center">
           <div class="p-2 bg-blue-100 rounded-lg">
+            
             <svg
               class="w-6 h-6 text-blue-600"
               fill="none"
