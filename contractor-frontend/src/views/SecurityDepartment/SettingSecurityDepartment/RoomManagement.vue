@@ -37,28 +37,6 @@
             min="1"
           >
         </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">ประเภทห้อง</label>
-          <select 
-            v-model="newRoom.type"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          >
-            <option value="training">ห้องอบรม</option>
-            <option value="meeting">ห้องประชุม</option>
-            <option value="conference">ห้องประชุมใหญ่</option>
-            <option value="workshop">ห้องปฏิบัติการ</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">ชั้น</label>
-          <input 
-            type="number" 
-            v-model="newRoom.floor"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            placeholder="ชั้นที่"
-            min="1"
-          >
-        </div>
       </div>
       <div class="mt-4">
         <label class="block text-sm font-medium text-gray-700">อุปกรณ์ที่มี</label>
@@ -144,7 +122,6 @@
         <div class="flex justify-between items-start mb-3">
           <div>
             <h3 class="font-medium text-gray-900">{{ room.name }}</h3>
-            <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{{ getRoomTypeName(room.type) }}</span>
           </div>
           <div class="flex gap-2">
             <button 
@@ -185,10 +162,6 @@
           <div class="flex justify-between">
             <span>ความจุ:</span>
             <span class="font-medium">{{ room.capacity }} คน</span>
-          </div>
-          <div v-if="room.floor" class="flex justify-between">
-            <span>ชั้น:</span>
-            <span>{{ room.floor }}</span>
           </div>
           <div class="flex justify-between">
             <span>สถานะ:</span>
@@ -292,10 +265,10 @@ const emit = defineEmits(['room-added', 'room-updated', 'room-deleted', 'room-av
 
 // Meeting rooms
 const rooms = ref([
-  { id: 1, name: 'ห้อง A', capacity: 30, available: true, type: 'training', floor: 1, equipment: ['projector', 'whiteboard', 'air_conditioning'] },
-  { id: 2, name: 'ห้อง B', capacity: 50, available: false, type: 'meeting', floor: 2, equipment: ['projector', 'microphone', 'computer'] },
-  { id: 3, name: 'ห้อง C', capacity: 20, available: true, type: 'workshop', floor: 1, equipment: ['whiteboard', 'wifi'] },
-  { id: 4, name: 'ห้องประชุมใหญ่', capacity: 100, available: true, type: 'conference', floor: 3, equipment: ['projector', 'microphone', 'air_conditioning', 'wifi'] }
+  { id: 1, name: 'ห้อง A', capacity: 30, available: true, equipment: ['projector', 'whiteboard', 'air_conditioning'] },
+  { id: 2, name: 'ห้อง B', capacity: 50, available: false, equipment: ['projector', 'microphone', 'computer'] },
+  { id: 3, name: 'ห้อง C', capacity: 20, available: true, equipment: ['whiteboard', 'wifi'] },
+  { id: 4, name: 'ห้องประชุมใหญ่', capacity: 100, available: true, equipment: ['projector', 'microphone', 'air_conditioning', 'wifi'] }
 ])
 
 // User roles and permissions
@@ -325,8 +298,6 @@ const newRoom = ref({
   name: '',
   capacity: '',
   available: true,
-  type: 'training',
-  floor: '',
   equipment: []
 })
 
@@ -352,16 +323,6 @@ const hasPermission = (permission) => {
   return userRole?.permissions.includes(permission) || false
 }
 
-const getRoomTypeName = (type) => {
-  const typeNames = {
-    'training': 'ห้องอบรม',
-    'meeting': 'ห้องประชุม',
-    'conference': 'ห้องประชุมใหญ่',
-    'workshop': 'ห้องปฏิบัติการ'
-  }
-  return typeNames[type] || type
-}
-
 const getEquipmentName = (equipment) => {
   const equipmentNames = {
     'projector': 'โปรเจคเตอร์',
@@ -385,8 +346,6 @@ const addRoom = () => {
       name: newRoom.value.name,
       capacity: parseInt(newRoom.value.capacity),
       available: newRoom.value.available,
-      type: newRoom.value.type,
-      floor: newRoom.value.floor ? parseInt(newRoom.value.floor) : null,
       equipment: [...newRoom.value.equipment]
     }
     
@@ -398,8 +357,6 @@ const addRoom = () => {
       name: '',
       capacity: '',
       available: true,
-      type: 'training',
-      floor: '',
       equipment: []
     }
     

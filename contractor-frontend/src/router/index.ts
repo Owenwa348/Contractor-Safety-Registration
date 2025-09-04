@@ -17,7 +17,7 @@ import TrainingBooking from '../views/contractor/TrainingBooking.vue'
 import ListEmployees from '../views/SecurityDepartment/ListEmployees/ListEmployees.vue'
 import TakeExam from '../views/contractor/TakeExam/TakeExam.vue'
 import PrintCard from '../views/SecurityDepartment/PrintCard/PrintCard.vue'
-import DownloadTrainingList from '../views/SecurityDepartment/DownloadTrainingList.vue'
+import DownloadTrainingList from '../views/SecurityDepartment/DownloadTrainingList/DownloadTrainingList.vue'
 import NotFound from '../views/NotFound.vue'
 import ApprovalOfficer from '../views/Manager/ApprovalOfficer.vue'
 import ApprovalSafety from '../views/SecurityDepartment/ApprovalSafety.vue'// เพิ่มการนำเข้า ApprovalSafety
