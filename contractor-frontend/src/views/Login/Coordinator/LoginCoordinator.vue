@@ -178,8 +178,10 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useAuth } from '../../../composables/useAuth.js';
 
 const router = useRouter();
+const { login } = useAuth();
 
 const taxId = ref("");
 const username = ref("");
@@ -272,8 +274,13 @@ const handleLogin = () => {
     return;
   }
 
-  // Note: ใช้ in-memory storage แทน localStorage ใน artifact
-  // localStorage.setItem("auth", "true");
+  // Use auth composable to login
+  login('contractor', {
+    taxId: user.taxId,
+    username: user.username,
+    role: "contractor"
+  });
+  
   router.push("/manage-team");
 };
 </script>

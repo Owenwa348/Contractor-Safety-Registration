@@ -458,6 +458,47 @@
           </div>
         </div>
       </div>
+      <!-- Duplicate Tax ID Modal -->
+      <div v-if="showDuplicateModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl transform transition-all">
+          <div class="text-center">
+            <!-- Warning Icon -->
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-6">
+              <svg class="h-8 w-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+              </svg>
+            </div>
+            
+            <!-- Warning Message -->
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">พบข้อมูลซ้ำในระบบ</h3>
+            <div class="text-gray-600 space-y-3 mb-6">
+              <p class="text-base">
+                เลขประจำตัวผู้เสียภาษีอากรที่ท่านกรอกมีอยู่ในระบบแล้ว
+              </p>
+              <p class="text-base">
+                กรุณาติดต่อผู้ดูแลระบบเพื่อขอยกเลิกข้อมูลเก่าก่อนลงทะเบียนใหม่
+              </p>
+              <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+                <p class="text-sm font-semibold text-blue-800 mb-2">📧 ติดต่อผู้ดูแลระบบ:</p>
+                <p class="text-sm text-blue-700">
+                  <strong>อีเมล:</strong> admin@contractorsafety.com<br>
+                  <strong>โทร:</strong> 02-123-4567 ต่อ 100
+                </p>
+              </div>
+            </div>
+            
+            <!-- Action Button -->
+            <div class="space-y-3">
+              <button 
+                @click="closeDuplicateModal"
+                class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg"
+              >
+                ตกลง - กลับไปหน้าเข้าสู่ระบบ
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -495,7 +536,15 @@ export default {
         lowercase: false,
         number: false
       },
-      showSuccessModal: false
+      showSuccessModal: false,
+      showDuplicateModal: false,
+      // Mock database of existing tax IDs
+      existingTaxIds: [
+        '1234567891234',
+        '2222222222222', 
+        '3333333333333',
+        '5555555555555'
+      ]
     }
   },
 computed: {
@@ -694,9 +743,26 @@ computed: {
       this.$router.push('/')
     },
 
+    checkDuplicateTaxId() {
+      // Check if the entered tax ID already exists in the system
+      return this.existingTaxIds.includes(this.form.taxId)
+    },
+
+    closeDuplicateModal() {
+      this.showDuplicateModal = false
+      // Navigate back to login page
+      this.$router.push('/')
+    },
+
     async submitForm() {
       if (!this.isFormValid) {
         alert('กรุณากรอกข้อมูลให้ครบถ้วน')
+        return
+      }
+
+      // Check for duplicate tax ID first
+      if (this.checkDuplicateTaxId()) {
+        this.showDuplicateModal = true
         return
       }
 

@@ -1,35 +1,57 @@
+/**
+ * router/index.ts - การกำหนดเส้นทางของแอปพลิเคชัน
+ * จัดการ routing สำหรับระบบจัดการความปลอดภัยคู่ธุรกิจ
+ * รวมถึง authentication, authorization และการจัดการสิทธิ์
+CAREER
+ */
+
 // src/router/index.ts
 import { createRouter, createWebHistory } from 'vue-router'
-//Login/contractor
-import Login from '../views/Login/Coordinator/LoginCoordinator.vue'
-import CheckPermissions from '../views/Login/Coordinator/CheckPermissionsContractor.vue'
-import ContractorRegistration from '../views/Login/Coordinator/ContractorRegistration.vue'
-import ForgotPasswordCoordinator from '../views/Login/Coordinator/ForgotPasswordCoordinator.vue'
-//
-//Login/Owner and safety
-import LoginOwnerAndSafety from '../views/Login/Owner and safety/LoginOwnerAndSafety.vue'
-import SetPasswordOwnerAndSafety from '../views/Login/Owner and safety/SetPasswordOwnerAndSafety.vue'
-import ForgotPasswordOwnerAndSafety from '../views/Login/Owner and safety/ForgotPasswordOwnerAndSafety.vue'
-//
-import AddContractor from '../views/contractor/ManageTeam/AddContractor.vue'
-import ManageTeam from '../views/contractor/ManageTeam/ManageTeam.vue'
-import TrainingBooking from '../views/contractor/TrainingBooking.vue'
-import ListEmployees from '../views/SecurityDepartment/ListEmployees.vue'
-import TakeExam from '../views/contractor/TakeExam.vue'
-import PrintCard from '../views/SecurityDepartment/PrintCard.vue'
-import DownloadTrainingList from '../views/SecurityDepartment/DownloadTrainingList.vue'
-import NotFound from '../views/NotFound.vue'
-import ApprovalOfficer from '../views/Manager/ApprovalOfficer.vue'
-import ApprovalSafety from '../views/SecurityDepartment/ApprovalSafety.vue'// เพิ่มการนำเข้า ApprovalSafety
-import CertificaAdd from '../views/contractor/CertificaAdd/CertificaAdd.vue' // เพิ่มการนำเข้า CertificaAdd
-import BookTraining from '../views/contractor/BookTraining.vue' // เพิ่มการนำเข้า BookTraining
-import CreateTraining from '../views/SecurityDepartment/CreateTraining.vue'
-import Setting from '../views/SecurityDepartment/SettingSecurityDepartment/Setting.vue' // เพิ่มการนำเข้า Settings
 
-// Caretaker imports
-import UserManagement from '../views/Caretaker/UserManagement/UserManagement.vue'
-import SystemConfig from '../views/Caretaker/SystemConfig.vue'
-import DatabaseManagement from '../views/Caretaker/DatabaseManagement.vue'
+// ==================== กลุ่ม Login/Contractor ====================
+// สำหรับผู้ประสานงานคู่ธุรกิจ
+import Login from '../views/Login/Coordinator/LoginCoordinator.vue'//หน้าล็อกอิน
+import CheckPermissions from '../views/Login/Coordinator/CheckPermissionsContractor.vue'//หน้าตรวจสอบสิทธิ์การเข้าใช้งาน
+import ContractorRegistration from '../views/Login/Coordinator/ContractorRegistration.vue'//หน้าหลักลงทะเบียนผู้รับเหมา
+import ForgotPasswordCoordinator from '../views/Login/Coordinator/ForgotPasswordCoordinator.vue'//หน้าลืมรหัสผ่าน
+
+// ==================== กลุ่ม Login/Owner and Safety ====================
+// สำหรับเจ้าของงานและพนักงานความปลอดภัย
+import LoginOwnerAndSafety from '../views/Login/Owner and safety/LoginOwnerAndSafety.vue'//หน้าล็อกอิน
+import SetPasswordOwnerAndSafety from '../views/Login/Owner and safety/SetPasswordOwnerAndSafety.vue'//หน้าตั้งค่ารหัสผ่าน
+import ForgotPasswordOwnerAndSafety from '../views/Login/Owner and safety/ForgotPasswordOwnerAndSafety.vue'//หน้าลืมรหัสผ่าน
+
+// ==================== กลุ่ม Contractor Features ====================
+// คุณสมบัติสำหรับผู้รับเหมา
+import AddContractor from '../views/contractor/ManageTeam/AddContractor.vue'//หน้าจอเพิ่มผู้รับเหมา
+import ManageTeam from '../views/contractor/ManageTeam/ManageTeam.vue'//หน้าจัดการทีม
+import TrainingBooking from '../views/contractor/TrainingBooking/TrainingBooking.vue'//หน้าจองอบรม
+import TakeExam from '../views/contractor/TakeExam/TakeExam.vue'//หน้าประเมินผล
+import CertificaAdd from '../views/contractor/CertificaAdd/CertificaAdd.vue' // เพิ่มเอกสาร
+import BookTraining from '../views/contractor/BookTraining/BookTraining.vue' // จองอบรม
+import Assessment from '../views/contractor/Assessment/Assessment.vue' // การประเมินผล
+
+// ==================== กลุ่ม Security Department ====================
+// คุณสมบัติสำหรับแผนกความปลอดภัย
+import ListEmployees from '../views/SecurityDepartment/ListEmployees/ListEmployees.vue'//รายชื่อพนักงาน
+import PrintCard from '../views/SecurityDepartment/PrintCard/PrintCard.vue'//พิมพ์บัตร
+import DownloadTrainingList from '../views/SecurityDepartment/DownloadTrainingList/DownloadTrainingList.vue'//ดาวน์โหลดรายชื่อผู้อบรม
+import ApprovalSafety from '../views/SecurityDepartment/ApprovalSafety.vue' // อนุมัติความปลอดภัย
+import CreateTraining from '../views/SecurityDepartment/CreateTraining/CreateTraining.vue'
+import Setting from '../views/SecurityDepartment/SettingSecurityDepartment/Setting.vue' // การตั้งค่า
+
+// ==================== กลุ่ม Manager ====================
+// คุณสมบัติสำหรับผู้จัดการ
+import ApprovalOfficer from '../views/Manager/ApprovalOfficer.vue'//การอนุมัติผู้ประสานงานคู่ธุรกิจ
+
+// ==================== กลุ่ม Caretaker ====================
+// คุณสมบัติสำหรับผู้ดูแลระบบ
+import UserManagement from '../views/Caretaker/UserManagement/UserManagement.vue'//หน้าจัดการผู้ใช้งาน
+import SystemConfig from '../views/Caretaker/SystemConfig.vue'//หน้าการตั้งค่าระบบ
+// import DatabaseManagement from '../views/Caretaker/DatabaseManagement.vue'//หน้าจัดการฐานข้อมูล
+
+// ==================== อื่นๆ ====================
+import NotFound from '../views/NotFound.vue'//หน้าข้อผิดพลาด 404
 
 const routes = [
 
@@ -76,62 +98,68 @@ const routes = [
   {
     path: '/add-contractor',
     component: AddContractor,
-    meta: { step: 1, title: 'เพิ่มผู้รับเหมา' }
+    meta: { title: 'เพิ่มผู้รับเหมา' }
   },
   {
     path: '/download-training-list',
     component: DownloadTrainingList,
-    meta: { step: 1, title: 'ดาวน์โหลดรายชื่อผู้อบรม' }
+    meta: { title: 'ดาวน์โหลดรายชื่อผู้อบรม' }
   },
   {
     path: '/manage-team',
     component: ManageTeam,
-    meta: { step: 1, title: 'จัดการทีม' }
+    meta: { title: 'จัดการทีม' }
   },
   {
     path: '/training-booking',
     component: TrainingBooking,
-    meta: { step: 3, title: 'จองอบรม' }
+    meta: { title: 'จองอบรม' }
   },
   {
     path: '/list-employees',
     component: ListEmployees,
-    meta: { step: 5, title: 'รายชื่อพนักงาน' }
+    meta: { title: 'รายชื่อพนักงาน' }
   },
   {
     path: '/take-exam',
     component: TakeExam,
-    meta: { step: 6, title: 'สอบ' }
+    meta: { title: 'สอบ' }
+  },
+  {
+    path: '/assessment/:trainingId',
+    component: Assessment,
+    meta: { title: 'การประเมิน' },
+    props: true
   },
   {
     path: '/print-card',
     component: PrintCard,
-    meta: { step: 7, title: 'พิมพ์บัตร' }
+    meta: { title: 'พิมพ์บัตร' }
   },
   {
     path: '/approval-officer',
     component: ApprovalOfficer,
-    meta: { step: 8, title: 'การอนุมัติผู้ประสานงานคู่ธุรกิจ' }
+    meta: { title: 'การอนุมัติผู้ประสานงานคู่ธุรกิจ' }
   },
   {
     path: '/approval-safety',
     component: ApprovalSafety,
-    meta: { step: 9, title: 'การอนุมัติผู้ประสานงานด้านความปลอดภัย' }
+    meta: { title: 'การอนุมัติผู้ประสานงานด้านความปลอดภัย' }
   },
   {
     path: '/certifica-add',
     component: CertificaAdd,
-    meta: { step: 10, title: 'เพิ่มเอกสาร CertificaAdd' }
+    meta: { title: 'เพิ่มเอกสาร CertificaAdd' }
   },
   {
     path: '/book-training',
     component: BookTraining,
-    meta: { step: 11, title: 'จองอบรมทีมงาน' }
+    meta: { title: 'จองอบรมทีมงาน' }
   },
   {
     path: '/create-training',
     component: CreateTraining,
-    meta: { step: 12, title: 'สร้างการฝึกอบรม' }
+    meta: { title: 'สร้างการฝึกอบรม' }
   },
   {
     path: '/setting',
@@ -142,18 +170,18 @@ const routes = [
   {
     path: '/caretaker-user-management',
     component: UserManagement,
-    meta: { title: 'จัดการผู้ใช้งาน', requiresAuth: true, role: 'caretaker' }
+    meta: { title: 'จัดการผู้ใช้งาน' }
   },
   {
     path: '/caretaker-system-config',
     component: SystemConfig,
-    meta: { title: 'การตั้งค่าระบบ', requiresAuth: true, role: 'caretaker' }
+    meta: { title: 'การตั้งค่าระบบ' }
   },
-  {
-    path: '/caretaker-database-management',
-    component: DatabaseManagement,
-    meta: { title: 'จัดการฐานข้อมูล', requiresAuth: true, role: 'caretaker' }
-  },
+  // {
+  //   path: '/caretaker-database-management',
+  //   component: DatabaseManagement,
+  //   meta: { title: 'จัดการฐานข้อมูล', requiresAuth: true, role: 'caretaker' }
+  // },
   {
     path: '/:pathMatch(.*)*',
     component: NotFound,
@@ -188,13 +216,9 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const isLoggedIn = localStorage.getItem('auth') === 'true'
-
-  if (to.meta.public || isLoggedIn) {
-    next()
-  } else {
-    next('/')
-  }
+  // Allow access to all pages without authentication checks
+  console.log('Navigation to:', to.path, '- Access allowed without authentication')
+  next()
 })
 
 export default router

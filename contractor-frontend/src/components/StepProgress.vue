@@ -161,7 +161,7 @@ export default {
         '/caretaker-database-management',
         '/caretaker-permissions'
       ]
-      return hidePaths.includes(this.$route.path)
+      return hidePaths.includes(this.$route.path) || this.$route.path.startsWith('/assessment')
     },
     steps() {
       return [

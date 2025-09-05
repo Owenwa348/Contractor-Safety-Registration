@@ -1,71 +1,14 @@
 <template>
   <div class="space-y-6">
     <div class="flex justify-between items-center">
-      <h2 class="text-lg font-medium text-gray-900">จัดการผู้ใช้งาน (หัวหน้างาน)</h2>
-      <button 
-        @click="showAddUserForm = !showAddUserForm"
-        class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center gap-2"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-        </svg>
-        เพิ่มผู้ใช้
-      </button>
-    </div>
-
-    <!-- Add User Form -->
-    <div v-if="showAddUserForm" class="bg-gray-50 p-6 rounded-lg">
-      <h3 class="font-medium text-gray-900 mb-4">เพิ่มหัวหน้างานใหม่</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700">อีเมล</label>
-          <input 
-            type="email" 
-            v-model="newUser.email"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            placeholder="example@company.com"
-          >
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">ชื่อผู้ใช้ (Username)</label>
-          <input 
-            type="text" 
-            v-model="newUser.username"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            placeholder="ระบุชื่อผู้ใช้"
-          >
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">หัวหน้างาน</label>
-          <input 
-            type="text" 
-            v-model="newUser.position"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            placeholder="หัวหน้างาน"
-          >
-        </div>
-      </div>
-      <div class="flex justify-end gap-2 mt-4">
-        <button 
-          @click="showAddUserForm = false"
-          class="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
-        >
-          ยกเลิก
-        </button>
-        <button 
-          @click="addUser"
-          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-        >
-          เพิ่มผู้ใช้
-        </button>
-      </div>
+      <h2 class="text-lg font-medium text-gray-900">จัดการผู้ใช้งาน (ผู้ประสานงานผู้รับเหมา)</h2>
     </div>
 
     <!-- User Management Table -->
     <div class="bg-white rounded-lg shadow overflow-hidden">
       <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900">รายชื่อหัวหน้างานในระบบ</h3>
-        <p class="text-sm text-gray-600 mt-1">จำนวนทั้งหมด: {{ users.length }} คน (คลิกที่ข้อมูลเพื่อแก้ไขได้เลย)</p>
+        <h3 class="text-lg font-medium text-gray-900">รายชื่อผู้ประสานงานผู้รับเหมาในระบบ</h3>
+        <p class="text-sm text-gray-600 mt-1">จำนวนทั้งหมด: {{ users.length }} คน</p>
       </div>
       
       <div class="overflow-x-auto">
@@ -73,8 +16,10 @@
           <thead class="bg-gray-50">
             <tr>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">อีเมล</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่อผู้ใช้</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">สถานะ</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">เลขประจำตัวผู้เสียภาษีอากร</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่อ-นามสกุล</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">สถานะบัญชี</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">สถานะการล็อกอิน</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">รหัสผ่าน</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ล็อกอินล่าสุด</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">จัดการ</th>
@@ -95,29 +40,29 @@
                         v-model="editingUser.email"
                         type="email"
                         class="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                        @blur="saveUser(user.id)"
                         @keyup.enter="saveUser(user.id)"
                       />
                     </div>
-                    <div v-else class="text-sm font-medium text-gray-900 cursor-pointer" @click="startEdit(user)">
+                    <div v-else class="text-sm font-medium text-gray-900">
                       {{ user.email }}
                     </div>
                   </div>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div v-if="editingUserId === user.id" class="text-sm">
-                  <input 
-                    v-model="editingUser.username"
-                    type="text"
-                    class="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                    @blur="saveUser(user.id)"
-                    @keyup.enter="saveUser(user.id)"
-                  />
+                <div class="text-sm text-gray-900 font-mono">
+                  {{ user.taxId }}
                 </div>
-                <div v-else class="text-sm text-gray-900 cursor-pointer" @click="startEdit(user)">
-                  {{ user.username }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">
+                  {{ user.hasLoggedIn ? user.fullName : '-' }}
                 </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" :class="getAccountStatusClass(user.accountStatus)">
+                  {{ getAccountStatusText(user.accountStatus) }}
+                </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" :class="getLoginStatusClass(user.hasLoggedIn)">
@@ -148,17 +93,24 @@
                 <div class="flex gap-2">
                   <button 
                     v-if="editingUserId === user.id"
+                    @click="saveUser(user.id)"
+                    class="text-green-600 hover:text-green-900">
+                    ตกลง
+                  </button>
+                  <button 
+                    v-if="editingUserId === user.id"
                     @click="cancelEdit"
                     class="text-gray-600 hover:text-gray-900">
                     ยกเลิก
                   </button>
                   <button 
-                    v-else
+                    v-if="editingUserId !== user.id"
                     @click="startEdit(user)"
                     class="text-blue-600 hover:text-blue-900">
                     แก้ไข
                   </button>
                   <button 
+                    v-if="editingUserId !== user.id"
                     @click="deleteUser(user.id)"
                     class="text-red-600 hover:text-red-900">
                     ลบ
@@ -191,9 +143,11 @@ const emit = defineEmits(['user-added', 'user-updated', 'user-deleted'])
 const users = ref([
   {
     id: 1,
-    email: 'supervisor1@company.com',
-    username: 'หัวหน้างานขนส่ง',
-    position: 'หัวหน้างาน',
+    email: 'contractor1@company.com',
+    taxId: '1234567891234',
+    fullName: 'สมชาย ใจดี',
+    status: 'ผู้ประสานงานผู้รับเหมา',
+    accountStatus: 'active',
     hasLoggedIn: true,
     hasPassword: true,
     lastLogin: '2024-08-29',
@@ -201,9 +155,11 @@ const users = ref([
   },
   {
     id: 2,
-    email: 'supervisor2@company.com',
-    username: 'หัวหน้างานปั้นจันยกของ',
-    position: 'หัวหน้างาน',
+    email: 'contractor2@company.com',
+    taxId: '9876543210987',
+    fullName: 'สมหญิง รักดี',
+    status: 'ผู้ประสานงานผู้รับเหมา',
+    accountStatus: 'active', 
     hasLoggedIn: true,
     hasPassword: true,
     lastLogin: '2024-08-28',
@@ -211,9 +167,11 @@ const users = ref([
   },
   {
     id: 3,
-    email: 'supervisor3@company.com',
-    username: 'หัวหน้างานจัดการ',
-    position: 'หัวหน้างาน',
+    email: 'contractor3@company.com',
+    taxId: '5555555555555',
+    fullName: 'วิชัย มานะ',
+    status: 'ผู้ประสานงานผู้รับเหมา',
+    accountStatus: 'pending',
     hasLoggedIn: false,
     hasPassword: false,
     lastLogin: null,
@@ -221,9 +179,11 @@ const users = ref([
   },
   {
     id: 4,
-    email: 'safety.manager@company.com',
-    username: 'หัวหน้างานอับอากาศ',
-    position: 'หัวหน้างาน',
+    email: 'contractor4@company.com',
+    taxId: '1111111111111',
+    fullName: 'สุรีย์ ปลอดภัย',
+    status: 'ผู้ประสานงานผู้รับเหมา',
+    accountStatus: 'active',
     hasLoggedIn: true,
     hasPassword: true,
     lastLogin: '2024-08-30',
@@ -232,8 +192,10 @@ const users = ref([
   {
     id: 5,
     email: 'team.lead@company.com',
-    username: 'หัวหน้างานสถาปนิก',
-    position: 'หัวหน้างาน',
+    taxId: '2222222222222',
+    fullName: 'วิศิษฐ์ สร้างสรรค์',
+    status: 'ปิดการใช้งาน',
+    accountStatus: 'inactive',
     hasLoggedIn: false,
     hasPassword: false,
     lastLogin: null,
@@ -242,19 +204,38 @@ const users = ref([
 ])
 
 // Form states
-const newUser = ref({
-  email: '',
-  username: '',
-  position: ''
-})
-
-const showAddUserForm = ref(false)
 const editingUserId = ref(null)
 const editingUser = ref({})
 
 // Methods
 const getLoginStatusClass = (hasLoggedIn) => {
   return hasLoggedIn ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+}
+
+const getAccountStatusClass = (accountStatus) => {
+  switch (accountStatus) {
+    case 'active':
+      return 'bg-green-100 text-green-800'
+    case 'inactive':
+      return 'bg-red-100 text-red-800'
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-800'
+    default:
+      return 'bg-gray-100 text-gray-800'
+  }
+}
+
+const getAccountStatusText = (accountStatus) => {
+  switch (accountStatus) {
+    case 'active':
+      return 'ใช้งานอยู่'
+    case 'inactive':
+      return 'ปิดใช้งาน'
+    case 'pending':
+      return 'รออนุมัติ'
+    default:
+      return 'ไม่ทราบ'
+  }
 }
 
 const formatDate = (dateString) => {
@@ -269,47 +250,7 @@ const formatDate = (dateString) => {
   })
 }
 
-const addUser = () => {
-  if (!newUser.value.email || !newUser.value.username || !newUser.value.position) {
-    alert('กรุณากรอกข้อมูลให้ครบถ้วน')
-    return
-  }
 
-  // Check if email already exists
-  const existingUser = users.value.find(user => user.email.toLowerCase() === newUser.value.email.toLowerCase())
-  if (existingUser) {
-    alert('อีเมลนี้มีอยู่ในระบบแล้ว')
-    return
-  }
-
-  const user = {
-    id: Math.max(...users.value.map(u => u.id)) + 1,
-    email: newUser.value.email,
-    username: newUser.value.username,
-    position: newUser.value.position,
-    hasLoggedIn: false,
-    hasPassword: false,
-    lastLogin: null,
-    createdAt: new Date().toISOString().split('T')[0]
-  }
-
-  users.value.push(user)
-  emit('user-added', user)
-
-  // Reset form
-  newUser.value = {
-    email: '',
-    username: '',
-    position: 'หัวหน้างาน'
-  }
-
-  showAddUserForm.value = false
-  
-  // Send password setup link after user creation
-  sendPasswordResetLink(user)
-  
-  alert('เพิ่มผู้ใช้เรียบร้อยแล้ว ลิงค์ตั้งรหัสผ่านได้ถูกคัดลอกแล้ว กรุณาส่งให้ผู้ใช้')
-}
 
 const startEdit = (user) => {
   editingUserId.value = user.id
@@ -331,12 +272,6 @@ const saveUser = (userId) => {
       return
     }
 
-    // Validate username length
-    if (!editingUser.value.username || editingUser.value.username.trim().length < 3) {
-      alert('ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร')
-      return
-    }
-
     // Check if email already exists (excluding current user)
     const existingUser = users.value.find(user => 
       user.email.toLowerCase() === editingUser.value.email.toLowerCase() && user.id !== userId
@@ -346,7 +281,8 @@ const saveUser = (userId) => {
       return
     }
 
-    users.value[userIndex] = { ...editingUser.value }
+    // Only update email, keep other fields unchanged
+    users.value[userIndex].email = editingUser.value.email
     emit('user-updated', users.value[userIndex])
     
     editingUserId.value = null
@@ -367,7 +303,7 @@ const deleteUser = (userId) => {
 
 const sendPasswordResetLink = (user) => {
   // Simulate sending password reset link
-  const resetUrl = `${window.location.origin}/setpasswordownerandsafety?email=${encodeURIComponent(user.email)}`
+  const resetUrl = `${window.location.origin}/login/coordinator/forgot-password?email=${encodeURIComponent(user.email)}`
   
   // Copy to clipboard or show modal with link
   navigator.clipboard.writeText(resetUrl).then(() => {
@@ -388,4 +324,5 @@ const resetPassword = (user) => {
     sendPasswordResetLink(user)
   }
 }
+
 </script>

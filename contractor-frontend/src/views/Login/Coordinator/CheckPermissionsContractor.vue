@@ -46,7 +46,7 @@
         <div v-if="resultMessage" class="p-4 rounded-xl border-2 transition-all duration-300">
           <div 
             class="flex items-center gap-3"
-            :class="resultStatus === 'found' ? 'text-green-700 bg-green-50 border-green-200' : 'text-red-700 bg-red-50 border-red-200'"
+            :class="getResultClass()"
           >
             <!-- Success Icon -->
             <svg v-if="resultStatus === 'found'" class="w-6 h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -77,7 +77,7 @@
 
           <button
             type="button"
-            @click="goBack"
+            @click="goToLogin"
             class="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-xl font-semibold transition-all duration-200 hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-gray-100"
           >
             <span class="flex items-center justify-center gap-2">
@@ -106,7 +106,9 @@ const resultStatus = ref("");
 
 // ตัวอย่าง mock ข้อมูลในระบบ
 const mockUsers = [
-  { taxId: "1234567891234" },
+  { taxId: "1234567891234", status: "active" },
+  { taxId: "9876543210987", status: "inactive" },
+  { taxId: "5555555555555", status: "duplicate" },
 ];
 
 // แก้ไขฟังก์ชันเพื่อให้สามารถแก้ไขได้เมื่อความยาวเต็มแล้ว
@@ -153,15 +155,40 @@ const handleCheck = () => {
   const user = mockUsers.find((u) => u.taxId === taxId.value);
 
   if (user) {
-    resultMessage.value = "พบข้อมูลในระบบ สามารถเข้าใช้งานได้";
-    resultStatus.value = "found";
+    // Check if user is active
+    if (user.status === 'active') {
+      resultMessage.value = "พบข้อมูลในระบบ สามารถเข้าใช้งานได้";
+      resultStatus.value = "found";
+    } else if (user.status === 'inactive') {
+      resultMessage.value = "บัญชีของท่านถูกปิดใช้งาน กรุณาติดต่อผู้ดูแลระบบที่ admin@company.com";
+      resultStatus.value = "inactive";
+    } else if (user.status === 'duplicate') {
+      resultMessage.value = "พบข้อมูลซ้ำในระบบ กรุณาติดต่อผู้ดูแลระบบที่ admin@company.com เพื่อขอยกเลิกข้อมูลเก่าก่อนลงทะเบียนใหม่";
+      resultStatus.value = "duplicate";
+    }
   } else {
-    resultMessage.value = "ไม่พบข้อมูลในระบบ กรุณาลงทะเบียนหรือติดต่อผู้ดูแลระบบ";
+    resultMessage.value = "ไม่พบข้อมูลในระบบ สามารถลงทะเบียนใหม่ได้";
     resultStatus.value = "notfound";
   }
 };
 
-const goBack = () => {
+const goToLogin = () => {
   router.back();
+};
+
+// Get result styling based on status
+const getResultClass = () => {
+  switch (resultStatus.value) {
+    case 'found':
+      return 'text-green-700 bg-green-50 border-green-200';
+    case 'inactive':
+      return 'text-orange-700 bg-orange-50 border-orange-200';
+    case 'duplicate':
+      return 'text-red-700 bg-red-50 border-red-200';
+    case 'notfound':
+      return 'text-blue-700 bg-blue-50 border-blue-200';
+    default:
+      return 'text-gray-700 bg-gray-50 border-gray-200';
+  }
 };
 </script>
