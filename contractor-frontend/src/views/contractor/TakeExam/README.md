@@ -8,7 +8,7 @@ TakeExam/
 ├── components/
 │   ├── TrainingSelector.vue      # เลือกหลักสูตรอบรม
 │   ├── TrainingDetails.vue       # แสดงรายละเอียดหลักสูตร
-│   ├── ExamAccessLinks.vue       # ลิงก์และ QR Code เข้าสู่การสอบ
+│   ├── ExamAccessLinks.vue       # ลิงก์และ QR Code เข้าสู่การประเมิน
 │   ├── ParticipantsList.vue      # รายชื่อและสถิติผู้เข้าสอบ
 │   ├── ParticipantStats.vue      # สถิติผลการสอบ (ผ่าน/ไม่ผ่าน)
 │   ├── ParticipantRow.vue        # แถวข้อมูลผู้เข้าสอบแต่ละคน
@@ -34,15 +34,15 @@ TakeExam/
 **หน้าที่:** แสดงรายละเอียดหลักสูตรที่เลือกและรวม ExamAccessLinks
 **Props:**
 - `trainingData` - ข้อมูลหลักสูตร
-- `examUrl` - URL เข้าสู่การสอบ
+- `examUrl` - URL การประเมิน
 - `selectedTraining` - ID หลักสูตรที่เลือก
 **Events:**
 - `copy-link` - เมื่อคัดลอกลิงก์
 
 ### 3. ExamAccessLinks.vue
-**หน้าที่:** จัดการลิงก์เข้าสู่การสอบและ QR Code
+**หน้าที่:** จัดการลิงก์เข้าสู่การประเมินและ QR Code
 **Props:**
-- `examUrl` - URL เข้าสู่การสอบ
+- `examUrl` - URL เข้าสู่การประเมิน
 - `selectedTraining` - ID หลักสูตรที่เลือก
 **Features:**
 - สร้าง QR Code แบบ dynamic

@@ -11,7 +11,7 @@ export function useTrainingManagement() {
       startTime: 9,
       endTime: 11, 
       type: "อบรมพื้นฐานความปลอดภัย", 
-      examiner: "นายสมชัย งบ.1", 
+      examiner: "นายประเสริฐ เริสบาระ หัวหน้างานความปลอดภัย", 
       room: "ห้อง A (30 ที่นั่ง)", 
       color: "#3b82f6", 
       maxParticipants: 25, 
@@ -26,7 +26,7 @@ export function useTrainingManagement() {
       startTime: 13,
       endTime: 16, 
       type: "อบรมการใช้เครื่องมือ", 
-      examiner: "นายสุรพล งบ.2", 
+      examiner: "นายสมชัย แสงโสม หัวหน้างานเครื่องจักร", 
       room: "ห้อง B (50 ที่นั่ง)", 
       color: "#10b981", 
       maxParticipants: 20, 
@@ -41,7 +41,7 @@ export function useTrainingManagement() {
       startTime: 13,
       endTime: 16, 
       type: "อบรมการใช้เครื่องจักร", 
-      examiner: "นายสุรพล งบ.2", 
+      examiner: "นายสมชัย แสงโสม หัวหน้างานเครื่องจักร", 
       room: "ห้อง B (50 ที่นั่ง)", 
       color: "#10b981", 
       maxParticipants: 20, 
@@ -56,7 +56,7 @@ export function useTrainingManagement() {
       startTime: 13,
       endTime: 16, 
       type: "อบรมการประกอบอุปกรณ์", 
-      examiner: "นายสุรพล งบ.2", 
+      examiner: "นายสุรพล กรมหนึ่ง หัวหน้างานปั้นจันยกของ", 
       room: "ห้อง B (50 ที่นั่ง)", 
       color: "#10b981", 
       maxParticipants: 20, 
@@ -133,6 +133,89 @@ export function useTrainingManagement() {
       return true;
     }
     return false;
+  };
+
+  const deleteEventSession = (eventId, sessionDate) => {
+    const eventToDelete = events.value.find(event => event.id === eventId);
+    if (!eventToDelete) return false;
+
+    // If no specific session date is provided, delete the entire event
+    if (!sessionDate) {
+      return deleteEvent(eventId);
+    }
+
+    // For single-day events (most common case with recurring events)
+    if (eventToDelete.startDate === eventToDelete.endDate) {
+      // Check if the session date matches the event date
+      if (eventToDelete.startDate === sessionDate) {
+        return deleteEvent(eventId);
+      }
+      return false; // Session date doesn't match
+    }
+
+    // For multi-day events, handle date range modification
+    const startDate = new Date(eventToDelete.startDate);
+    const endDate = new Date(eventToDelete.endDate);
+    const deleteDate = new Date(sessionDate);
+
+    // Check if the delete date is within the event range
+    if (deleteDate < startDate || deleteDate > endDate) {
+      return false; // Date not in range
+    }
+
+    // If deleting the start date, move start date forward
+    if (deleteDate.getTime() === startDate.getTime()) {
+      const newStartDate = new Date(startDate);
+      newStartDate.setDate(startDate.getDate() + 1);
+      
+      if (newStartDate <= endDate) {
+        eventToDelete.startDate = formatDateString(newStartDate);
+        return true;
+      } else {
+        // If this was the last day, delete the entire event
+        return deleteEvent(eventId);
+      }
+    }
+    
+    // If deleting the end date, move end date backward
+    if (deleteDate.getTime() === endDate.getTime()) {
+      const newEndDate = new Date(endDate);
+      newEndDate.setDate(endDate.getDate() - 1);
+      
+      if (newEndDate >= startDate) {
+        eventToDelete.endDate = formatDateString(newEndDate);
+        return true;
+      } else {
+        // If this was the last day, delete the entire event
+        return deleteEvent(eventId);
+      }
+    }
+    
+    // If deleting a middle date, split the event into two separate events
+    if (deleteDate > startDate && deleteDate < endDate) {
+      const firstPartEndDate = new Date(deleteDate);
+      firstPartEndDate.setDate(deleteDate.getDate() - 1);
+      eventToDelete.endDate = formatDateString(firstPartEndDate);
+      
+      const secondPartStartDate = new Date(deleteDate);
+      secondPartStartDate.setDate(deleteDate.getDate() + 1);
+      
+      const secondEvent = {
+        ...eventToDelete,
+        id: Date.now() + Math.random(),
+        startDate: formatDateString(secondPartStartDate),
+        endDate: formatDateString(endDate)
+      };
+      
+      events.value.push(secondEvent);
+      return true;
+    }
+    
+    return false;
+  };
+
+  const formatDateString = (date) => {
+    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
   };
 
   const createMultipleEvents = (formData, preview) => {
@@ -246,6 +329,7 @@ export function useTrainingManagement() {
     addEvent,
     updateEvent,
     deleteEvent,
+    deleteEventSession,
     createMultipleEvents,
     getEventColor,
     startDrag,

@@ -68,6 +68,7 @@
         @close="closeViewModal"
         @edit="openEditModal"
         @delete="handleDeleteEvent"
+        @delete-session="handleDeleteSession"
       />
     </div>
   </div>
@@ -98,6 +99,7 @@ const {
   addEvent,
   updateEvent,
   deleteEvent,
+  deleteEventSession,
   createMultipleEvents,
   startDrag,
   handleDrop,
@@ -144,6 +146,12 @@ const handleSaveEvent = ({ formData, preview, isEdit }) => {
 
 const handleDeleteEvent = (eventId) => {
   if (deleteEvent(eventId)) {
+    closeViewModal();
+  }
+};
+
+const handleDeleteSession = (eventId, sessionDate) => {
+  if (deleteEventSession(eventId, sessionDate)) {
     closeViewModal();
   }
 };

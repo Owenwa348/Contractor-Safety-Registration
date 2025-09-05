@@ -68,7 +68,7 @@
             
             <!-- ปุ่มออกจากระบบสำหรับเดสก์ท็อป -->
             <button 
-              @click="logout"
+              @click="handleLogout"
               class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:translate-y-0 flex-shrink-0"
             >
               ออกจากระบบ
@@ -88,7 +88,7 @@
           </div>
           <!-- ปุ่มออกจากระบบขนาดเล็ก -->
           <button 
-            @click="logout"
+            @click="handleLogout"
             class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
             title="ออกจากระบบ"
           >
@@ -105,44 +105,51 @@
   </nav>
 </template>
 
-<script>
-export default {
-  name: 'Navbar',
-  
-  // ปรับแต่ง Props ที่รับจาก parent component
-  props: {
-    showMobileMenu: {
-      type: Boolean,
-      default: false
-    }
-  },
-  
-  // กำหนด Events ที่สามารถ emit ไปยัง parent component
-  emits: ['toggle-mobile-menu'],
-  
-  // ข้อมูลที่ใช้ใน component
-  data() {
-    return {
-      companyName: 'บริษัท ABC จำกัด', // ชื่อบริษัท (สามารถดึงจาก API ได้)
-      userName: 'ผู้ประสานงานคู่ธุรกิจ' // ชื่อผู้ใช้ (สามารถดึงจาก API ได้)
-    }
-  },
-  // เมท็อดต่างๆ ของ component
-  methods: {
-    /**
-     * ฟังก์ชัน logout - จัดการการออกจากระบบ
-     * แสดงการยืนยันและนำทางไปหน้า login
-     */
-    logout() {
-      if (confirm('คุณต้องการออกจากระบบหรือไม่?')) {
-        // ล้างข้อมูลผู้ใช้จาก localStorage
-        localStorage.removeItem('auth')
-        localStorage.removeItem('userInfo')
-        
-        // นำทางไปยังหน้าเข้าสู่ระบบ
-        this.$router.push('/')
-      }
-    }
+<script setup>
+import { computed, onMounted } from 'vue'
+import { useAuth } from '../composables/useAuth.js'
+
+// Props และ Emits
+defineProps({
+  showMobileMenu: {
+    type: Boolean,
+    default: false
+  }
+})
+
+defineEmits(['toggle-mobile-menu'])
+
+// Authentication composable
+const { logout, userData, userType, checkAuth } = useAuth()
+
+// Computed properties สำหรับแสดงข้อมูลผู้ใช้
+const companyName = computed(() => {
+  if (userType.value === 'contractor') {
+    return userData.value.taxId ? `บริษัท ABC จำกัด` : 'ผู้รับเหมา'
+  } else if (userType.value === 'internal') {
+    return 'บุคลากรภายใน'
+  }
+  return 'ระบบจัดการความปลอดภัย'
+})
+
+const userName = computed(() => {
+  if (userType.value === 'contractor') {
+    return userData.value.username || 'ผู้ประสานงานคู่ธุรกิจ'
+  } else if (userType.value === 'internal') {
+    return userData.value.email || 'บุคลากรภายใน'
+  }
+  return 'ผู้ใช้งาน'
+})
+
+// ฟังก์ชันออกจากระบบ
+const handleLogout = () => {
+  if (confirm('คุณต้องการออกจากระบบหรือไม่?')) {
+    logout()
   }
 }
+
+// ตรวจสอบสถานะการเข้าสู่ระบบเมื่อ component ถูก mount
+onMounted(() => {
+  checkAuth()
+})
 </script>

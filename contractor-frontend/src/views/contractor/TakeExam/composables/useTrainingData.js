@@ -1,6 +1,20 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 
 export function useTrainingData() {
+  // Utility function to convert training name to URL-friendly format
+  const getTrainingSlug = (trainingId, trainingName) => {
+    // Convert Thai characters and spaces to URL-friendly format
+    const slug = trainingName
+      .replace(/อบรม/g, 'training')
+      .replace(/พื้นฐาน/g, 'basic')
+      .replace(/ความปลอดภัย/g, 'safety')
+      .replace(/เครื่องมือ/g, 'tools')
+      .replace(/เครื่องจักร/g, 'machines')
+      .replace(/การประกอบอุปกรณ์/g, 'first-aid')
+      .replace(/\s+/g, '-')
+      .toLowerCase()
+    return `${trainingId}-${slug}`.replace(/[^a-z0-9-]/g, '')
+  }
   // ข้อมูลหลักสูตรอบรม
   const trainings = ref([
     {
@@ -74,7 +88,8 @@ export function useTrainingData() {
     }
   ])
 
-  const selectedTraining = ref('')
+  // Initialize selectedTraining from localStorage or empty string
+  const selectedTraining = ref(localStorage.getItem('selectedTraining') || '')
   const searchTerm = ref('')
 
   // Computed properties
@@ -99,8 +114,9 @@ export function useTrainingData() {
   })
 
   const examUrl = computed(() => {
-    if (selectedTraining.value) {
-      return `${window.location.origin}/exam/${selectedTraining.value}`
+    if (selectedTraining.value && selectedTrainingData.value) {
+      const trainingSlug = getTrainingSlug(selectedTraining.value, selectedTrainingData.value.name)
+      return `${window.location.origin}/assessment/${trainingSlug}`
     }
     return ''
   })
@@ -113,6 +129,36 @@ export function useTrainingData() {
     completedParticipants.value.filter(p => p.examStatus === 'failed').length
   )
 
+  // Watch for changes in selectedTraining and save to localStorage
+  watch(selectedTraining, (newValue) => {
+    if (newValue) {
+      localStorage.setItem('selectedTraining', newValue)
+    } else {
+      localStorage.removeItem('selectedTraining')
+    }
+  })
+
+  // Validate stored training on mount
+  onMounted(() => {
+    const storedTraining = localStorage.getItem('selectedTraining')
+    if (storedTraining) {
+      // Check if the stored training still exists in the trainings list
+      const trainingExists = trainings.value.some(t => t.id === storedTraining)
+      if (!trainingExists) {
+        // If stored training doesn't exist, clear it
+        localStorage.removeItem('selectedTraining')
+        selectedTraining.value = ''
+      }
+    }
+  })
+
+  // Function to reset selection
+  const resetSelection = () => {
+    selectedTraining.value = ''
+    searchTerm.value = ''
+    localStorage.removeItem('selectedTraining')
+  }
+
   return {
     trainings,
     selectedTraining,
@@ -123,6 +169,8 @@ export function useTrainingData() {
     filteredCompletedParticipants,
     examUrl,
     passedCount,
-    failedCount
+    failedCount,
+    getTrainingSlug,
+    resetSelection
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="mt-8 pt-6 border-t">
-    <h3 class="text-xl font-bold text-gray-800 mb-4">เข้าสู่การสอบ</h3>
+    <h3 class="text-xl font-bold text-gray-800 mb-4">เข้าสู่การประเมิน</h3>
     
     <!-- Direct Link -->
     <div class="mb-6">
@@ -36,18 +36,11 @@
         {{ showQRCode ? 'ซ่อน QR Code' : 'แสดง QR Code' }}
       </button>
     </div>
-    <div>
-      <router-link to="/assessment">
-        <button>
-          ประเมินชั่วคราว
-        </button>
-      </router-link>
-    </div>
 
     <div v-if="showQRCode" class="mt-6 text-center">
       <div class="inline-block p-6 bg-white border-2 border-gray-200 rounded-xl shadow-lg">
         <div ref="qrcode" class="qr-code-container"></div>
-        <p class="text-sm text-gray-500 mt-3 font-medium">สแกนเพื่อเข้าสู่การสอบ</p>
+        <p class="text-sm text-gray-500 mt-3 font-medium">สแกนเพื่อเข้าสู่การประเมิน</p>
       </div>
     </div>
   </div>
@@ -104,7 +97,7 @@ export default {
           <div class="flex flex-col items-center">
             <img 
               src="${qrImageUrl}" 
-              alt="QR Code สำหรับเข้าสู่การสอบ" 
+              alt="QR Code สำหรับเข้าสู่การประเมิน" 
               class="w-48 h-48 mx-auto rounded-lg border border-gray-200 shadow-sm"
               onload="this.style.opacity=1; this.parentElement.parentElement.querySelector('.loading-text')?.remove()"
               onerror="this.onerror=null; this.src='https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${qrData}&choe=UTF-8'; this.alt='QR Code (Fallback)'"

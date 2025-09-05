@@ -6,21 +6,35 @@
       </svg>
       เลือกหลักสูตรอบรม
     </label>
-    <select 
-      id="trainingSelect"
-      :value="selectedTraining"
-      @change="$emit('update:selectedTraining', $event.target.value)"
-      class="w-full md:w-2/3 px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
-    >
-      <option value="">-- เลือกหลักสูตรอบรม --</option>
-      <option 
-        v-for="training in trainings" 
-        :key="training.id" 
-        :value="training.id"
+    <div class="flex flex-col md:flex-row gap-3">
+      <select 
+        id="trainingSelect"
+        :value="selectedTraining"
+        @change="$emit('update:selectedTraining', $event.target.value)"
+        class="flex-1 md:flex-none md:w-2/3 px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
       >
-        {{ training.name }}
-      </option>
-    </select>
+        <option value="">-- เลือกหลักสูตรอบรม --</option>
+        <option 
+          v-for="training in trainings" 
+          :key="training.id" 
+          :value="training.id"
+        >
+          {{ training.name }}
+        </option>
+      </select>
+      
+      <button
+        v-if="selectedTraining"
+        @click="$emit('clear-selection')"
+        class="px-4 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-2 md:w-auto"
+        title="ล้างการเลือก"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>
+        ล้าง
+      </button>
+    </div>
   </div>
 </template>
 
@@ -37,6 +51,6 @@ export default {
       required: true
     }
   },
-  emits: ['update:selectedTraining']
+  emits: ['update:selectedTraining', 'clear-selection']
 }
 </script>

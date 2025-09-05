@@ -42,10 +42,10 @@
             แก้ไข
           </button>
           <button 
-            @click="handleDelete" 
+            @click="handleDeleteSession" 
             class="flex-1 bg-red-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-red-600 transition-all hover:-translate-y-0.5"
           >
-            ลบ
+            {{ getDeleteButtonText() }}
           </button>
         </div>
       </div>
@@ -69,16 +69,19 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['close', 'edit', 'delete']);
+const emit = defineEmits(['close', 'edit', 'delete', 'deleteSession']);
 
 const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
 
 const eventDetails = computed(() => {
   if (!props.event) return [];
   
+  // Determine the date label based on whether we're showing a specific clicked date or date range
+  const dateLabel = props.event.clickedDate ? "วันที่" : (props.event.startDate === props.event.endDate ? "วันที่" : "ช่วงวันที่");
+  
   return [
     { 
-      label: "ช่วงวันที่", 
+      label: dateLabel, 
       value: formatDateRange(props.event), 
       icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" 
     },
@@ -111,6 +114,12 @@ const formatThaiDate = (dateString) => {
 };
 
 const formatDateRange = (event) => {
+  // If we have a clicked date, show that specific date
+  if (event.clickedDate) {
+    return formatThaiDate(event.clickedDate);
+  }
+  
+  // Otherwise show the normal date range
   if (event.startDate === event.endDate) {
     return formatThaiDate(event.startDate);
   } else {
@@ -120,6 +129,30 @@ const formatDateRange = (event) => {
 
 const formatTimeRange = (startHour, endHour) => {
   return `${startHour.toString().padStart(2, '0')}:00 - ${endHour.toString().padStart(2, '0')}:00`;
+};
+
+const handleDeleteSession = () => {
+  const isSpecificDate = props.event.clickedDate;
+  
+  if (isSpecificDate) {
+    // When clicking from a specific date, delete only that session
+    const deleteMessage = `คุณแน่ใจหรือไม่ที่จะลบการอบรมในวันที่ ${formatThaiDate(props.event.clickedDate)} นี้?\n\nหมายเหตุ: การอบรมในวันอื่นๆ จะยังคงอยู่ตามปกติ`;
+    
+    if (confirm(deleteMessage)) {
+      emit('deleteSession', props.event.id, props.event.clickedDate);
+    }
+  } else {
+    // When viewing the general event, delete the entire event
+    const deleteMessage = `คุณแน่ใจหรือไม่ที่จะลบการอบรมทั้งหมดนี้?`;
+    
+    if (confirm(deleteMessage)) {
+      emit('delete', props.event.id);
+    }
+  }
+};
+
+const getDeleteButtonText = () => {
+  return props.event.clickedDate ? 'ลบ' : 'ลบการอบรม';
 };
 
 const handleDelete = () => {

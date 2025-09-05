@@ -351,13 +351,14 @@ const handleSubmit = () => {
 watch(() => props.showModal, (newValue) => {
   if (newValue) {
     if (props.isEdit && props.eventData) {
+      // Load existing event data for editing
       form.value = {
         type: props.eventData.type || "",
         startDate: props.eventData.startDate || "",
         endDate: props.eventData.endDate || "",
         startTime: props.eventData.startTime || "",
         endTime: props.eventData.endTime || "",
-        selectedDays: [],
+        selectedDays: props.eventData.selectedDays || [],
         examiner: props.eventData.examiner || "",
         room: props.eventData.room || "",
         maxParticipants: props.eventData.maxParticipants || null,

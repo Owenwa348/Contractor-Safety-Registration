@@ -45,10 +45,21 @@
         <!-- Tab Content -->
         <div class="p-6">
           <!-- Permissions Tab -->
-          <UserManagement 
-            v-if="activeTab === 'permissions'"
-            :current-user="currentUser"
-          />
+          <div v-if="activeTab === 'permissions'" class="space-y-8">
+            <!-- User Management Section -->
+            <div class="bg-gray-50 p-6 rounded-lg">
+              <UserManagement 
+                :current-user="currentUser"
+              />
+            </div>
+            
+            <!-- Contractor Coordinator Management Section -->
+            <div class="bg-gray-50 p-6 rounded-lg">
+              <UserContractorCoordinator 
+                :current-user="currentUser"
+              />
+            </div>
+          </div>
 
           <!-- Activities Tab -->
           <ActivityManagement 
@@ -88,7 +99,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import UserManagement from './UserManagement.vue'
+import UserManagement from './UserManager.vue'
+import UserContractorCoordinator from './๊UserContractorCoordinator.vue'
 import ActivityManagement from './ActivityManagement.vue'
 import RoomManagement from './RoomManagement.vue'
 import DataManagement from './DataManagement.vue'

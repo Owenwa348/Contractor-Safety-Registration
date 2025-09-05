@@ -110,8 +110,8 @@ const selectedStatus = ref('')
 // Sample supervisors data
 const supervisors = ref([
   { id: 1, name: 'นายสมชัย แสงโสม ', department: 'หัวหน้างานขนส่ง' },
-  { id: 2, name: 'นายสุรพล กรมหนึ่ง', department: 'หัวหน้างานปั้นจันยกของ' },
-  { id: 3, name: 'นายประเสริฐ เริสบาระ', department: 'หัวหน้างานจัดการ' }
+  { id: 2, name: 'นายสุรพล กรมหนึ่ง', department: 'หัวหน้างานเครื่องจักร' },
+  { id: 3, name: 'นายประเสริฐ เริสบาระ', department: 'หัวหน้างานความปลอดภัย' }
 ])
 
 // Headers

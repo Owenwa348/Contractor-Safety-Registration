@@ -14,6 +14,7 @@
           type="date" 
           required 
           :min="minDate" 
+          :max="maxDate"
           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
           @change="$emit('validate-date-range')" 
         />
@@ -26,6 +27,7 @@
           type="date" 
           required 
           :min="form.startDate || minDate" 
+          :max="maxDate"
           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
           @change="$emit('validate-date-range')" 
         />
@@ -96,6 +98,10 @@ const props = defineProps({
   minDate: {
     type: String,
     required: true
+  },
+  maxDate: {
+    type: String,
+    default: null
   },
   isMultiDay: {
     type: Boolean,

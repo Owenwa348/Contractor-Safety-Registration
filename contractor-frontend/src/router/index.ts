@@ -126,9 +126,10 @@ const routes = [
     meta: { title: 'สอบ' }
   },
   {
-    path: '/assessment',
+    path: '/assessment/:trainingId',
     component: Assessment,
-    meta: { title: 'การประเมินผล' }
+    meta: { title: 'การประเมิน' },
+    props: true
   },
   {
     path: '/print-card',
@@ -169,12 +170,12 @@ const routes = [
   {
     path: '/caretaker-user-management',
     component: UserManagement,
-    meta: { title: 'จัดการผู้ใช้งาน', requiresAuth: true, role: 'caretaker' }
+    meta: { title: 'จัดการผู้ใช้งาน' }
   },
   {
     path: '/caretaker-system-config',
     component: SystemConfig,
-    meta: { title: 'การตั้งค่าระบบ', requiresAuth: true, role: 'caretaker' }
+    meta: { title: 'การตั้งค่าระบบ' }
   },
   // {
   //   path: '/caretaker-database-management',
@@ -215,13 +216,9 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const isLoggedIn = localStorage.getItem('auth') === 'true'
-
-  if (to.meta.public || isLoggedIn) {
-    next()
-  } else {
-    next('/')
-  }
+  // Allow access to all pages without authentication checks
+  console.log('Navigation to:', to.path, '- Access allowed without authentication')
+  next()
 })
 
 export default router

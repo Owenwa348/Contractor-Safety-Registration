@@ -13,14 +13,40 @@ export function useModal() {
   };
 
   const openEditModal = (event) => {
-    selectedEvent.value = event;
+    // Create a clean copy of the event data for editing
+    selectedEvent.value = {
+      id: event.id,
+      type: event.type,
+      title: event.title,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      selectedDays: event.selectedDays || [],
+      examiner: event.examiner,
+      room: event.room,
+      maxParticipants: event.maxParticipants,
+      currentParticipants: event.currentParticipants || 0,
+      color: event.color,
+      isBooked: event.isBooked || false
+    };
     editingEvent.value = true;
     showViewModal.value = false;
     showAddEventModal.value = true;
   };
 
-  const openViewModal = (event) => {
-    selectedEvent.value = event;
+  const openViewModal = (event, clickedDate = null) => {
+    if (clickedDate) {
+      // Create a copy of the event with the specific clicked date
+      selectedEvent.value = {
+        ...event,
+        clickedDate: clickedDate,
+        displayStartDate: clickedDate,
+        displayEndDate: clickedDate
+      };
+    } else {
+      selectedEvent.value = event;
+    }
     showViewModal.value = true;
   };
 

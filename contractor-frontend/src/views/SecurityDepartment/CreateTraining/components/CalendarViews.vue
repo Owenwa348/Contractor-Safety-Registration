@@ -32,7 +32,7 @@
             v-for="event in getEventsForDate(date.fullDate)" 
             :key="event.id" 
             class="text-xs text-white p-2 rounded cursor-pointer hover:opacity-80 transition-all hover:shadow-sm" 
-            @click="$emit('viewEvent', event)" 
+            @click="$emit('viewEvent', event, date.fullDate)" 
             :style="{ backgroundColor: event.color }" 
             draggable="true" 
             @dragstart="$emit('startDrag', event, $event)"
@@ -84,7 +84,7 @@
               :key="event.id" 
               class="text-xs text-white p-2 rounded mb-1 cursor-pointer hover:opacity-80 transition-all hover:shadow-sm" 
               :style="{ backgroundColor: event.color }" 
-              @click="$emit('viewEvent', event)" 
+              @click="$emit('viewEvent', event, day.fullDate)" 
               draggable="true" 
               @dragstart="$emit('startDrag', event, $event)"
             >

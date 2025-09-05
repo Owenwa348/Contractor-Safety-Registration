@@ -5,6 +5,17 @@
       <div class="bg-white rounded-lg shadow-lg p-6">
         <h1 class="text-xl font-bold text-center mb-6">รายละเอียดก่อนเริ่มทำแบบทดสอบ</h1>
         
+        <!-- แสดงข้อมูลหลักสูตร -->
+        <div v-if="currentTraining" class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h2 class="text-lg font-bold text-blue-800 mb-2">หลักสูตร: {{ trainingName }}</h2>
+          <div class="text-sm text-blue-700 space-y-1">
+            <p><strong>วันที่อบรม:</strong> {{ currentTraining.details.date }}</p>
+            <p><strong>เวลา:</strong> {{ currentTraining.details.time }}</p>
+            <p><strong>วิทยากร:</strong> {{ currentTraining.details.instructor }}</p>
+            <p><strong>เกณฑ์ผ่าน:</strong> <span class="text-red-600 font-bold">{{ trainingPassingScore }}%</span></p>
+          </div>
+        </div>
+        
         <div class="space-y-4 mb-6">
           <div class="flex items-start">
             <span class="text-blue-600 font-bold mr-2">1.</span>
@@ -12,7 +23,7 @@
               <span>มีเวลาในการสอบทั้งหมด </span>
               <span class="text-red-500 font-bold">{{ examInfo.timeLimit }} นาที</span>
               <span> จะเริ่มนับเวลาตั้งแต่เริ่มทำแบบทดสอบ หลังจบเวลาการสอบ และมีคะแนนการผ่านอยู่ที่ </span>
-              <span class="text-red-500 font-bold">{{ examInfo.passingScore }}%</span>
+              <span class="text-red-500 font-bold">{{ trainingPassingScore }}%</span>
             </div>
           </div>
         </div>
@@ -51,7 +62,7 @@
           :disabled="!selectedCompany || !idNumber"
           class="w-full bg-green-600 text-white py-3 rounded-lg font-bold text-lg disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-green-700 transition-colors"
         >
-          ดำไป
+          ถัดไป
         </button>
       </div>
     </div>
@@ -235,6 +246,12 @@
 <script>
 export default {
   name: 'AssessmentSystem',
+  props: {
+    trainingId: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
       currentStep: 'info', // 'info', 'exam', 'result'
@@ -243,6 +260,58 @@ export default {
       examInfo: {
         timeLimit: 30, // นาที
         passingScore: 80 // เปอร์เซ็นต์
+      },
+      
+      // ข้อมูลหลักสูตรอบรม
+      trainings: {
+        'safety-basic': {
+          id: 'safety-basic',
+          name: 'อบรมพื้นฐานความปลอดภัย',
+          details: {
+            date: '25 - 30 สิงหาคม 2568',
+            time: '08:30 - 16:30 น.',
+            instructor: 'ดร.สมชาย ปลอดภัย',
+            passingScore: 80,
+            duration: '8 ชั่วโมง',
+            description: 'หลักการพื้นฐานด้านความปลอดภัยในการทำงาน การป้องกันอุบัติเหตุ และการใช้อุปกรณ์ป้องกันภัยส่วนบุคคล'
+          }
+        },
+        'tool-operation': {
+          id: 'tool-operation',
+          name: 'อบรมการใช้เครื่องมือ',
+          details: {
+            date: '22 - 24 สิงหาคม 2568',
+            time: '08:30 - 12:00 น.',
+            instructor: 'ช่างเอก เครื่องกล',
+            passingScore: 70,
+            duration: '4 ชั่วโมง',
+            description: 'การใช้เครื่องมือพื้นฐานในการทำงาน การบำรุงรักษา และมาตรการความปลอดภัยในการใช้เครื่องมือ'
+          }
+        },
+        'machine-operation': {
+          id: 'machine-operation',
+          name: 'อบรมการใช้เครื่องจักร',
+          details: {
+            date: '3 กันยายน 2568',
+            time: '08:30 - 17:00 น.',
+            instructor: 'วิศวกรใหญ่ สมเกียรติ',
+            passingScore: 75,
+            duration: '8 ชั่วโมง',
+            description: 'การปฏิบัติงานกับเครื่องจักรอุตสาหกรรม ระบบความปลอดภัย และการบำรุงรักษาเบื้องต้น'
+          }
+        },
+        'first-aid': {
+          id: 'first-aid',
+          name: 'อบรมการประกอบอุปกรณ์',
+          details: {
+            date: '12 - 18 กันยายน 2568',
+            time: '09:00 - 16:00 น.',
+            instructor: 'พยาบาลวิชาชีพ สุขใจ',
+            passingScore: 80,
+            duration: '7 ชั่วโมง',
+            description: 'การปฐมพยาบาลเบื้องต้น การช่วยเหลือผู้ประสบอุบัติเหตุ และการใช้อุปกรณ์ปฐมพยาบาล'
+          }
+        }
       },
       
       // ข้อสอบทั้งหมด 60 ข้อ (ตัวอย่าง)
@@ -296,6 +365,22 @@ export default {
   computed: {
     currentQuestion() {
       return this.examQuestions[this.currentQuestionIndex] || {}
+    },
+    extractedTrainingId() {
+      if (!this.trainingId) return ''
+      // Extract training ID from slug format (e.g., "safety-basic-training-basic-safety" -> "safety-basic")
+      const knownTrainingIds = ['safety-basic', 'tool-operation', 'machine-operation', 'first-aid']
+      const foundId = knownTrainingIds.find(id => this.trainingId.startsWith(id))
+      return foundId || this.trainingId
+    },
+    currentTraining() {
+      return this.trainings[this.extractedTrainingId] || null
+    },
+    trainingName() {
+      return this.currentTraining ? this.currentTraining.name : 'หลักสูตรอบรม'
+    },
+    trainingPassingScore() {
+      return this.currentTraining ? this.currentTraining.details.passingScore : this.examInfo.passingScore
     }
   },
   methods: {

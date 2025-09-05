@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="mb-8">
       <h1 class="text-3xl font-bold mb-3">ทำแบบทดสอบหลังอบรม</h1>
-      <p class="text-gray-600 text-lg">เลือกหลักสูตรอบรมเพื่อดูรายละเอียดและเข้าสู่การสอบ</p>
+      <p class="text-gray-600 text-lg">เลือกหลักสูตรอบรมเพื่อดูรายละเอียดและเข้าสู่การประเมิน</p>
     </div>
 
     <!-- Training Selection -->
@@ -11,6 +11,7 @@
       :selected-training="selectedTraining"
       :trainings="trainings"
       @update:selected-training="selectedTraining = $event"
+      @clear-selection="resetSelection"
     />
 
     <!-- Training Details or Participants -->
@@ -75,7 +76,8 @@ export default {
       filteredCompletedParticipants,
       examUrl,
       passedCount,
-      failedCount
+      failedCount,
+      resetSelection
     } = useTrainingData()
 
     // Clipboard composable
@@ -106,7 +108,8 @@ export default {
       showToast,
       // Methods
       copyToClipboard,
-      handleConfirmExam
+      handleConfirmExam,
+      resetSelection
     }
   }
 }

@@ -194,80 +194,88 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'LoginForm',
-  data() {
-    return {
-      email: '',
-      password: '',
-      showPassword: false,
-      emailStatus: null, // null, 'valid', 'no-password', 'invalid'
-      emailMessage: '',
-      
-      // Mock database - ในการใช้งานจริงควรเรียก API
-      mockDatabase: [
-        { email: 'safety01@gmail.com', hasPassword: true, password: '123456' },
-        { email: 'safety02@gmail.com', hasPassword: true, password: '123456' },
-        { email: 'safety03@gmail.com', hasPassword: false },
-        { email: 'safety04@gmail.com', hasPassword: false },
-      ]
-    }
-  },
-  computed: {
-    showPasswordField() {
-      return this.emailStatus === 'valid';
-    },
-    canSubmit() {
-      return this.emailStatus === 'valid' && this.email && this.password;
-    }
-  },
-  methods: {
-    checkEmail() {
-      if (!this.email) {
-        this.resetEmailStatus();
-        return;
-      }
-      
-      // จำลองการตรวจสอบอีเมลในระบบ
-      const user = this.mockDatabase.find(u => u.email.toLowerCase() === this.email.toLowerCase());
-      
-      if (!user) {
-        // อีเมลไม่มีในระบบ
-        this.emailStatus = 'invalid';
-        this.emailMessage = 'อีเมลของท่านไม่มีในระบบ';
-      } else if (!user.hasPassword) {
-        // มีอีเมลแต่ยังไม่ได้ตั้งรหัสผ่าน
-        this.emailStatus = 'no-password';
-        this.emailMessage = 'กรุณาตั้งรหัสผ่านของท่าน';
-      } else {
-        // มีอีเมลและมีรหัสผ่านแล้ว
-        this.emailStatus = 'valid';
-        this.emailMessage = '';
-      }
-    },
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuth } from '../../../composables/useAuth.js'
+
+const router = useRouter()
+const { login } = useAuth()
+
+// Reactive data
+const email = ref('')
+const password = ref('')
+const showPassword = ref(false)
+const emailStatus = ref(null) // null, 'valid', 'no-password', 'invalid'
+const emailMessage = ref('')
+
+// Mock database - ในการใช้งานจริงควรเรียก API
+const mockDatabase = [
+  { email: 'safety01@gmail.com', hasPassword: true, password: '123456' },
+  { email: 'safety02@gmail.com', hasPassword: true, password: '123456' },
+  { email: 'safety03@gmail.com', hasPassword: false },
+  { email: 'safety04@gmail.com', hasPassword: false },
+]
+
+// Computed properties
+const showPasswordField = computed(() => {
+  return emailStatus.value === 'valid'
+})
+
+const canSubmit = computed(() => {
+  return emailStatus.value === 'valid' && email.value && password.value
+})
+
+// Methods
+const checkEmail = () => {
+  if (!email.value) {
+    resetEmailStatus()
+    return
+  }
+  
+  // จำลองการตรวจสอบอีเมลในระบบ
+  const user = mockDatabase.find(u => u.email.toLowerCase() === email.value.toLowerCase())
+  
+  if (!user) {
+    // อีเมลไม่มีในระบบ
+    emailStatus.value = 'invalid'
+    emailMessage.value = 'อีเมลของท่านไม่มีในระบบ'
+  } else if (!user.hasPassword) {
+    // มีอีเมลแต่ยังไม่ได้ตั้งรหัสผ่าน
+    emailStatus.value = 'no-password'
+    emailMessage.value = 'กรุณาตั้งรหัสผ่านของท่าน'
+  } else {
+    // มีอีเมลและมีรหัสผ่านแล้ว
+    emailStatus.value = 'valid'
+    emailMessage.value = ''
+  }
+}
+
+const resetEmailStatus = () => {
+  emailStatus.value = null
+  emailMessage.value = ''
+  password.value = ''
+}
+
+const handleLogin = () => {
+  if (!canSubmit.value) return
+  
+  // ตรวจสอบรหัสผ่าน
+  const user = mockDatabase.find(u => u.email.toLowerCase() === email.value.toLowerCase())
+  
+  if (user && user.hasPassword && user.password === password.value) {
+    // Use auth composable to login
+    login('internal', {
+      email: email.value,
+      role: "internal"
+    })
     
-    resetEmailStatus() {
-      this.emailStatus = null;
-      this.emailMessage = '';
-      this.password = '';
-    },
-    
-    handleLogin() {
-      if (!this.canSubmit) return;
-      
-      // ตรวจสอบรหัสผ่าน
-      const user = this.mockDatabase.find(u => u.email.toLowerCase() === this.email.toLowerCase());
-      
-      if (user && user.hasPassword && user.password === this.password) {
-        // เข้าสู่ระบบสำเร็จ
-        console.log('เข้าสู่ระบบสำเร็จ:', this.email);
-        this.$router.push('/list-employees');
-      } else {
-        // รหัสผ่านไม่ถูกต้อง
-        alert('รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง');
-      }
-    }
+    // เข้าสู่ระบบสำเร็จ
+    console.log('เข้าสู่ระบบสำเร็จ:', email.value)
+    router.push('/list-employees')
+  } else {
+    // รหัสผ่านไม่ถูกต้อง
+    alert('รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง')
   }
 }
 </script>
