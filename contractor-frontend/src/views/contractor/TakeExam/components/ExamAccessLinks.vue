@@ -36,6 +36,13 @@
         {{ showQRCode ? 'ซ่อน QR Code' : 'แสดง QR Code' }}
       </button>
     </div>
+    <div>
+      <router-link to="/assessment">
+        <button>
+          ประเมินชั่วคราว
+        </button>
+      </router-link>
+    </div>
 
     <div v-if="showQRCode" class="mt-6 text-center">
       <div class="inline-block p-6 bg-white border-2 border-gray-200 rounded-xl shadow-lg">

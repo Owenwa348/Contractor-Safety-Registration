@@ -17,37 +17,6 @@ export const CARETAKER_ICONS = {
     `
   },
 
-  // ไอคอนการตั้งค่าระบบ
-  CogIcon: {
-    template: `
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    `
-  },
-
-  // ไอคอนจัดการฐานข้อมูล
-  DatabaseIcon: {
-    template: `
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-      </svg>
-    `
-  },
-
-  // ไอคอนจัดการสิทธิ์
-  ShieldIcon: {
-    template: `
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-      </svg>
-    `
-  },
-
   // ไอคอนรายงานระบบ
   ChartBarIcon: {
     template: `
@@ -67,16 +36,6 @@ export const CARETAKER_ICONS = {
       </svg>
     `
   },
-
-  // ไอคอนออกจากระบบ
-  LogoutIcon: {
-    template: `
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-      </svg>
-    `
-  }
 };
 
 /**
@@ -92,30 +51,6 @@ export const CARETAKER_MENU_ITEMS = [
     category: 'user-management',
     priority: 1
   },
-  {
-    path: '/caretaker-permissions',
-    name: 'จัดการสิทธิ์การเข้าถึง',
-    icon: 'ShieldIcon',
-    description: 'กำหนดสิทธิ์และระดับการเข้าถึงข้อมูล',
-    category: 'security',
-    priority: 2
-  },
-  {
-    path: '/caretaker-system-config',
-    name: 'การตั้งค่าระบบ',
-    icon: 'CogIcon',
-    description: 'กำหนดค่าระบบและพารามิเตอร์ต่างๆ',
-    category: 'system',
-    priority: 3
-  },
-  {
-    path: '/caretaker-database-management',
-    name: 'จัดการฐานข้อมูล',
-    icon: 'DatabaseIcon',
-    description: 'จัดการฐานข้อมูล การสำรองข้อมูล และการบำรุงรักษา',
-    category: 'database',
-    priority: 4
-  }
 ];
 
 /**
