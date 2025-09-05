@@ -10,54 +10,6 @@ export function useTrainingBooking() {
   const isBooking = ref(false)
   const notifications = ref([])
   
-  // Training data
-  const events = ref([
-    { 
-      id: 1, 
-      title: 'อบรมพื้นฐานความปลอดภัย', 
-      date: '2025-08-07', 
-      time: '08:30', 
-      endTime: '12:30',
-      instructor: 'นายสมชัย งบ.1',
-      capacity: 20,
-      booked: 12,
-      room: 'ห้อง A'
-    },
-    { 
-      id: 2, 
-      title: 'อบรมการใช้เครื่องมือ', 
-      date: '2025-08-14', 
-      time: '08:00', 
-      endTime: '12:00',
-      instructor: 'นายสมศักดิ์ กิจดี',
-      capacity: 25,
-      booked: 3,
-      room: 'ห้อง B'
-    },
-    { 
-      id: 3, 
-      title: 'อบรมการใช้เครื่องจักร', 
-      date: '2025-08-19', 
-      time: '08:30', 
-      endTime: '12:30',
-      instructor: 'นางสาวมาลี ใจดี',
-      capacity: 30,
-      booked: 0,
-      room: 'ห้อง C'
-    },
-    { 
-      id: 4, 
-      title: 'อบรมการประกอบอุปกรณ์', 
-      date: '2025-08-22', 
-      time: '08:30', 
-      endTime: '12:30',
-      instructor: 'นายวิชัย เก่งดี',
-      capacity: 20,
-      booked: 2,
-      room: 'ห้อง A'
-    }
-  ])
-  
   // URL parameters
   const selectedEventId = ref('')
   const examDate = ref('')
@@ -65,10 +17,14 @@ export function useTrainingBooking() {
   const eventTitle = ref('')
   const eventDate = ref('')
   const eventTime = ref('')
+  const eventEndTime = ref('')
   const examiner = ref('')
+  const instructor = ref('')
   const room = ref('')
   const eventType = ref('')
   const round = ref('')
+  const capacity = ref('')
+  const participantCount = ref('')
   
   // Initialize from URL
   const initializeFromRoute = () => {
@@ -87,10 +43,14 @@ export function useTrainingBooking() {
     if (route.query.eventTitle) eventTitle.value = route.query.eventTitle
     if (route.query.eventDate) eventDate.value = route.query.eventDate
     if (route.query.eventTime) eventTime.value = route.query.eventTime
+    if (route.query.eventEndTime) eventEndTime.value = route.query.eventEndTime
     if (route.query.examiner) examiner.value = route.query.examiner
+    if (route.query.instructor) instructor.value = route.query.instructor
     if (route.query.room) room.value = route.query.room
     if (route.query.type) eventType.value = route.query.type
     if (route.query.round) round.value = route.query.round
+    if (route.query.capacity) capacity.value = route.query.capacity
+    if (route.query.participantCount) participantCount.value = route.query.participantCount
   }
   
   // Watch route changes
@@ -108,33 +68,29 @@ export function useTrainingBooking() {
     if (newQuery.eventTitle) eventTitle.value = newQuery.eventTitle
     if (newQuery.eventDate) eventDate.value = newQuery.eventDate
     if (newQuery.eventTime) eventTime.value = newQuery.eventTime
+    if (newQuery.eventEndTime) eventEndTime.value = newQuery.eventEndTime
     if (newQuery.examiner) examiner.value = newQuery.examiner
+    if (newQuery.instructor) instructor.value = newQuery.instructor
     if (newQuery.room) room.value = newQuery.room
     if (newQuery.type) eventType.value = newQuery.type
     if (newQuery.round) round.value = newQuery.round
+    if (newQuery.capacity) capacity.value = newQuery.capacity
+    if (newQuery.participantCount) participantCount.value = newQuery.participantCount
   })
   
   // Computed properties
   const selectedEvent = computed(() => {
-    // First try to find from predefined events
-    const foundEvent = events.value.find(event => event.id === parseInt(selectedEventId.value))
-    
-    // If found in predefined events, return it
-    if (foundEvent) {
-      return foundEvent
-    }
-    
-    // If not found but we have URL parameters, create dynamic event
-    if (eventTitle.value || eventDate.value) {
+    // Create event from URL parameters if available
+    if (eventTitle.value || eventDate.value || selectedEventId.value) {
       return {
         id: parseInt(selectedEventId.value) || 0,
         title: eventTitle.value || 'ไม่ระบุหัวข้อ',
         date: eventDate.value || '',
         time: eventTime.value || '08:00',
-        endTime: '12:00', // Default end time
-        instructor: examiner.value || 'ไม่ระบุผู้สอน',
-        capacity: 30, // Default capacity
-        booked: 0, // Default booked count
+        endTime: eventEndTime.value || '12:00',
+        instructor: instructor.value || examiner.value || 'ไม่ระบุผู้สอน',
+        capacity: parseInt(capacity.value) || 30,
+        booked: parseInt(participantCount.value) || 0,
         room: room.value || 'ไม่ระบุห้อง',
         type: eventType.value || eventTitle.value || 'อบรม'
       }
@@ -232,11 +188,8 @@ export function useTrainingBooking() {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000))
       
-      // Update booked count
-      const eventIndex = events.value.findIndex(e => e.id === selectedEvent.value.id)
-      if (eventIndex !== -1) {
-        events.value[eventIndex].booked += selectedPeople.length
-      }
+      // In a real application, this would update the backend
+      // Since we're using URL parameters, we don't need to update local state
       
       // Store the specific exam date for each selected person
       selectedPeople.forEach(person => {
@@ -268,17 +221,20 @@ export function useTrainingBooking() {
     isLoading,
     isBooking,
     notifications,
-    events,
     selectedEventId,
     examDate,
     examDateDisplay,
     eventTitle,
     eventDate,
     eventTime,
+    eventEndTime,
     examiner,
+    instructor,
     room,
     eventType,
     round,
+    capacity,
+    participantCount,
     
     // Computed
     selectedEvent,

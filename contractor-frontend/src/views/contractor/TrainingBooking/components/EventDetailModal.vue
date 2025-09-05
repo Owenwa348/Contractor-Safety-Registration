@@ -26,25 +26,68 @@
       
       <!-- Event Details -->
       <div v-if="selectedEvent" class="space-y-4">
+        <!-- Training Name -->
         <div class="border-l-4 pl-4 border-blue-600">
           <h4 class="text-xl font-semibold text-gray-900">{{ selectedEvent.title }}</h4>
         </div>
         
-        <div class="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <label class="text-gray-600 font-medium">วันที่</label>
-            <p class="text-gray-900">
-              {{ selectedEvent.isMultiDay && selectedDate
-                ? formatThaiDate(selectedDate)
-                : selectedEvent.isMultiDay 
-                  ? formatDateRange(selectedEvent.startDate, selectedEvent.endDate)
-                  : formatThaiDate(selectedEvent.date || selectedEvent.startDate) 
-              }}
-            </p>
+        <!-- Training Details Grid -->
+        <div class="space-y-3">
+          <!-- Instructor -->
+          <div class="flex items-start">
+            <div class="min-w-0 flex-1">
+              <label class="text-gray-600 font-medium text-sm">ชื่อผู้สอน</label>
+              <p class="text-gray-900 mt-1">{{ selectedEvent.instructor || 'ไม่ระบุ' }}</p>
+            </div>
           </div>
-          <div v-if="!selectedEvent.isAllDay">
-            <label class="text-gray-600 font-medium">เวลา</label>
-            <p class="text-gray-900">{{ selectedEvent.time }}:00 น.</p>
+          
+          <!-- Date -->
+          <div class="flex items-start">
+            <div class="min-w-0 flex-1">
+              <label class="text-gray-600 font-medium text-sm">วันที่</label>
+              <p class="text-gray-900 mt-1">
+                {{ selectedEvent.isMultiDay && selectedDate
+                  ? formatThaiDate(selectedDate)
+                  : selectedEvent.isMultiDay 
+                    ? formatDateRange(selectedEvent.startDate, selectedEvent.endDate)
+                    : formatThaiDate(selectedEvent.date || selectedEvent.startDate) 
+                }}
+              </p>
+            </div>
+          </div>
+          
+          <!-- Time -->
+          <div v-if="!selectedEvent.isAllDay" class="flex items-start">
+            <div class="min-w-0 flex-1">
+              <label class="text-gray-600 font-medium text-sm">เวลา</label>
+              <p class="text-gray-900 mt-1">
+                {{ selectedEvent.time }}:00 - {{ selectedEvent.endTime }}:00 น.
+              </p>
+            </div>
+          </div>
+          
+          <!-- Room -->
+          <div class="flex items-start">
+            <div class="min-w-0 flex-1">
+              <label class="text-gray-600 font-medium text-sm">ห้อง</label>
+              <p class="text-gray-900 mt-1">{{ selectedEvent.room || 'ไม่ระบุ' }}</p>
+            </div>
+          </div>
+          
+          <!-- Participant Count -->
+          <div class="flex items-start">
+            <div class="min-w-0 flex-1">
+              <label class="text-gray-600 font-medium text-sm">จำนวนผู้เข้าร่วม</label>
+              <p class="text-gray-900 mt-1">
+                {{ selectedEvent.participantCount }}/{{ selectedEvent.capacity }} คน
+                <span class="ml-2 px-2 py-1 rounded-full text-xs"
+                      :class="selectedEvent.participantCount >= selectedEvent.capacity 
+                        ? 'bg-red-100 text-red-700' 
+                        : 'bg-green-100 text-green-700'">
+                  {{ selectedEvent.participantCount >= selectedEvent.capacity ? 'เต็ม' : 'ว่าง' }}
+                </span>
+              </p>
+            </div>
           </div>
         </div>
 
@@ -73,20 +116,6 @@
               </div>
             </div>
           </div>
-        </div>
-        
-        <!-- Participant Count -->
-        <div class="text-sm">
-          <label class="text-gray-600 font-medium">จำนวนผู้เข้าร่วม</label>
-          <p class="text-gray-900">
-            {{ selectedEvent.participantCount }}/{{ selectedEvent.capacity }} คน
-            <span class="ml-2 px-2 py-1 rounded-full text-xs"
-                  :class="selectedEvent.participantCount >= selectedEvent.capacity 
-                    ? 'bg-red-100 text-red-700' 
-                    : 'bg-green-100 text-green-700'">
-              {{ selectedEvent.participantCount >= selectedEvent.capacity ? 'เต็ม' : 'ว่าง' }}
-            </span>
-          </p>
         </div>
 
         <!-- Date selection for multi-day events -->

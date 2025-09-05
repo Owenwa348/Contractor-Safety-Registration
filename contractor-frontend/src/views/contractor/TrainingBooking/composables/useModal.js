@@ -68,9 +68,13 @@ export function useModal() {
       eventTitle: currentEvent.title,
       eventDate: bookingDate,
       eventTime: String(currentEvent.time || 8),
-      examiner: "นายสมชัย งบ.1",
+      eventEndTime: String(currentEvent.endTime || 12),
+      examiner: currentEvent.instructor || "ไม่ระบุผู้สอน",
+      instructor: currentEvent.instructor || "ไม่ระบุผู้สอน",
       type: currentEvent.title,
-      room: "ห้อง A",
+      room: currentEvent.room || "ไม่ระบุห้อง",
+      capacity: String(currentEvent.capacity || 30),
+      participantCount: String(currentEvent.participantCount || 0),
       registrationDaysBefore: String(currentEvent.registrationDaysBefore || 1),
       // Add the specific exam date for individual tracking
       examDate: bookingDate
@@ -80,11 +84,11 @@ export function useModal() {
       queryParams.eventEndDate = currentEvent.endDate
       queryParams.isMultiDay = "true"
       queryParams.selectedDate = bookingDate
-      queryParams.round = `${formatThaiDate(bookingDate)} ${currentEvent.time}:00-12:00`
+      queryParams.round = `${formatThaiDate(bookingDate)} ${currentEvent.time}:00-${currentEvent.endTime}:00`
       // For multi-day events, use the selected specific date as exam date
       queryParams.examDateDisplay = formatThaiDate(bookingDate)
     } else {
-      queryParams.round = `${currentEvent.startDate} ${currentEvent.time}:00-12:00`
+      queryParams.round = `${currentEvent.startDate} ${currentEvent.time}:00-${currentEvent.endTime}:00`
       queryParams.examDateDisplay = formatThaiDate(currentEvent.startDate)
     }
 
